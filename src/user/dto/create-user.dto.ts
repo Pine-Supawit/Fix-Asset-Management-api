@@ -6,7 +6,7 @@ export class CreateUserDto {
     @IsString()
     emp_id: string;
 
-    @ApiProperty({ description: 'Employee ID' })
+    @ApiProperty({ description: 'Username' })
     @IsString()
     username: string;
 
