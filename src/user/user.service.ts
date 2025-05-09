@@ -3,7 +3,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { randomUUID } from 'crypto';
 import { FindOneByUsernameDto, FindUsersDto } from './dto/find-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -32,7 +31,7 @@ export class UserService {
       }
 
       const user = new User();
-      user.id = randomUUID();
+      user.emp_id = params.emp_id;
       user.username = params.username;
       user.password = params.password;
       user.phone = params.phone;

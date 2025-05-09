@@ -5,14 +5,18 @@ import {
     CreateDateColumn,
     Entity,
     PrimaryColumn,
+    PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
 import * as bcrypt from "bcrypt";
 
 @Entity()
 export class User {
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn()
     id: string;
+
+    @Column()
+    emp_id: string;
 
     @Column({ unique: true })
     username: string;
