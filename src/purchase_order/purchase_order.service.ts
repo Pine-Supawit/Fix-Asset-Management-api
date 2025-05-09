@@ -29,6 +29,7 @@ export class PurchaseOrderService {
           PurchaseID: 'DESC',
         },
       });
+      this.logger.debug(`[find-many-assets]: ${JSON.stringify(purchaseOrders)}\n [total]: ${total}`);
       return {
         data: purchaseOrders,
         pagination: {

@@ -29,6 +29,7 @@ export class PurchaseRequestService {
           PRNO: 'DESC',
         },
       });
+      this.logger.debug(`[find-many-assets]: ${JSON.stringify(purchaseRequests)}\n [total]: ${total}`);
       return {
         data: purchaseRequests,
         pagination: {
