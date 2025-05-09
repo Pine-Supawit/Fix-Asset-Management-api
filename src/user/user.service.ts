@@ -1,6 +1,5 @@
 import { Injectable, InternalServerErrorException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -11,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { RefreshDto } from './dto/refresh.dto';
 import { LoginDto } from './dto/login-user.dto';
+import { ForgetPasswordDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -109,7 +109,7 @@ export class UserService {
     }
   }
 
-  async forgotPassword(params: UpdateUserDto) {
+  async forgotPassword(params: ForgetPasswordDto) {
     try {
       const user = await this.userRepository.findOne({
         where: {
