@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PurchaseRequest]),
+    TypeOrmModule.forFeature([PurchaseRequest], 'off_pp'),
   ],
   controllers: [PurchaseRequestController],
   providers: [PurchaseRequestService],

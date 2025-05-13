@@ -6,7 +6,7 @@ import { Asset } from './entities/asset.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Asset]),
+    TypeOrmModule.forFeature([Asset], 'off_pp'),
   ],
   controllers: [AssetsController],
   providers: [AssetsService],

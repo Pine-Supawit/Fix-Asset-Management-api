@@ -10,7 +10,7 @@ import { Repository } from 'typeorm';
 export class AssetsService {
   private readonly logger = new Logger(AssetsService.name)
   constructor(
-    @InjectRepository(Asset)
+    @InjectRepository(Asset, 'off_pp')
     private readonly assetsRepository: Repository<Asset>,
   ) { }
   create(createAssetDto: CreateAssetDto) {

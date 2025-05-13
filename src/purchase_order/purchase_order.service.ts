@@ -10,8 +10,8 @@ import { FindPurchaseOrderDto } from './dto/find-purchase-order.dto';
 export class PurchaseOrderService {
   private readonly logger = new Logger(PurchaseOrderService.name)
   constructor(
-    @InjectRepository(PurchaseOrder)
-    private purchaseOrderRepository: Repository<PurchaseOrder>,
+    @InjectRepository(PurchaseOrder, 'off_pp')
+    private readonly purchaseOrderRepository: Repository<PurchaseOrder>,
   ) { }
   create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
     return 'This action adds a new purchaseOrder';

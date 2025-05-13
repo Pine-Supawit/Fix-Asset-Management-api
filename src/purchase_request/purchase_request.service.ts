@@ -10,8 +10,8 @@ import { PurchaseRequest } from './entities/purchase_request.entity';
 export class PurchaseRequestService {
   private readonly logger = new Logger(PurchaseRequestService.name)
   constructor(
-    @InjectRepository(PurchaseRequest)
-    private purchaseRequestRepository: Repository<PurchaseRequest>,
+    @InjectRepository(PurchaseRequest, 'off_pp')
+    private readonly purchaseRequestRepository: Repository<PurchaseRequest>,
   ) { }
   create(createPurchaseRequestDto: CreatePurchaseRequestDto) {
     return 'This action adds a new purchaseRequest';
