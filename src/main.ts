@@ -8,8 +8,8 @@ async function bootstrap() {
   const logger = new Logger()
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
-    .setTitle('Test')
-    .setDescription('Test')
+    .setTitle('Assets Management API')
+    .setDescription('The API for managing assets')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
