@@ -7,7 +7,7 @@ import { FindInvoiceDto } from './dto/find-invoice.dto';
 @Controller('invoice')
 export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
-  @Get('find-many')
+  @Get()
   findAll(@Query() body: FindInvoiceDto) {
     return this.invoiceService.findAll(body);
   }

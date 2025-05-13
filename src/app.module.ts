@@ -13,6 +13,10 @@ import { AssetsModule } from './assets/assets.module';
 import { Asset } from './assets/entities/asset.entity';
 import { InvoiceModule } from './invoice/invoice.module';
 import { Invoice } from './invoice/entities/invoice.entity';
+import { SupplierModule } from './supplier/supplier.module';
+import { Supplier } from './supplier/entities/supplier.entity';
+import { AssetCheckModule } from './asset_check/asset_check.module';
+import { AssetChecklist } from './asset_check/entities/asset_check.entity';
 
 @Module({
   imports: [
@@ -25,7 +29,7 @@ import { Invoice } from './invoice/entities/invoice.entity';
       password: 'Drowssap1',
       database: 'off_pp',
       // entities: [Product, User],
-      entities: [PurchaseOrder, PurchaseRequest, Asset],
+      entities: [PurchaseOrder, PurchaseRequest, Asset, AssetChecklist],
       synchronize: false,
       options: {
         encrypt: false
@@ -49,12 +53,32 @@ import { Invoice } from './invoice/entities/invoice.entity';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    TypeOrmModule.forRoot({
+      name: 'Ent_db',
+      type: 'mssql',
+      host: '203.146.94.243',
+      port: 1433,
+      username: 'samyan',
+      password: 'Drowssap1',
+      database: 'Ent_db',
+      entities: [Supplier],
+      synchronize: false,
+      options: {
+        encrypt: false
+      },
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
     // ProductsModule,
     // UserModule,
     PurchaseOrderModule,
     PurchaseRequestModule,
     AssetsModule,
-    InvoiceModule],
+    InvoiceModule,
+    SupplierModule,
+    AssetCheckModule],
   controllers: [],
   providers: [],
 })

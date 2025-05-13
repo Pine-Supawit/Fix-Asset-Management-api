@@ -1,13 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
-import { IsNumber, IsOptional } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
-export class FindPurchaseRequestDto {
-    @ApiProperty({ required: false, description: 'Search by purchase request ID' })
-    @IsNumber()
+export class FindAssetCheckDto {
+    @ApiProperty({ required: false, description: 'Search by AssetChecklist ID' })
+    @IsString()
     @IsOptional()
-    @Transform(({ value }) => Number(value))
-    PRNO: string;
+    AssChecklist_ID: string;
 
     @ApiProperty({ required: false, description: 'Page number' })
     @IsNumber()

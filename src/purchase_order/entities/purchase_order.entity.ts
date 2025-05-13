@@ -4,11 +4,12 @@ import {
     PrimaryGeneratedColumn,
     CreateDateColumn,
     UpdateDateColumn,
+    PrimaryColumn,
 } from 'typeorm';
 
 @Entity('Purchasing')
 export class PurchaseOrder {
-    @PrimaryGeneratedColumn()
+    @PrimaryColumn()
     PurchaseID: number;
 
     @Column()

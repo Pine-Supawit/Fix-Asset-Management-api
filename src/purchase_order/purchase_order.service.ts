@@ -23,6 +23,9 @@ export class PurchaseOrderService {
       const limit = params.limit || 10;
       const skip = (page - 1) * limit;
       const [purchaseOrders, total] = await this.purchaseOrderRepository.findAndCount({
+        where: {
+          PurchaseID: params.PurchaseID,
+        },
         skip: skip,
         take: limit,
         order: {

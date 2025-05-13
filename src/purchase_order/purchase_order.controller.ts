@@ -10,7 +10,7 @@ import { ApiTags } from '@nestjs/swagger';
 export class PurchaseOrderController {
   constructor(private readonly purchaseOrderService: PurchaseOrderService) { }
 
-  @Get('find-many')
+  @Get()
   findAll(@Query() body: FindPurchaseOrderDto) {
     return this.purchaseOrderService.findAll(body);
   }

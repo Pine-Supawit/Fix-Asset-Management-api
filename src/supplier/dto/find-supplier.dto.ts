@@ -1,13 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
-import { IsNumber, IsOptional } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
-export class FindPurchaseRequestDto {
-    @ApiProperty({ required: false, description: 'Search by purchase request ID' })
-    @IsNumber()
+export class FindSupplierDto {
+    @ApiProperty({ required: false, description: 'Search by Supplier ID' })
+    @IsString()
     @IsOptional()
-    @Transform(({ value }) => Number(value))
-    PRNO: string;
+    SupplierID: string;
 
     @ApiProperty({ required: false, description: 'Page number' })
     @IsNumber()

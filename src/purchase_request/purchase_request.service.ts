@@ -23,6 +23,9 @@ export class PurchaseRequestService {
       const limit = params.limit || 10;
       const skip = (page - 1) * limit;
       const [purchaseRequests, total] = await this.purchaseRequestRepository.findAndCount({
+        where: {
+          PRNO: params.PRNO,
+        },
         skip: skip,
         take: limit,
         order: {
