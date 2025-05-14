@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,10 +16,10 @@ export class PurchaseOrderService {
   ) { }
   async create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
     try {
-      const purchaseOrder = new PurchaseOrder();
-      const result = await this.purchaseOrderRepository.save({
-        ...purchaseOrder
-      })
+      const purchaseOrder = {
+        ...createPurchaseOrderDto,
+      }
+      const result = await this.purchaseOrderRepository.save(purchaseOrder);
       this.logger.debug(`[create-purchase-order]: ${JSON.stringify(result)}`);
       return {
         data: result,
@@ -79,14 +79,13 @@ export class PurchaseOrderService {
         },
       });
       if (!purchaseOrder) {
-        return {
-          status: 404,
-          message: 'Purchase order not found',
-        };
+        this.logger.warn(`Purchase order with ID ${id.PurchaseID} not found`);
+        throw new NotFoundException('Purchase order not found');
       }
       await this.purchaseOrderRepository.delete({
         PurchaseID: id.PurchaseID,
       });
+      this.logger.debug(`[delete-purchase-order]: ${JSON.stringify(purchaseOrder.PurchaseID)}`);
       return {
         status: 200,
         message: 'Purchase order deleted successfully',
