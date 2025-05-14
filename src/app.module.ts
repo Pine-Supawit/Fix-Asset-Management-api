@@ -28,8 +28,7 @@ import { AssetChecklist } from './asset_check/entities/asset_check.entity';
       username: 'samyan',
       password: 'Drowssap1',
       database: 'off_pp',
-      // entities: [Product, User],
-      entities: [PurchaseOrder, PurchaseRequest, Asset, AssetChecklist],
+      entities: [User, PurchaseOrder, PurchaseRequest, Asset, AssetChecklist],
       synchronize: false,
       options: {
         encrypt: false

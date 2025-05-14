@@ -1,10 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CreatePurchaseOrderDto } from './dto/create-purchase_order.dto';
-import { UpdatePurchaseOrderDto } from './dto/update-purchase_order.dto';
+import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
+import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseOrder } from './entities/purchase_order.entity';
 import { Repository } from 'typeorm';
 import { FindPurchaseOrderDto } from './dto/find-purchase-order.dto';
+import { DeletePurchaseOrderDto } from './dto/delete-purchase-order.dto';
 
 @Injectable()
 export class PurchaseOrderService {
@@ -13,8 +14,22 @@ export class PurchaseOrderService {
     @InjectRepository(PurchaseOrder, 'off_pp')
     private readonly purchaseOrderRepository: Repository<PurchaseOrder>,
   ) { }
-  create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
-    return 'This action adds a new purchaseOrder';
+  async create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
+    try {
+      const purchaseOrder = new PurchaseOrder();
+      const result = await this.purchaseOrderRepository.save({
+        ...purchaseOrder
+      })
+      this.logger.debug(`[create-purchase-order]: ${JSON.stringify(result)}`);
+      return {
+        data: result,
+        status: 200,
+        message: 'Purchase order created successfully',
+      };
+    } catch (error) {
+      this.logger.error('Error creating purchase order', error);
+      throw new Error('Error creating purchase order');
+    }
   }
 
   async findAll(params: FindPurchaseOrderDto) {
@@ -56,7 +71,29 @@ export class PurchaseOrderService {
     return `This action updates a #${id} purchaseOrder`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} purchaseOrder`;
+  async remove(id: DeletePurchaseOrderDto) {
+    try {
+      const purchaseOrder = await this.purchaseOrderRepository.findOne({
+        where: {
+          PurchaseID: id.PurchaseID,
+        },
+      });
+      if (!purchaseOrder) {
+        return {
+          status: 404,
+          message: 'Purchase order not found',
+        };
+      }
+      await this.purchaseOrderRepository.delete({
+        PurchaseID: id.PurchaseID,
+      });
+      return {
+        status: 200,
+        message: 'Purchase order deleted successfully',
+      };
+    } catch (error) {
+      this.logger.error('Error deleting purchase order', error);
+      throw new Error('Error deleting purchase order');
+    }
   }
 }
