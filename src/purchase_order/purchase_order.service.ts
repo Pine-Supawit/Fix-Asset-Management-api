@@ -16,6 +16,7 @@ export class PurchaseOrderService {
   ) { }
   async create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
     try {
+      
       const purchaseOrder = {
         ...createPurchaseOrderDto,
       }
@@ -28,6 +29,7 @@ export class PurchaseOrderService {
       };
     } catch (error) {
       this.logger.error('Error creating purchase order', error);
+      console.log(createPurchaseOrderDto, JSON.stringify(createPurchaseOrderDto[Object.keys(createPurchaseOrderDto)[57]])); // log the 58th value
       throw new Error('Error creating purchase order');
     }
   }
