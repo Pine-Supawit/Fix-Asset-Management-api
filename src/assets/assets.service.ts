@@ -30,6 +30,7 @@ export class AssetsService {
         },
       });
       this.logger.debug(`[find-many-assets]: ${JSON.stringify(assets)}\n [total]: ${total}`);
+      this.logger.debug(`[find-many-assets]: ${JSON.stringify(assets.length)}`);
       return {
         data: assets,
         pagination: {

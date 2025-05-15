@@ -17,9 +17,15 @@ import { SupplierModule } from './supplier/supplier.module';
 import { Supplier } from './supplier/entities/supplier.entity';
 import { AssetCheckModule } from './asset_check/asset_check.module';
 import { AssetChecklist } from './asset_check/entities/asset_check.entity';
+import { PurchaseRequestDetailModule } from './purchase-request-detail/purchase-request-detail.module';
+import { PurchaseRequestDetail } from './purchase-request-detail/entities/purchase-request-detail.entity';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
     TypeOrmModule.forRoot({
       name: 'off_pp',
       type: 'mssql',
@@ -28,7 +34,7 @@ import { AssetChecklist } from './asset_check/entities/asset_check.entity';
       username: 'samyan',
       password: 'Drowssap1',
       database: 'off_pp',
-      entities: [User, PurchaseOrder, PurchaseRequest, Asset, AssetChecklist],
+      entities: [User, PurchaseOrder, PurchaseRequest, PurchaseRequestDetail, Asset, AssetChecklist],
       synchronize: false,
       options: {
         encrypt: false
@@ -42,15 +48,11 @@ import { AssetChecklist } from './asset_check/entities/asset_check.entity';
       username: 'samyan',
       password: 'Drowssap1',
       database: 'Endeavour',
-      entities: [Invoice],
+      entities: [Invoice, Product],
       synchronize: false,
       options: {
         encrypt: false
       },
-    }),
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: '.env',
     }),
     TypeOrmModule.forRoot({
       name: 'Ent_db',
@@ -70,14 +72,16 @@ import { AssetChecklist } from './asset_check/entities/asset_check.entity';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    // ProductsModule,
+    ProductsModule,
     // UserModule,
     PurchaseOrderModule,
     PurchaseRequestModule,
+    PurchaseRequestDetailModule,
     AssetsModule,
     InvoiceModule,
     SupplierModule,
-    AssetCheckModule],
+    AssetCheckModule,
+  ],
   controllers: [],
   providers: [],
 })

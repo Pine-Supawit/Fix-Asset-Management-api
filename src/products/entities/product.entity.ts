@@ -1,10 +1,10 @@
 import { Column, Entity, PrimaryColumn } from "typeorm";
 
-@Entity()
+@Entity('Products')
 export class Product {
     @PrimaryColumn()
-    id: string;
+    ProductID: string;
 
     @Column()
-    name: string;
+    ProductName: string;
 }

@@ -12,7 +12,7 @@ export class PurchaseOrder {
     @PrimaryColumn()
     PurchaseID: number;
 
-    @Column()
+    @PrimaryColumn()
     RevisionID: number;
 
     @Column({ length: 10 })

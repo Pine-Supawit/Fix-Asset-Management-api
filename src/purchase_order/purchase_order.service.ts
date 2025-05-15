@@ -50,7 +50,8 @@ export class PurchaseOrderService {
           SendDocDate: 'DESC',
         },
       });
-      this.logger.debug(`[find-many-assets]: ${JSON.stringify(purchaseOrders)}\n [total]: ${total}`);
+      this.logger.debug(`[find-many-purchase-order]: ${JSON.stringify(purchaseOrders)}\n [total]: ${total}`);
+      this.logger.debug(`[find-many-purchase-order]: ${JSON.stringify(purchaseOrders.length)}`);
       return {
         data: purchaseOrders,
         pagination: {

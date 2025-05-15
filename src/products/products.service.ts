@@ -6,36 +6,53 @@ import { Repository } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseResponse } from 'src/common/interfaces/interfaces';
+import { FindProductDto } from './dto/find-product.dto';
 
 @Injectable()
 export class ProductsService {
   private readonly logger = new Logger(ProductsService.name);
   constructor(
-    @InjectRepository(Product)
+    @InjectRepository(Product, 'Endeavour')
     private productRepository: Repository<Product>
   ) { }
-  async create(params: CreateProductDto): Promise<BaseResponse<Product>> {
+  async create(params: CreateProductDto) {
     try {
-      const id = randomUUID()
-      const product: Product = {
-        id: id,
-        name: params.name
-      }
-      await this.productRepository.save(product)
-      const result = {
-        data: product,
-        status: 201
-      }
-      this.logger.debug(`[create-product]: ${JSON.stringify(product)}`)
-      return result
+
     } catch (error) {
-      this.logger.error(error)
-      throw error
+
     }
   }
 
-  findAll() {
-    return this.productRepository.find();
+  async findAll(params: FindProductDto) {
+    try {
+      const page = params.page || 1;
+      const limit = params.limit || 10;
+      const skip = (page - 1) * limit;
+      const [products, total] = await this.productRepository.findAndCount({
+        where: {
+          ProductID: params.ProductID
+        },
+        skip: skip,
+        take: limit,
+        order: {
+          ProductID: 'ASC'
+        }
+      });
+      this.logger.debug(`[find-many-products]: ${JSON.stringify(products)}\n [total]: ${total}`);
+      this.logger.debug(`[find-many-products]: ${JSON.stringify(products.length)}`);
+      return {
+        data: products,
+        pagination: {
+          page: Number(page),
+          limit: Number(limit),
+          total: total,
+        },
+        status: 200
+      }
+    } catch (error) {
+      this.logger.error('Error fetching products', error);
+      throw new Error('Error fetching products');
+    }
   }
 
   findOne(id: number) {

@@ -29,7 +29,8 @@ export class InvoiceService {
           InvoiceID: 'DESC',
         }
       });
-      this.logger.debug(`[find-many-assets]: ${JSON.stringify(invoices)}\n [total]: ${total}`);
+      this.logger.debug(`[find-many-invoice]: ${JSON.stringify(invoices)}\n [total]: ${total}`);
+      this.logger.debug(`[find-many-invoice]: ${JSON.stringify(invoices.length)}`);
       return {
         data: invoices,
         pagination: {
