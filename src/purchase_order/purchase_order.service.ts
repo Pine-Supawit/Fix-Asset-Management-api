@@ -3,7 +3,7 @@ import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseOrder } from './entities/purchase_order.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { FindPurchaseOrderDto } from './dto/find-purchase-order.dto';
 import { DeletePurchaseOrderDto } from './dto/delete-purchase-order.dto';
 
@@ -16,7 +16,7 @@ export class PurchaseOrderService {
   ) { }
   async create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
     try {
-      
+
       const purchaseOrder = {
         ...createPurchaseOrderDto,
       }
@@ -29,7 +29,6 @@ export class PurchaseOrderService {
       };
     } catch (error) {
       this.logger.error('Error creating purchase order', error);
-      console.log(createPurchaseOrderDto, JSON.stringify(createPurchaseOrderDto[Object.keys(createPurchaseOrderDto)[57]])); // log the 58th value
       throw new Error('Error creating purchase order');
     }
   }
@@ -42,11 +41,13 @@ export class PurchaseOrderService {
       const [purchaseOrders, total] = await this.purchaseOrderRepository.findAndCount({
         where: {
           PurchaseID: params.PurchaseID,
+          SendDocDate: Not(IsNull()),
+          ReceiveDocDate: Not(IsNull()),
         },
         skip: skip,
         take: limit,
         order: {
-          PurchaseID: 'DESC',
+          SendDocDate: 'DESC',
         },
       });
       this.logger.debug(`[find-many-assets]: ${JSON.stringify(purchaseOrders)}\n [total]: ${total}`);
