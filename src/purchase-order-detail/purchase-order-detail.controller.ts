@@ -3,7 +3,7 @@ import { PurchaseOrderDetailService } from './purchase-order-detail.service';
 import { CreatePurchaseOrderDetailDto } from './dto/create-purchase-order-detail.dto';
 import { UpdatePurchaseOrderDetailDto } from './dto/update-purchase-order-detail.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { FindDetailedOrderDto } from './dto/find-detailed-purchasing.dto';
+import { FindPurchaseOrderDetailedDto } from './dto/find-detailed-purchasing.dto';
 
 @ApiTags('Purchase Order Detail')
 @Controller('purchase-order-detail')
@@ -16,8 +16,8 @@ export class PurchaseOrderDetailController {
   // }
 
   @Get()
-  findAll(@Query() body: FindDetailedOrderDto) {
-    return this.purchaseOrderDetailService.findAll();
+  findAll(@Query() body: FindPurchaseOrderDetailedDto) {
+    return this.purchaseOrderDetailService.findAll(body);
   }
 
   // @Get(':id')

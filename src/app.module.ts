@@ -20,6 +20,7 @@ import { AssetChecklist } from './asset_check/entities/asset_check.entity';
 import { PurchaseRequestDetailModule } from './purchase-request-detail/purchase-request-detail.module';
 import { PurchaseRequestDetail } from './purchase-request-detail/entities/purchase-request-detail.entity';
 import { PurchaseOrderDetailModule } from './purchase-order-detail/purchase-order-detail.module';
+import { PurchaseOrderDetail } from './purchase-order-detail/entities/purchase-order-detail.entity';
 
 @Module({
   imports: [
@@ -35,7 +36,7 @@ import { PurchaseOrderDetailModule } from './purchase-order-detail/purchase-orde
       username: 'samyan',
       password: 'Drowssap1',
       database: 'off_pp',
-      entities: [User, PurchaseOrder, PurchaseRequest, PurchaseRequestDetail, Asset, AssetChecklist],
+      entities: [User, PurchaseOrder, PurchaseRequest, PurchaseRequestDetail, PurchaseOrderDetail, Asset, AssetChecklist],
       synchronize: false,
       options: {
         encrypt: false
