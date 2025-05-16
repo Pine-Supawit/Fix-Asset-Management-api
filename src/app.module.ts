@@ -19,6 +19,7 @@ import { AssetCheckModule } from './asset_check/asset_check.module';
 import { AssetChecklist } from './asset_check/entities/asset_check.entity';
 import { PurchaseRequestDetailModule } from './purchase-request-detail/purchase-request-detail.module';
 import { PurchaseRequestDetail } from './purchase-request-detail/entities/purchase-request-detail.entity';
+import { PurchaseOrderDetailModule } from './purchase-order-detail/purchase-order-detail.module';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { PurchaseRequestDetail } from './purchase-request-detail/entities/purcha
     InvoiceModule,
     SupplierModule,
     AssetCheckModule,
+    PurchaseOrderDetailModule,
   ],
   controllers: [],
   providers: [],
