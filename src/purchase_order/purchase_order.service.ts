@@ -1,6 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
-import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
+// import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseOrder } from './entities/purchase_order.entity';
 import { IsNull, Not, Repository } from 'typeorm';
@@ -14,35 +13,34 @@ export class PurchaseOrderService {
     @InjectRepository(PurchaseOrder, 'off_pp')
     private readonly purchaseOrderRepository: Repository<PurchaseOrder>,
   ) { }
-  async create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
-    try {
+  // async create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
+  //   try {
 
-      const purchaseOrder = {
-        ...createPurchaseOrderDto,
-      }
-      const result = await this.purchaseOrderRepository.save(purchaseOrder);
-      this.logger.debug(`[create-purchase-order]: ${JSON.stringify(result)}`);
-      return {
-        data: result,
-        status: 200,
-        message: 'Purchase order created successfully',
-      };
-    } catch (error) {
-      this.logger.error('Error creating purchase order', error);
-      throw new Error('Error creating purchase order');
-    }
-  }
+  //     const purchaseOrder = {
+  //       ...createPurchaseOrderDto,
+  //     }
+  //     const result = await this.purchaseOrderRepository.save(purchaseOrder);
+  //     this.logger.debug(`[create-purchase-order]: ${JSON.stringify(result)}`);
+  //     return {
+  //       data: result,
+  //       status: 200,
+  //       message: 'Purchase order created successfully',
+  //     };
+  //   } catch (error) {
+  //     this.logger.error('Error creating purchase order', error);
+  //     throw new Error('Error creating purchase order');
+  //   }
+  // }
 
   async findAll(params: FindPurchaseOrderDto) {
     try {
       const page = params.page || 1;
       const limit = params.limit || 10;
       const skip = (page - 1) * limit;
+      this.logger.debug(`[find-many-purchase-order]: ${JSON.stringify(params)}`);
       const [purchaseOrders, total] = await this.purchaseOrderRepository.findAndCount({
         where: {
           PurchaseID: params.PurchaseID,
-          SendDocDate: Not(IsNull()),
-          ReceiveDocDate: Not(IsNull()),
         },
         skip: skip,
         take: limit,
@@ -69,10 +67,6 @@ export class PurchaseOrderService {
 
   findOne(id: number) {
     return `This action returns a #${id} purchaseOrder`;
-  }
-
-  update(id: number, updatePurchaseOrderDto: UpdatePurchaseOrderDto) {
-    return `This action updates a #${id} purchaseOrder`;
   }
 
   async remove(id: DeletePurchaseOrderDto) {
