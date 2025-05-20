@@ -22,27 +22,47 @@ export class PurchaseOrderDetailService {
       const page = params.page || 1;
       const limit = params.limit || 10;
       const skip = (page - 1) * limit;
+
+      this.logger.debug(`[find-purchase-order-detail]: ${JSON.stringify(params)}`);
+
+      const where: any = {};
+
+      if (params.PurchaseID !== undefined) {
+        where.PurchaseID = Number(params.PurchaseID);
+      }
+
+      if (params.RevisionID !== undefined) {
+        where.RevisionID = Number(params.RevisionID);
+      }
+
+      if (params.No !== undefined) {
+        where.No = Number(params.No);
+      }
+
       const [purchaseOrderDetails, total] = await this.purchaseOrderDetailRepository.findAndCount({
-        skip: skip,
+        where,
+        skip,
         take: limit,
       });
+
       this.logger.debug(`[find-purchase-order-detail]: ${JSON.stringify(purchaseOrderDetails)}`);
-      this.logger.debug(`[find-purchase-order-detail]: ${JSON.stringify(total)}`);
-      const result = {
+      this.logger.debug(`[find-purchase-order-detail]: total count = ${total}`);
+
+      return {
         data: purchaseOrderDetails,
         pagination: {
-          page: page,
-          limit: limit,
-          total: total,
+          page,
+          limit,
+          total,
         },
         status: 200,
-      }
-      return result;
+      };
     } catch (error) {
       this.logger.error(error);
       throw error;
     }
   }
+
 
   findOne(id: number) {
     return `This action returns a #${id} purchaseOrderDetail`;

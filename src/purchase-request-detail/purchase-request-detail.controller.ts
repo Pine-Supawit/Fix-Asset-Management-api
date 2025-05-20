@@ -8,12 +8,7 @@ import { FindPurchaseRequesDetailDto } from './dto/find-purchase-request-detail.
 @ApiTags('Purchase Request Detail')
 @Controller('purchase-request-detail')
 export class PurchaseRequestDetailController {
-  constructor(private readonly purchaseRequestDetailService: PurchaseRequestDetailService) {}
-
-  // @Post()
-  // create(@Body() createPurchaseRequestDetailDto: CreatePurchaseRequestDetailDto) {
-  //   return this.purchaseRequestDetailService.create(createPurchaseRequestDetailDto);
-  // }
+  constructor(private readonly purchaseRequestDetailService: PurchaseRequestDetailService) { }
 
   @Get()
   @ApiOperation({ summary: 'Get all purchase request details' })
@@ -21,18 +16,4 @@ export class PurchaseRequestDetailController {
     return this.purchaseRequestDetailService.findAll(body);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.purchaseRequestDetailService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updatePurchaseRequestDetailDto: UpdatePurchaseRequestDetailDto) {
-  //   return this.purchaseRequestDetailService.update(+id, updatePurchaseRequestDetailDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.purchaseRequestDetailService.remove(+id);
-  // }
 }

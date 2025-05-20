@@ -16,23 +16,4 @@ export class PurchaseRequestController {
     return this.purchaseRequestService.findAll(body);
   }
 
-  // @Post()
-  // create(@Body() createPurchaseRequestDto: CreatePurchaseRequestDto) {
-  //   return this.purchaseRequestService.create(createPurchaseRequestDto);
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.purchaseRequestService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updatePurchaseRequestDto: UpdatePurchaseRequestDto) {
-  //   return this.purchaseRequestService.update(+id, updatePurchaseRequestDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.purchaseRequestService.remove(+id);
-  // }
 }

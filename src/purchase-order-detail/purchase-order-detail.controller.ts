@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { PurchaseOrderDetailService } from './purchase-order-detail.service';
 import { CreatePurchaseOrderDetailDto } from './dto/create-purchase-order-detail.dto';
 import { UpdatePurchaseOrderDetailDto } from './dto/update-purchase-order-detail.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FindPurchaseOrderDetailedDto } from './dto/find-detailed-purchasing.dto';
 
 @ApiTags('Purchase Order Detail')
@@ -10,28 +10,10 @@ import { FindPurchaseOrderDetailedDto } from './dto/find-detailed-purchasing.dto
 export class PurchaseOrderDetailController {
   constructor(private readonly purchaseOrderDetailService: PurchaseOrderDetailService) { }
 
-  // @Post()
-  // create(@Body() createPurchaseOrderDetailDto: CreatePurchaseOrderDetailDto) {
-  //   return this.purchaseOrderDetailService.create(createPurchaseOrderDetailDto);
-  // }
-
   @Get()
+  @ApiOperation({ summary: 'Get all purchase order details' })
   findAll(@Query() body: FindPurchaseOrderDetailedDto) {
     return this.purchaseOrderDetailService.findAll(body);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.purchaseOrderDetailService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updatePurchaseOrderDetailDto: UpdatePurchaseOrderDetailDto) {
-  //   return this.purchaseOrderDetailService.update(+id, updatePurchaseOrderDetailDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.purchaseOrderDetailService.remove(+id);
-  // }
 }

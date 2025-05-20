@@ -38,10 +38,16 @@ export class PurchaseOrderService {
       const limit = params.limit || 10;
       const skip = (page - 1) * limit;
       this.logger.debug(`[find-many-purchase-order]: ${JSON.stringify(params)}`);
+      const where: any = {};
+      if (params.PurchaseID !== undefined) {
+        where.PurchaseID = Number(params.PurchaseID);
+      }
+      if (params.RevisionID !== undefined) {
+        where.RevisionID = Number(params.RevisionID);
+      }
+
       const [purchaseOrders, total] = await this.purchaseOrderRepository.findAndCount({
-        where: {
-          PurchaseID: params.PurchaseID,
-        },
+        where,
         skip: skip,
         take: limit,
         order: {

@@ -16,23 +16,4 @@ export class AssetsController {
     return this.assetsService.findAll(body);
   }
 
-  // @Post()
-  // create(@Body() createAssetDto: CreateAssetDto) {
-  //   return this.assetsService.create(createAssetDto);
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.assetsService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateAssetDto: UpdateAssetDto) {
-  //   return this.assetsService.update(+id, updateAssetDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.assetsService.remove(+id);
-  // }
 }

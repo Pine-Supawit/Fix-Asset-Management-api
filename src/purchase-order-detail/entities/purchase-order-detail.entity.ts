@@ -82,7 +82,7 @@ export class PurchaseOrderDetail {
     GTotalQty: number;
 
     @Column({ type: 'varchar', length: 5, nullable: true })
-    GUnit: string;
+    GPUnit: string;
 
     @Column({ type: 'float', nullable: true })
     GPUnitCost: number;

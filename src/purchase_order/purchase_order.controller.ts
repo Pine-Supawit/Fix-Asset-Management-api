@@ -17,21 +17,6 @@ export class PurchaseOrderController {
     return this.purchaseOrderService.findAll(body);
   }
 
-  // @Post()
-  // create(@Body() createPurchaseOrderDto: CreatePurchaseOrderDto) {
-  //   return this.purchaseOrderService.create(createPurchaseOrderDto);
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.purchaseOrderService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updatePurchaseOrderDto: UpdatePurchaseOrderDto) {
-  //   return this.purchaseOrderService.update(+id, updatePurchaseOrderDto);
-  // }
-
   @Delete()
   remove(@Query() id: DeletePurchaseOrderDto) {
     return this.purchaseOrderService.remove(id);
