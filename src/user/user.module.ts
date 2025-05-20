@@ -5,8 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtStrategy } from 'src/strategies/jwt.strategy';
-import { LocalStrategy } from 'src/strategies/local.strategy';
+import { JwtStrategy } from 'src/common/utils/strategies/jwt.strategy';
+import { LocalStrategy } from 'src/common/utils/strategies/local.strategy';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User], 'off_pp'), JwtModule.registerAsync({
