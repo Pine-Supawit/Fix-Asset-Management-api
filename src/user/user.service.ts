@@ -3,19 +3,19 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { FindOneByUsernameDto, FindUsersDto } from './dto/find-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { RefreshDto } from './dto/refresh.dto';
 import { LoginDto } from './dto/login-user.dto';
 import { ForgetPasswordDto } from './dto/update-user.dto';
+import { FindOneByEmpIdDto, FindUsersDto } from './dto/find-user.dto';
 
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name)
   constructor(
-    @InjectRepository(User)
+    @InjectRepository(User, 'off_pp')
     private readonly userRepository: Repository<User>,
     private jwtService: JwtService,
     private configService: ConfigService
@@ -23,7 +23,7 @@ export class UserService {
   async create(params: CreateUserDto) {
     try {
       const checkUser = await this.userRepository.findOne({
-        where: { username: params.username }
+        where: { emp_id: params.emp_id }
       });
 
       if (checkUser) {
@@ -32,9 +32,9 @@ export class UserService {
 
       const user = new User();
       user.emp_id = params.emp_id;
-      user.username = params.username;
       user.password = params.password;
-      user.phone = params.phone;
+      user.fname = params.fname;
+      user.lname = params.lname;
 
       await this.userRepository.save(user);
 
@@ -59,7 +59,7 @@ export class UserService {
         const skip = (page - 1) * limit;
 
         const [users, total] = await this.userRepository.findAndCount({
-          skip,
+          skip: skip,
           take: limit,
         });
 
@@ -87,11 +87,11 @@ export class UserService {
   }
 
 
-  async findOneByUsername(params: FindOneByUsernameDto) {
+  async findOneByUsername(params: FindOneByEmpIdDto) {
     try {
       const user = await this.userRepository.findOne({
         where: {
-          username: params.username
+          emp_id: params.emp_id
         }
       })
       if (!user) {
@@ -112,7 +112,7 @@ export class UserService {
     try {
       const user = await this.userRepository.findOne({
         where: {
-          username: params.username,
+          emp_id: params.emp_id,
         },
       });
 
@@ -125,7 +125,7 @@ export class UserService {
       await this.userRepository.update(user.id, {
         password: hashedPassword,
       });
-
+      this.logger.debug(`[update-password]: ${JSON.stringify(user)}`);
       return {
         message: 'Password updated successfully',
         status: 200,
@@ -136,13 +136,30 @@ export class UserService {
     }
   }
 
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(params: FindOneByEmpIdDto) {
+    try {
+      const user = await this.userRepository.findOne({
+        where: {
+          emp_id: params.emp_id
+        }
+      });
+      if (!user) {
+        throw new NotFoundException('User not found')
+      }
+      await this.userRepository.delete(user.id);
+      this.logger.debug(`[delete-user]: ${JSON.stringify(user)}`)
+      return {
+        message: 'User deleted successfully',
+        status: 200
+      }
+    } catch (error) {
+      this.logger.error(error)
+      throw new InternalServerErrorException('Failed to delete user')
+    }
   }
 
-  async validateUser(username: string, pass: string) {
-    const user = await this.findOneByUsername({ username });
+  async validateUser(emp_id: string, pass: string) {
+    const user = await this.findOneByUsername({ emp_id });
     if (user && (await bcrypt.compare(pass, user.data.password))) {
       const { password, ...result } = user.data;
       return result;
@@ -151,11 +168,17 @@ export class UserService {
   }
 
   async login(params: LoginDto) {
-    const user = await this.userRepository.findOne({ where: { username: params.username } })
+    const user = await this.userRepository.findOne({ where: { emp_id: params.emp_id } });
     if (!user) {
-      throw new NotFoundException('User not found')
+      throw new NotFoundException('User not found');
     }
-    const payload = { username: user.username, sub: user.id };
+
+    const isPasswordValid = await bcrypt.compare(params.password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const payload = { emp_id: user.emp_id, sub: user.id };
 
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: '2h',
@@ -170,8 +193,8 @@ export class UserService {
     await this.userRepository.save(user);
 
     return {
-      accessToken: accessToken,
-      refreshToken: refreshToken,
+      accessToken,
+      refreshToken,
     };
   }
 
@@ -188,11 +211,11 @@ export class UserService {
       if (!isValid) throw new UnauthorizedException('Invalid refresh token');
 
       const newAccessToken = this.jwtService.sign(
-        { username: user.username, sub: user.id },
+        { emp_id: user.emp_id, sub: user.id },
         { expiresIn: '15m' },
       );
-
-      return { access_token: newAccessToken };
+      this.logger.warn(`[refresh-token]: emp_id ${JSON.stringify(user.emp_id)}`);
+      return { accessToken: newAccessToken };
     } catch (e) {
       throw new UnauthorizedException('Refresh token is invalid or expired');
     }

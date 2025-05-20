@@ -6,15 +6,15 @@ export class CreateUserDto {
     @IsString()
     emp_id: string;
 
-    @ApiProperty({ description: 'Username' })
-    @IsString()
-    username: string;
-
     @ApiProperty()
     @IsString()
     password: string;
 
     @ApiProperty()
     @IsString()
-    phone: string;
+    fname: string;
+
+    @ApiProperty()
+    @IsString()
+    lname: string;
 }

@@ -1,18 +1,25 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { FindOneByUsernameDto, FindUsersDto } from './dto/find-user.dto';
 import { LocalAuthGuard } from 'src/guard/local-auth.guard';
 import { LoginDto } from './dto/login-user.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { ForgetPasswordDto } from './dto/update-user.dto';
+import { FindOneByEmpIdDto, FindUsersDto } from './dto/find-user.dto';
 
 @ApiBearerAuth()
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) { }
+
+  // @UseGuards(AuthGuard('jwt'))
+  @Post()
+  @ApiOperation({ summary: 'Create new user', description: 'Create new user that can login to the system' })
+  create(@Body() body: CreateUserDto) {
+    return this.userService.create(body);
+  }
 
   // @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -28,13 +35,6 @@ export class UserController {
   }
 
   // @UseGuards(AuthGuard('jwt'))
-  @Post()
-  @ApiOperation({ summary: 'Create new user', description: 'Create new user that can login to the system' })
-  create(@Body() body: CreateUserDto) {
-    return this.userService.create(body);
-  }
-
-  // @UseGuards(AuthGuard('jwt'))
   @Get('find-many')
   @ApiOperation({ summary: 'Find all user in the system', description: 'Returns all users in the database' })
   findAll(@Query() body: FindUsersDto) {
@@ -44,7 +44,7 @@ export class UserController {
   // @UseGuards(AuthGuard('jwt'))
   @Get('find-one')
   @ApiOperation({ summary: 'Find one user from username', description: 'Returns 1 user' })
-  findOne(@Query() body: FindOneByUsernameDto) {
+  findOne(@Query() body: FindOneByEmpIdDto) {
     return this.userService.findOneByUsername(body);
   }
 
@@ -52,5 +52,11 @@ export class UserController {
   @ApiOperation({ summary: 'Forget password', description: 'Reset password if user forgot password' })
   update(@Body() body: ForgetPasswordDto) {
     return this.userService.forgotPassword(body);
+  }
+
+  @Delete()
+  @ApiOperation({ summary: 'Delete user', description: 'Delete user from the system' })
+  delete(@Body() body: FindOneByEmpIdDto) {
+    return this.userService.remove(body);
   }
 }

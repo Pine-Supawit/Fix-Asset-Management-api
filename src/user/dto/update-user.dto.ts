@@ -4,7 +4,7 @@ import { IsString } from "class-validator";
 export class ForgetPasswordDto {
     @ApiProperty()
     @IsString()
-    username: string;
+    emp_id: string;
 
     @ApiProperty()
     @IsString()

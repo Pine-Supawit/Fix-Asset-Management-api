@@ -1,10 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNumber, IsOptional, IsString } from "class-validator";
 
-export class FindOneByUsernameDto {
+export class FindOneByEmpIdDto {
     @ApiProperty()
     @IsString()
-    username: string;
+    emp_id: string;
 }
 
 export class FindUsersDto {

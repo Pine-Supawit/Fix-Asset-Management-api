@@ -4,37 +4,36 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    PrimaryColumn,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
 import * as bcrypt from "bcrypt";
 
-@Entity()
+@Entity('Users')
 export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ type: 'nvarchar', length: 255 })
     emp_id: string;
 
-    @Column({ unique: true })
-    username: string;
+    @Column({ type: 'varchar', length: 255 })
+    fname: string;
 
-    @Column()
+    @Column({ type: 'varchar', length: 255 })
+    lname: string;
+
+    @Column({ type: 'nvarchar', length: 255 })
     password: string;
 
-    @Column()
-    phone: string;
+    @Column({ type: 'nvarchar', length: 255, nullable: true })
+    refreshToken: string;
 
-    @Column({ nullable: true })
-    refreshToken: string
+    @CreateDateColumn({ type: 'datetime2' })
+    createdAt: Date;
 
-    @CreateDateColumn()
-    createdAt: Date
-
-    @UpdateDateColumn()
-    updatedAt: Date
+    @UpdateDateColumn({ type: 'datetime2' })
+    updatedAt: Date;
 
     @BeforeInsert()
     @BeforeUpdate()

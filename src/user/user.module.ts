@@ -9,7 +9,7 @@ import { JwtStrategy } from 'src/strategies/jwt.strategy';
 import { LocalStrategy } from 'src/strategies/local.strategy';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), JwtModule.registerAsync({
+  imports: [TypeOrmModule.forFeature([User], 'off_pp'), JwtModule.registerAsync({
     imports: [ConfigModule],
     useFactory: async (configService: ConfigService) => ({
       secret: configService.get('JWT_SECRET'),

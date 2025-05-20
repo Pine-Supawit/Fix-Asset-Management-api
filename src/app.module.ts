@@ -50,7 +50,7 @@ import { PurchaseOrderDetail } from './purchase-order-detail/entities/purchase-o
       username: 'samyan',
       password: 'Drowssap1',
       database: 'Endeavour',
-      entities: [Invoice, Product],
+      // entities: [Invoice, Product],
       synchronize: false,
       options: {
         encrypt: false
@@ -64,7 +64,7 @@ import { PurchaseOrderDetail } from './purchase-order-detail/entities/purchase-o
       username: 'samyan',
       password: 'Drowssap1',
       database: 'Ent_db',
-      entities: [Supplier],
+      // entities: [Supplier],
       synchronize: false,
       options: {
         encrypt: false
@@ -74,15 +74,15 @@ import { PurchaseOrderDetail } from './purchase-order-detail/entities/purchase-o
       isGlobal: true,
       envFilePath: '.env',
     }),
-    ProductsModule,
-    // UserModule,
+    // ProductsModule,
+    UserModule,
     PurchaseOrderModule,
     PurchaseRequestModule,
     PurchaseRequestDetailModule,
     PurchaseOrderDetailModule,
     AssetsModule,
-    InvoiceModule,
-    SupplierModule,
+    // InvoiceModule,
+    // SupplierModule,
     AssetCheckModule,
   ],
   controllers: [],

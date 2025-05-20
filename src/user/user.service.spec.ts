@@ -16,7 +16,7 @@ describe('UserService - login', () => {
 
   const mockUser = {
     id: 1,
-    username: 'admin',
+    emp_id: '111111',
     setRefreshToken: jest.fn(),
   } as unknown as User;
 
@@ -52,7 +52,7 @@ describe('UserService - login', () => {
     (mockUserRepository.findOne as jest.Mock).mockResolvedValue(null);
 
     await expect(
-      service.login({ username: 'wrong-user', password: '1234' }),
+      service.login({ emp_id: 'wrong-user', password: '1234' }),
     ).rejects.toThrow(NotFoundException);
   });
 
@@ -60,7 +60,7 @@ describe('UserService - login', () => {
     (mockUserRepository.findOne as jest.Mock).mockResolvedValue(mockUser);
     (mockUserRepository.save as jest.Mock).mockResolvedValue(true);
 
-    const result = await service.login({ username: 'admin', password: '1234' });
+    const result = await service.login({ emp_id: '111111', password: '1234' });
 
     expect(result).toEqual({
       accessToken: 'access-token',
@@ -68,12 +68,12 @@ describe('UserService - login', () => {
     });
 
     expect(mockJwtService.sign).toHaveBeenCalledWith(
-      { username: 'admin', sub: 1 },
+      { emp_id: '111111', sub: 1 },
       { expiresIn: '2h' },
     );
 
     expect(mockJwtService.sign).toHaveBeenCalledWith(
-      { username: 'admin', sub: 1 },
+      { emp_id: '111111', sub: 1 },
       { expiresIn: '7d', secret: 'refresh-secret' },
     );
 
