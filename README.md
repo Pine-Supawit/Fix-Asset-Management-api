@@ -7,11 +7,11 @@ $ npm install
 ## Compile and run the project
 
 ```bash
-# development mode
+# development mode (use this one if you are testing)
 $ npm run start:dev
 
 # production mode
-$ npm run start:prod
+$ npm run start:prod 
 ```
 <!-- 
 ## Run tests
