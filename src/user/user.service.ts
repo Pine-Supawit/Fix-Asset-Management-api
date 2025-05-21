@@ -59,8 +59,14 @@ export class UserService {
         const skip = (page - 1) * limit;
 
         const [users, total] = await this.userRepository.findAndCount({
+          where: {
+            emp_id: params.emp_id
+          },
           skip: skip,
           take: limit,
+          order: {
+            emp_id: 'ASC'
+          }
         });
 
         return {

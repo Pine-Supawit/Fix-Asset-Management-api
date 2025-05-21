@@ -16,15 +16,8 @@ export class UserController {
   constructor(private readonly userService: UserService) { }
 
   // @UseGuards(AuthGuard('jwt'))
-  @Get('find-one')
-  @ApiOperation({ summary: 'Find one user from username', description: 'Returns 1 user' })
-  findOne(@Query() body: FindOneByEmpIdDto) {
-    return this.userService.findOneByUsername(body);
-  }
-
-  // @UseGuards(AuthGuard('jwt'))
-  @Get('find-many')
-  @ApiOperation({ summary: 'Find all user in the system', description: 'Returns all users in the database' })
+  @Get()
+  @ApiOperation({ summary: 'Find user(s) in the system', description: 'Returns user(s) in the database' })
   findAll(@Query() body: FindUsersDto) {
     return this.userService.findAll(body);
   }

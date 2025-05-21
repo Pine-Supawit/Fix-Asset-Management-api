@@ -9,6 +9,10 @@ export class FindOneByEmpIdDto {
 
 export class FindUsersDto {
     @ApiProperty({ required: false })
+    @IsString()
+    emp_id: string;
+
+    @ApiProperty({ required: false })
     @IsNumber()
     @IsOptional()
     page: number;
