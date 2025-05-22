@@ -4,30 +4,29 @@ import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class FindPurchaseOrderDetailedDto {
     @ApiProperty({ required: false, description: 'Search by purchase order ID' })
-    @IsNumber()
+    @IsString()
     @IsOptional()
-    @Transform(({ value }) => Number(value))
-    PurchaseID: number;
+    PurchaseID?: string;
 
     @ApiProperty({ required: false, description: 'Search by revision ID' })
-    @IsNumber()
+    @IsString()
     @IsOptional()
-    @Transform(({ value }) => Number(value))
-    RevisionID: number;
+    RevisionID?: string;
 
     @ApiProperty({ required: false })
     @IsNumber()
-    No: number;
+    @IsOptional()
+    No?: number;
 
     @ApiProperty({ required: false, description: 'Page number' })
     @IsNumber()
     @IsOptional()
     @Transform(({ value }) => Number(value))
-    page: number;
+    page?: number;
 
     @ApiProperty({ required: false, description: 'Page size' })
     @IsNumber()
     @IsOptional()
     @Transform(({ value }) => Number(value))
-    limit: number;
+    limit?: number;
 }

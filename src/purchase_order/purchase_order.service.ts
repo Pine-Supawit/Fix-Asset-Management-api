@@ -1,10 +1,13 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 // import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseOrder } from './entities/purchase_order.entity';
 import { IsNull, Not, Repository } from 'typeorm';
 import { FindPurchaseOrderDto } from './dto/find-purchase-order.dto';
 import { DeletePurchaseOrderDto } from './dto/delete-purchase-order.dto';
+import { PurchaseOrderDetailService } from 'src/purchase-order-detail/purchase-order-detail.service';
+import { IPurchaseOrder } from 'src/common/interfaces/purchase-order.interface';
+import { PurchaseRequestService } from 'src/purchase_request/purchase_request.service';
 
 @Injectable()
 export class PurchaseOrderService {
@@ -12,6 +15,10 @@ export class PurchaseOrderService {
   constructor(
     @InjectRepository(PurchaseOrder, 'off_pp')
     private readonly purchaseOrderRepository: Repository<PurchaseOrder>,
+    @Inject(PurchaseOrderDetailService)
+    private readonly purchaseOrderDetailService: PurchaseOrderDetailService,
+    @Inject(PurchaseRequestService)
+    private readonly purchaseRequestService: PurchaseRequestService,
   ) { }
   // async create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
   //   try {
@@ -37,31 +44,98 @@ export class PurchaseOrderService {
       const page = params.page || 1;
       const limit = params.limit || 10;
       const skip = (page - 1) * limit;
+
       this.logger.debug(`[find-many-purchase-order]: ${JSON.stringify(params)}`);
+
       const where: any = {};
       if (params.PurchaseID !== undefined) {
         where.PurchaseID = Number(params.PurchaseID);
+        where.ReceiveDocDate = Not(IsNull());
       }
       if (params.RevisionID !== undefined) {
         where.RevisionID = Number(params.RevisionID);
+        where.ReceiveDocDate = Not(IsNull());
       }
 
       const [purchaseOrders, total] = await this.purchaseOrderRepository.findAndCount({
         where,
-        skip: skip,
+        skip,
         take: limit,
-        order: {
-          SendDocDate: 'DESC',
-        },
+        order: { SendDocDate: 'DESC' },
       });
-      this.logger.debug(`[find-many-purchase-order]: ${JSON.stringify(purchaseOrders)}\n [total]: ${total}`);
-      this.logger.debug(`[find-many-purchase-order]: ${JSON.stringify(purchaseOrders.length)}`);
+
+      const purchaseOrdersResult: IPurchaseOrder[] = [];
+
+      const POTypeMap: Record<string, string> = {
+        A: "Asset",
+        T: "Tools",
+        E: "Expense",
+        S: "Spare",
+        C: "Consumable",
+      };
+
+      for (const purchaseOrder of purchaseOrders) {
+        const detailsResponse = await this.purchaseOrderDetailService.findAll({
+          PurchaseID: purchaseOrder.PurchaseID.toString(),
+          RevisionID: purchaseOrder.RevisionID.toString(),
+        });
+
+        const requestsResponse = await this.purchaseRequestService.findAll({
+          PRNO: purchaseOrder.PRNo?.toString(),
+        });
+
+        const details = detailsResponse?.data?.length ? detailsResponse.data : [];
+        const requests = requestsResponse?.data?.length ? requestsResponse.data : [];
+
+        for (const detail of details) {
+          for (const request of requests) {
+            purchaseOrdersResult.push({
+              POID: "PP" + purchaseOrder.PurchaseID?.toString(),
+              RepairID: request?.RepairNo || "",
+              LotShipment: purchaseOrder?.LotShipment || "",
+              DateOrder: purchaseOrder?.DateOrder || null,
+              DateOfDelivery: purchaseOrder?.EstimateArr1 || undefined,
+              InvDate: purchaseOrder?.InvDate || null,
+              BLDate: purchaseOrder?.BLDate || null,
+              Company: purchaseOrder?.Company || "",
+              ProductName: detail?.SProductName || "",
+              SupplierName: purchaseOrder?.SupplierID || "",
+              Contact: purchaseOrder?.ATTN || "",
+              RequestBy: purchaseOrder?.ShippingAgent || "",
+              PurchaseBy: purchaseOrder?.PurchaseOfficer || "",
+              Department: purchaseOrder?.PRDivision || "",
+              Purpose: request?.Purpose || "",
+              ForDepartment: purchaseOrder?.ForDivision || "",
+              Category: purchaseOrder?.PurchaseType || undefined,
+              InvNo: purchaseOrder?.InvNo || "",
+              BLNO: purchaseOrder?.BLNo || "",
+              POType: POTypeMap[detail?.AssetID] || "",
+              PODate: purchaseOrder?.DateOrder || null,
+              PRDate: purchaseOrder?.PRDate || null,
+              PRNO: purchaseOrder?.PRNo || "",
+              ReceiveDate: purchaseOrder?.DateArrive || null,
+              SendDocDate: purchaseOrder?.SendDocDate || null,
+              ReceiveDocDate: purchaseOrder?.ReceiveDocDate || null,
+              ApprovedBy: purchaseOrder?.ApprovedBy || "",
+              ApprovedDate: purchaseOrder?.ApprovedDate || null,
+              Amount: detail?.Amount || 0,
+              Discount: purchaseOrder?.TotalDiscount || 0,
+              VAT: purchaseOrder?.VAT || 0,
+              GrandTotal: purchaseOrder?.GrandTotal || 0,
+              Total: purchaseOrder?.TotalPrice || 0,
+            });
+          }
+        }
+      }
+
+      this.logger.debug(`[find-many-purchase-order-result]: ${JSON.stringify(purchaseOrdersResult)}\n [total]: ${total}`);
+
       return {
-        data: purchaseOrders,
+        data: purchaseOrdersResult,
         pagination: {
-          page: page,
-          limit: limit,
-          total: total,
+          page,
+          limit,
+          total,
         },
         status: 200,
       };

@@ -10,8 +10,8 @@ import { ForgetPasswordDto } from './dto/update-user.dto';
 import { FindOneByEmpIdDto, FindUsersDto } from './dto/find-user.dto';
 
 @ApiBearerAuth()
-@Controller('user')
-@ApiTags('User')
+@Controller('users')
+@ApiTags('Users')
 export class UserController {
   constructor(private readonly userService: UserService) { }
 

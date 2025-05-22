@@ -1,0 +1,36 @@
+export interface IPurchaseOrder {
+    POID?: string;
+    RepairID?: string;
+    Company?: string;
+    ProductName?: string;
+    SupplierName?: string;
+    Contact: string;
+    Department?: string;
+    PRNO?: string;
+    ForDepartment?: string;
+    ApprovedBy?: string;
+    ApprovedDate?: Date;
+    PRDate?: Date;
+    SendDocDate?: Date;
+    InvDate?: Date;
+    BLDate?: Date;
+    RequestBy?: string;
+    LotShipment?: string;
+    DateOrder?: Date;
+    DateOfDelivery?: Date;
+    ReceiveDocDate?: Date;
+    InvNo?: string;
+    BLNO?: string;
+    Purpose?: string;
+    PurchaseBy?: string;
+    Category?: number;
+    POType?: string;
+    Action?: string;
+    PODate?: Date;
+    ReceiveDate?: Date;
+    Discount?: number;
+    Total?: number;
+    GrandTotal?: number;
+    VAT?: number;
+    Amount?: number;
+}
