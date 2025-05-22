@@ -3,7 +3,7 @@ import { Transform } from "class-transformer";
 import { IsNumber, IsOptional } from "class-validator";
 
 export class FindPurchaseRequesDetailDto {
-    @ApiProperty({ required: false, description: 'Search by purchase request ID' })
+    @ApiProperty({ required: false, description: 'Search by Purchase Request Number' })
     @IsNumber()
     @IsOptional()
     @Transform(({ value }) => Number(value))

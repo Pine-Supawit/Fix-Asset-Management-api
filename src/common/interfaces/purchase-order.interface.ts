@@ -9,6 +9,7 @@ export interface IPurchaseOrder {
     Contact: string;
     Department?: string;
     PRNO?: string;
+    No: number;
     ForDepartment?: string;
     ApprovedBy?: string;
     ApprovedDate?: Date;

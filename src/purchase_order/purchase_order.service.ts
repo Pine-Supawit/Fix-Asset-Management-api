@@ -107,6 +107,7 @@ export class PurchaseOrderService {
                 BLDate: purchaseOrder?.BLDate || null,
                 Company: purchaseOrder?.Company || "",
                 ProductID: detail?.ProductID || "",
+                No: detail?.No || 1,
                 ProductName: detail?.SProductName || "",
                 SupplierID: purchaseOrder?.SupplierID || "",
                 SupplierName: supplierName,
