@@ -13,10 +13,15 @@ export class FindPurchaseOrderDetailedDto {
     @IsOptional()
     RevisionID?: string;
 
-    @ApiProperty({ required: false })
+    @ApiProperty({ required: false, description: 'Search by the order from PO' })
     @IsNumber()
     @IsOptional()
     No?: number;
+
+    @ApiProperty({ required: false, description: 'Search by product ID' })
+    @IsString()
+    @IsOptional()
+    ProductID?: string;
 
     @ApiProperty({ required: false, description: 'Page number' })
     @IsNumber()

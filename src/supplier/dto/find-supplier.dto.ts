@@ -6,17 +6,17 @@ export class FindSupplierDto {
     @ApiProperty({ required: false, description: 'Search by Supplier ID' })
     @IsString()
     @IsOptional()
-    SupplierID: string;
+    SupplierID?: string;
 
     @ApiProperty({ required: false, description: 'Page number' })
     @IsNumber()
     @IsOptional()
     @Transform(({ value }) => Number(value))
-    page: number;
+    page?: number;
 
     @ApiProperty({ required: false, description: 'Page size' })
     @IsNumber()
     @IsOptional()
     @Transform(({ value }) => Number(value))
-    limit: number;
+    limit?: number;
 }

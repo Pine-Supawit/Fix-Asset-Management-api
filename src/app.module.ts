@@ -64,7 +64,7 @@ import { PurchaseOrderDetail } from './purchase-order-detail/entities/purchase-o
       username: 'samyan',
       password: 'Drowssap1',
       database: 'Ent_db',
-      // entities: [Supplier],
+      entities: [Supplier],
       synchronize: false,
       options: {
         encrypt: false
@@ -83,7 +83,7 @@ import { PurchaseOrderDetail } from './purchase-order-detail/entities/purchase-o
     AssetCheckModule,
     // ProductsModule,
     // InvoiceModule,
-    // SupplierModule,
+    SupplierModule,
   ],
   controllers: [],
   providers: [],

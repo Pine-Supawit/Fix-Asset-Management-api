@@ -39,10 +39,17 @@ export class PurchaseOrderDetailService {
         where.No = Number(params.No);
       }
 
+      if (params.ProductID !== undefined) {
+        where.ProductID = params.ProductID;
+      }
+
       const [purchaseOrderDetails, total] = await this.purchaseOrderDetailRepository.findAndCount({
         where,
-        skip,
+        skip: skip,
         take: limit,
+        order: {
+          
+        }
       });
 
       this.logger.debug(`[find-purchase-order-detail]: ${JSON.stringify(purchaseOrderDetails)}`);
