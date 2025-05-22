@@ -11,7 +11,7 @@ export class PurchaseOrderDetailController {
   constructor(private readonly purchaseOrderDetailService: PurchaseOrderDetailService) { }
 
   @Get()
-  @ApiOperation({ summary: 'Get all purchase order details (Use all parameters below)' })
+  @ApiOperation({ summary: 'Get all purchase order details' })
   findAll(@Query() body: FindPurchaseOrderDetailedDto) {
     return this.purchaseOrderDetailService.findAll(body);
   }

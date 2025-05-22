@@ -99,6 +99,7 @@ export class PurchaseOrderService {
             for (const request of requests) {
               purchaseOrdersResult.push({
                 POID: "PP" + purchaseOrder.PurchaseID?.toString(),
+                RevisionID: purchaseOrder.RevisionID?.toString(),
                 RepairID: request?.RepairNo || "",
                 LotShipment: purchaseOrder?.LotShipment || "",
                 DateOrder: purchaseOrder?.DateOrder || null,
