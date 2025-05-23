@@ -60,15 +60,32 @@ export class PurchaseOrderDetailService {
         take: limit,
       });
 
+      const POTypeMap: Record<string, string> = {
+        A: "Asset",
+        T: "Tools",
+        E: "Expense",
+        S: "Spare",
+        C: "Consumable",
+      };
+
+      const CompanyMap: Record<string, string> = {
+        "P/P": "Pine-Pacific Co., Ltd",
+        "PIM": "Pine Industrial Materials Co., Ltd",
+        "S/R": "Saraburi"
+      }
+
+      const purchaseOrder = await this.purchaseOrderService.findOne({
+        PurchaseID: purchaseOrderDetails[0]?.PurchaseID,
+        RevisionID: purchaseOrderDetails[0]?.RevisionID,
+      })
+
       for (const purchaseOrderDetail of purchaseOrderDetails) {
-        const purchaseOrder = await this.purchaseOrderService.findAll({
-          PurchaseID: Number(purchaseOrderDetail.PurchaseID),
-          RevisionID: Number(purchaseOrderDetail.RevisionID),
-        })
         const purchaseOrderDetailResult = {
           PurchaseID: purchaseOrderDetail?.PurchaseID,
           RevisionID: purchaseOrderDetail?.RevisionID,
-          Company: purchaseOrder?.data[0]?.Company,
+          Department: purchaseOrder[0]?.Department,
+          ForDivision: purchaseOrder[0]?.ForDivision,
+          Company: CompanyMap[purchaseOrder[0]?.Company],
           No: purchaseOrderDetail?.No,
           ProductID: purchaseOrderDetail?.ProductID,
           ProductName: purchaseOrderDetail?.SProductName,
@@ -87,8 +104,11 @@ export class PurchaseOrderDetailService {
           PriceNote: purchaseOrderDetail?.PriceNote,
           PRNo: purchaseOrderDetail?.PRNo,
           PRItem: purchaseOrderDetail?.PRItem,
-          AssetID: purchaseOrderDetail?.AssetID,
-
+          AssetID: POTypeMap[purchaseOrderDetail?.AssetID],
+          PurchasingOfficer: purchaseOrder[0]?.PurchasingOfficer,
+          PurchaseBy: purchaseOrder[0]?.PurchaseBy,
+          InvNo: purchaseOrder[0]?.InvNo,
+          InvDate: purchaseOrder[0]?.InvDate,
         };
         purchaseOrderDetailsResult.push(purchaseOrderDetailResult);
       }
@@ -97,7 +117,7 @@ export class PurchaseOrderDetailService {
       this.logger.debug(`[find-purchase-order-detail]: total count = ${total}`);
 
       return {
-        data: purchaseOrderDetails,
+        data: purchaseOrderDetailsResult,
         pagination: {
           page,
           limit,

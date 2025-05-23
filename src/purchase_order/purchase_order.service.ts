@@ -104,9 +104,9 @@ export class PurchaseOrderService {
           for (const detail of details) {
             for (const request of requests) {
               purchaseOrdersResult.push({
-                POID: "PP" + purchaseOrder.PurchaseID?.toString(),
+                POID: purchaseOrder.PurchaseID?.toString(),
                 RevisionID: purchaseOrder.RevisionID?.toString(),
-                RepairID: request?.RepairNo || "",
+                RepairID: purchaseOrder?.TRNO || "",
                 LotShipment: purchaseOrder?.LotShipment || "",
                 DateOrder: purchaseOrder?.DateOrder || null,
                 DateOfDelivery: purchaseOrder?.EstimateArr1 || undefined,
@@ -169,8 +169,42 @@ export class PurchaseOrderService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} purchaseOrder`;
+  async findOne(params: FindPurchaseOrderDto) {
+    try {
+      const purchaseOrder = await this.purchaseOrderRepository.findOne({
+        where: {
+          PurchaseID: params.PurchaseID,
+          RevisionID: params.RevisionID,
+        },
+      });
+
+      const requests = await this.purchaseRequestService.findAll({
+        PRNO: purchaseOrder?.PRNo?.toString(),
+      });
+      const request: any = requests?.data || [];
+      if (!purchaseOrder) {
+        this.logger.warn(`Purchase order with ID ${params.PurchaseID} not found`);
+        throw new NotFoundException('Purchase order not found');
+      }
+      return {
+        data: {
+          PurchaseID: purchaseOrder.PurchaseID,
+          RevisionID: purchaseOrder.RevisionID,
+          Company: purchaseOrder.Company,
+          RequestBy: purchaseOrder.ShippingAgent,
+          PurchaseBy: purchaseOrder.PurchaseOfficer,
+          Department: purchaseOrder.PRDivision,
+          ForDivision: purchaseOrder.ForDivision,
+          InvNo: purchaseOrder.InvNo,
+          InvDate: purchaseOrder.InvDate,
+          Purpose: request?.Purpose || "",
+        },
+        status: 200,
+      }
+    } catch (error) {
+      this.logger.error('Error fetching purchase order', error);
+      throw new Error('Error fetching purchase order');
+    }
   }
 
   async remove(id: DeletePurchaseOrderDto) {

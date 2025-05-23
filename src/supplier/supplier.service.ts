@@ -49,9 +49,26 @@ export class SupplierService {
   //   return 'This action adds a new supplier';
   // }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} supplier`;
-  // }
+  async findOne(params: FindSupplierDto) {
+    try {
+      const supplier = await this.supplierRepository.findOne({
+        where: {
+          SupplierID: params.SupplierID,
+        },
+      });
+      if (!supplier) {
+        this.logger.error('Supplier not found');
+        throw new Error('Supplier not found');
+      }
+      return {
+        data: supplier,
+        status: 200,
+      };
+    } catch (error) {
+      this.logger.error('Error fetching supplier', error);
+      throw new Error('Error fetching supplier');
+    }
+  }
 
   // update(id: number, updateSupplierDto: UpdateSupplierDto) {
   //   return `This action updates a #${id} supplier`;

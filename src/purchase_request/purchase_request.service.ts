@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreatePurchaseRequestDto } from './dto/create-purchase_request.dto';
 import { UpdatePurchaseRequestDto } from './dto/update-purchase_request.dto';
 import { FindPurchaseRequestDto } from './dto/find-purchase-request.dto';
@@ -32,6 +32,12 @@ export class PurchaseRequestService {
           PRNO: 'DESC',
         },
       });
+      if (purchaseRequests.length === 0) {
+        return {
+          data: [],
+          status: 200
+        }
+      }
       this.logger.debug(`[find-many-purchase-request]: ${JSON.stringify(purchaseRequests)}\n [total]: ${total}`);
       this.logger.debug(`[find-many-purchase-request]: ${JSON.stringify(purchaseRequests.length)}`);
 
@@ -50,8 +56,28 @@ export class PurchaseRequestService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} purchaseRequest`;
+  async findOne(params: FindPurchaseRequestDto) {
+    try {
+      const purchaseRequest = await this.purchaseRequestRepository.findOne({
+        where: {
+          PRNO: params.PRNO,
+        },
+      });
+      if (!purchaseRequest) {
+        return {
+          data: "",
+          status: 200
+        }
+      }
+      this.logger.debug(`[find-one-purchase-request]: ${JSON.stringify(purchaseRequest)}`);
+      return {
+        data: purchaseRequest,
+        status: 200,
+      }
+    } catch (error) {
+      this.logger.error('Error fetching purchase request', error);
+      throw new Error('Error fetching purchase request');
+    }
   }
 
   update(id: number, updatePurchaseRequestDto: UpdatePurchaseRequestDto) {
