@@ -13,9 +13,10 @@ import { SupplierService } from 'src/supplier/supplier.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([PurchaseOrder, PurchaseOrderDetail, PurchaseRequest], 'off_pp'),
-    TypeOrmModule.forFeature([Supplier], 'Ent_db')
+    TypeOrmModule.forFeature([Supplier], 'Ent_db'),
   ],
   controllers: [PurchaseOrderController],
   providers: [PurchaseOrderService, PurchaseOrderDetailService, PurchaseRequestService, SupplierService],
+  exports: [PurchaseOrderService],
 })
 export class PurchaseOrderModule { }

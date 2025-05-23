@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 // import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseOrder } from './entities/purchase_order.entity';
@@ -16,12 +16,12 @@ export class PurchaseOrderService {
   constructor(
     @InjectRepository(PurchaseOrder, 'off_pp')
     private readonly purchaseOrderRepository: Repository<PurchaseOrder>,
-    @Inject(PurchaseOrderDetailService)
-    private readonly purchaseOrderDetailService: PurchaseOrderDetailService,
-    @Inject(PurchaseRequestService)
-    private readonly purchaseRequestService: PurchaseRequestService,
-    @Inject(SupplierService)
-    private readonly supplierService: SupplierService,
+    @Inject(forwardRef(() => PurchaseOrderDetailService))
+    private purchaseOrderDetailService: PurchaseOrderDetailService,
+    @Inject(forwardRef(() => PurchaseRequestService))
+    private purchaseRequestService: PurchaseRequestService,
+    @Inject(forwardRef(() => SupplierService))
+    private supplierService: SupplierService,
   ) { }
   // async create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
   //   try {
@@ -74,6 +74,12 @@ export class PurchaseOrderService {
         C: "Consumable",
       };
 
+      const CompanyMap: Record<string, string> = {
+        "P/P": "Pine-Pacific Co., Ltd",
+        "PIM": "Pine Industrial Materials Co., Ltd",
+        "S/R": "Saraburi"
+      }
+
       const purchaseOrdersResult: IPurchaseOrder[] = [];
 
       await Promise.all(
@@ -106,7 +112,7 @@ export class PurchaseOrderService {
                 DateOfDelivery: purchaseOrder?.EstimateArr1 || undefined,
                 InvDate: purchaseOrder?.InvDate || null,
                 BLDate: purchaseOrder?.BLDate || null,
-                Company: purchaseOrder?.Company || "",
+                Company: CompanyMap[purchaseOrder?.Company] || "",
                 ProductID: detail?.ProductID || "",
                 No: detail?.No || 1,
                 ProductName: detail?.SProductName || "",

@@ -10,5 +10,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   ],
   controllers: [PurchaseRequestController],
   providers: [PurchaseRequestService],
+  exports: [PurchaseRequestService],
 })
 export class PurchaseRequestModule { }
