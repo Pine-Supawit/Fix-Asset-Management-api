@@ -37,4 +37,8 @@ export interface IPurchaseOrder {
     GrandTotal?: number;
     VAT?: number;
     Amount?: number;
+    InsuranceCompany?: string;
+    InsuranceNo?: string;
+    PINO?: string;
+    PurchasingOfficer?: string;
 }

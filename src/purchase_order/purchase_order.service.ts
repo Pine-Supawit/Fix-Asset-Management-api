@@ -51,7 +51,7 @@ export class PurchaseOrderService {
 
       this.logger.debug(`[find-many-purchase-order]: ${JSON.stringify(params)}`);
 
-      const where: any = { ReceiveDocDate: Not(IsNull()) };
+      const where: any = {};
       if (params.PurchaseID !== undefined) {
         where.PurchaseID = Number(params.PurchaseID);
       }
@@ -141,6 +141,10 @@ export class PurchaseOrderService {
                 VAT: purchaseOrder?.VAT || 0,
                 GrandTotal: purchaseOrder?.GrandTotal || 0,
                 Total: purchaseOrder?.TotalPrice || 0,
+                InsuranceCompany: purchaseOrder?.InsuranceCompany || "",
+                InsuranceNo: purchaseOrder?.InsuranceNo || "",
+                PINO: purchaseOrder?.PINO || "",
+                PurchasingOfficer: purchaseOrder?.PurchaseOfficer || "",
               });
             }
           }
@@ -198,6 +202,10 @@ export class PurchaseOrderService {
           InvNo: purchaseOrder.InvNo,
           InvDate: purchaseOrder.InvDate,
           Purpose: request?.Purpose || "",
+          InsuranceCompany: purchaseOrder?.InsuranceCompany || "",
+          InsuranceNo: purchaseOrder?.InsuranceNo || "",
+          PINO: purchaseOrder?.PINO || "",
+          PurchasingOfficer: purchaseOrder?.PurchaseOfficer || "",
         },
         status: 200,
       }

@@ -74,17 +74,18 @@ export class PurchaseOrderDetailService {
         "S/R": "Saraburi"
       }
 
-      const purchaseOrder = await this.purchaseOrderService.findOne({
-        PurchaseID: purchaseOrderDetails[0]?.PurchaseID,
-        RevisionID: purchaseOrderDetails[0]?.RevisionID,
-      })
-
+      
       for (const purchaseOrderDetail of purchaseOrderDetails) {
+        const purchaseOrder = await this.purchaseOrderService.findOne({
+          PurchaseID: purchaseOrderDetail?.PurchaseID,
+          RevisionID: purchaseOrderDetail?.RevisionID,
+        })
+        this.logger.debug(`[find-purchase-order-detail]: ${JSON.stringify(purchaseOrder)}`);
         const purchaseOrderDetailResult = {
           PurchaseID: purchaseOrderDetail?.PurchaseID,
           RevisionID: purchaseOrderDetail?.RevisionID,
-          Department: purchaseOrder[0]?.Department,
-          ForDivision: purchaseOrder[0]?.ForDivision,
+          Department: purchaseOrder.data?.Department,
+          ForDivision: purchaseOrder.data?.ForDivision,
           Company: CompanyMap[purchaseOrder[0]?.Company],
           No: purchaseOrderDetail?.No,
           ProductID: purchaseOrderDetail?.ProductID,
@@ -105,16 +106,19 @@ export class PurchaseOrderDetailService {
           PRNo: purchaseOrderDetail?.PRNo,
           PRItem: purchaseOrderDetail?.PRItem,
           AssetID: POTypeMap[purchaseOrderDetail?.AssetID],
-          PurchasingOfficer: purchaseOrder[0]?.PurchasingOfficer,
-          PurchaseBy: purchaseOrder[0]?.PurchaseBy,
-          InvNo: purchaseOrder[0]?.InvNo,
-          InvDate: purchaseOrder[0]?.InvDate,
+          PurchasingOfficer: purchaseOrder.data?.PurchasingOfficer,
+          PurchaseBy: purchaseOrder.data?.PurchaseBy,
+          InvNo: purchaseOrder.data?.InvNo,
+          InvDate: purchaseOrder.data?.InvDate,
+          InsuranceCompany: purchaseOrder.data?.InsuranceCompany,
+          InsuranceNo: purchaseOrder.data?.InsuranceNo,
+          PINO: purchaseOrder.data?.PINO,
         };
         purchaseOrderDetailsResult.push(purchaseOrderDetailResult);
       }
 
-      this.logger.debug(`[find-purchase-order-detail]: ${JSON.stringify(purchaseOrderDetails)}`);
-      this.logger.debug(`[find-purchase-order-detail]: total count = ${total}`);
+      // this.logger.debug(`[find-purchase-order-detail]: ${JSON.stringify(purchaseOrderDetails)}`);
+      // this.logger.debug(`[find-purchase-order-detail]: total count = ${total}`);
 
       return {
         data: purchaseOrderDetailsResult,
