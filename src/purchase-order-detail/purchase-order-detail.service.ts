@@ -74,7 +74,7 @@ export class PurchaseOrderDetailService {
         "S/R": "Saraburi"
       }
 
-      
+
       for (const purchaseOrderDetail of purchaseOrderDetails) {
         const purchaseOrder = await this.purchaseOrderService.findOne({
           PurchaseID: purchaseOrderDetail?.PurchaseID,
@@ -117,8 +117,8 @@ export class PurchaseOrderDetailService {
         purchaseOrderDetailsResult.push(purchaseOrderDetailResult);
       }
 
-      // this.logger.debug(`[find-purchase-order-detail]: ${JSON.stringify(purchaseOrderDetails)}`);
-      // this.logger.debug(`[find-purchase-order-detail]: total count = ${total}`);
+      this.logger.debug(`[find-purchase-order-detail]: ${JSON.stringify(purchaseOrderDetails)}`);
+      this.logger.debug(`[find-purchase-order-detail]: total count = ${total}`);
 
       return {
         data: purchaseOrderDetailsResult,
