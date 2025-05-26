@@ -80,8 +80,31 @@ export class PurchaseRequestService {
     }
   }
 
-  update(id: number, updatePurchaseRequestDto: UpdatePurchaseRequestDto) {
-    return `This action updates a #${id} purchaseRequest`;
+  async update(params: UpdatePurchaseRequestDto) {
+    try {
+      const purchaseRequest = await this.purchaseRequestRepository.findOne({
+        where: {
+          PRNO: params.PRNO,
+        },
+      })
+
+      if (!purchaseRequest) {
+        throw new NotFoundException(`Purchase Request with PRNO: ${params.PRNO} not found`);
+      }
+      this.logger.debug(`[update-purchase-request]: ${JSON.stringify(params)}`);
+      const update = {
+        PRNO: params.PRNO || purchaseRequest.PRNO,
+        Purpose: params.Purpose || purchaseRequest.Purpose,
+      }
+      const updatedPurchaseRequest = await this.purchaseRequestRepository.update(
+        { PRNO: params.PRNO },
+        update
+      );
+      
+    } catch (error) {
+      this.logger.error('Error updating purchase request', error);
+      throw new Error('Error updating purchase request');
+    }
   }
 
   remove(id: number) {

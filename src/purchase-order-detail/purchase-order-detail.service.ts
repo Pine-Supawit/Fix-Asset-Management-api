@@ -1,10 +1,10 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreatePurchaseOrderDetailDto } from './dto/create-purchase-order-detail.dto';
 import { UpdatePurchaseOrderDetailDto } from './dto/update-purchase-order-detail.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseOrderDetail } from './entities/purchase-order-detail.entity';
 import { FindPurchaseOrderDetailedDto } from './dto/find-detailed-purchasing.dto';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { PurchaseOrderService } from 'src/purchase_order/purchase_order.service';
 import { PurchaseRequestService } from 'src/purchase_request/purchase_request.service';
 import { SupplierService } from 'src/supplier/supplier.service';
@@ -140,8 +140,71 @@ export class PurchaseOrderDetailService {
     return `This action returns a #${id} purchaseOrderDetail`;
   }
 
-  update(id: number, updatePurchaseOrderDetailDto: UpdatePurchaseOrderDetailDto) {
-    return `This action updates a #${id} purchaseOrderDetail`;
+  async update(params: UpdatePurchaseOrderDetailDto) {
+    try {
+      const purchaseOrderDetail = await this.purchaseOrderDetailRepository.findOne({
+        where: {
+          PurchaseID: Number(params.PurchaseID),
+          RevisionID: Number(params.RevisionID),
+          No: Number(params.No),
+        },
+      })
+      if (!purchaseOrderDetail) {
+        throw new NotFoundException(`Purchase Order Detail with PurchaseID: ${params.PurchaseID}, RevisionID: ${params.RevisionID}, No: ${params.No} not found`);
+      }
+
+      const purpose = await this.purchaseRequestService.findOne({
+        PRNO: purchaseOrderDetail.PRNo?.toString(),
+      })
+
+      const purchaseOrder = await this.purchaseOrderService.findOne({
+        PurchaseID: Number(params.PurchaseID),
+        RevisionID: Number(params.RevisionID),
+      })
+
+      this.logger.debug(`[update-purchase-order-detail]: ${JSON.stringify(params)}`);
+      const update = {
+        PurchaseID: Number(params.PurchaseID) || purchaseOrderDetail.PurchaseID,
+        RevisionID: Number(params.RevisionID) || purchaseOrderDetail.RevisionID,
+        No: Number(params.No) || purchaseOrderDetail.No,
+        AssetID: params.AssetID || purchaseOrderDetail.AssetID,
+        chk: params.AssetTypeCheck || purchaseOrderDetail.chk,
+        PriceNote: params.Note || purchaseOrderDetail.PriceNote,
+      }
+
+      const updatedPurchaseOrderDetail = await this.purchaseOrderDetailRepository.update(
+        {
+          PurchaseID: Number(params.PurchaseID),
+          RevisionID: Number(params.RevisionID),
+          No: Number(params.No),
+        },
+        update
+      );
+
+      const updatesPurchaseOrder = await this.purchaseOrderService.update({
+        PurchaseID: Number(params.PurchaseID),
+        RevisionID: Number(params.RevisionID),
+        InvNo: params.InvNo || purchaseOrder.data[0]?.InvNo,
+        InvDate: params.InvDate || purchaseOrder.data[0]?.InvDate,
+      })
+      const updatedPurchaseRequestPurpose = await this.purchaseRequestService.update(
+        {
+          PRNO: purchaseOrderDetail.PRNo?.toString(),
+          Purpose: params.Purpose || purpose.data[0]?.Purpose,
+        },
+      )
+
+      this.logger.debug(`[update-purchase-order-detail]: updatedPurchaseOrderDetail = ${JSON.stringify(updatedPurchaseOrderDetail)}`);
+
+      return {
+        data: [],
+        status: 200,
+        message: `Purchase Order Detail updated successfully`,
+      }
+    } catch (error) {
+      this.logger.error(error)
+      throw error;
+    }
   }
 
   remove(id: number) {

@@ -9,6 +9,7 @@ import { PurchaseOrderDetailService } from 'src/purchase-order-detail/purchase-o
 import { IPurchaseOrder } from 'src/common/interfaces/purchase-order.interface';
 import { PurchaseRequestService } from 'src/purchase_request/purchase_request.service';
 import { SupplierService } from 'src/supplier/supplier.service';
+import { UpdatePurchaseOrderDto } from './dto/update-purcahse-order.dto';
 
 @Injectable()
 export class PurchaseOrderService {
@@ -237,6 +238,36 @@ export class PurchaseOrderService {
     } catch (error) {
       this.logger.error('Error deleting purchase order', error);
       throw new Error('Error deleting purchase order');
+    }
+  }
+
+  async update(params: UpdatePurchaseOrderDto) {
+    try {
+      const purchaseOrder = await this.purchaseOrderRepository.findOne({
+        where: {
+          PurchaseID: Number(params.PurchaseID),
+          RevisionID: Number(params.RevisionID),
+        },
+      })
+      if (!purchaseOrder) {
+        this.logger.warn(`Purchase order with ID ${params.PurchaseID} not found`);
+        throw new NotFoundException(`Purchase order with ID ${params.PurchaseID} not found`);
+      }
+      this.logger.debug(`[update-purchase-order]: ${JSON.stringify(params)}`);
+      const update = {
+        PurchaseID: Number(params.PurchaseID) || purchaseOrder.PurchaseID,
+        RevisionID: Number(params.RevisionID) || purchaseOrder.RevisionID,
+        InvNo: params.InvNo || purchaseOrder.InvNo,
+        InvDate: params.InvDate || purchaseOrder.InvDate,
+      }
+      const updatedPurchaseOrder = await this.purchaseOrderRepository.update(
+        { PurchaseID: Number(params.PurchaseID), RevisionID: Number(params.RevisionID) },
+        update
+      );
+      this.logger.debug(`[update-purchase-order]: updatedPurchaseOrder = ${JSON.stringify(updatedPurchaseOrder)}`);
+    } catch (error) {
+      this.logger.error(error);
+      throw new Error('Error updating purchase order');
     }
   }
 }

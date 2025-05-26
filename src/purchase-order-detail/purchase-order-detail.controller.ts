@@ -16,4 +16,10 @@ export class PurchaseOrderDetailController {
     return this.purchaseOrderDetailService.findAll(body);
   }
 
+  @Patch()
+  @ApiOperation({ summary: 'Update purchase order detail' })
+  update(@Body() body: UpdatePurchaseOrderDetailDto) {
+    return this.purchaseOrderDetailService.update(body);
+  }
+
 }
