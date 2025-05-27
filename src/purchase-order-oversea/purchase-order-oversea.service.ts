@@ -87,9 +87,9 @@ async purchaseOrderOverseaByType(poType: string, page: number) {
     const offset = (page - 1) * poListSize;
 
     let typeQuery = '';
-    if (poType === 'Asset') {
+    if (poType === 'ASSET') {
       typeQuery = `pod.ProductID LIKE '5%'`;
-    } else if (poType === 'Non-Asset') {
+    } else if (poType === 'NON-ASSET') {
       typeQuery = `pod.ProductID NOT LIKE '5%'`;
     } else {
       throw new Error(`Error find by type the ${poType} is invalid`);

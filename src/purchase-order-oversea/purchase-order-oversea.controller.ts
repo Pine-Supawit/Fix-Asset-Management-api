@@ -14,7 +14,7 @@ export class PurchaseOrderOverseaController {
   
 @Get('/purchaseOrderOverseaByType')
 async purchaseOrderOverseaByType(@Query('type') type: string, @Query('page') page: string) {
-  return this.purchaseOrderOverseaService.purchaseOrderOverseaByType(type, +page);
+  return this.purchaseOrderOverseaService.purchaseOrderOverseaByType(type.toUpperCase(), +page);
 }
 
 

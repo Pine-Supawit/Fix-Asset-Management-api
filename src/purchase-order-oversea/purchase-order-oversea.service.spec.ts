@@ -140,14 +140,14 @@ describe('PurchaseOrderOverseaService', () => {
       },
     ];
     dataSourceMock.query = jest.fn().mockResolvedValueOnce(mockResult)
-    const result = await service.purchaseOrderOverseaByType('Asset', 1)
+    const result = await service.purchaseOrderOverseaByType('ASSET', 1)
     expect(result).toEqual({
       data: mockResult,
       pageNo: 1,
       total: mockResult.length,
     });
   });
-
+  
   it('should return data for Non-Asset type', async () => {
     const mockResult = [
       {
@@ -168,7 +168,7 @@ describe('PurchaseOrderOverseaService', () => {
       },
     ];
      dataSourceMock.query = jest.fn().mockResolvedValueOnce(mockResult)
-    const result = await service.purchaseOrderOverseaByType('Non-Asset', 1)
+    const result = await service.purchaseOrderOverseaByType('NON-ASSET', 1)
     expect(result).toEqual({
       data: mockResult,
       pageNo: 1,
@@ -195,7 +195,7 @@ describe('PurchaseOrderOverseaService', () => {
 
   it('should return empty data if no purchase orders found for purchaseOrderOverseaByType', async () => {
     dataSourceMock.query = jest.fn().mockResolvedValueOnce([]);
-    const result = await service.purchaseOrderOverseaByType('Asset', 1);
+    const result = await service.purchaseOrderOverseaByType('ASSET', 1);
     expect(result).toEqual({ data: [], pageNo: -1, total: -1 });
   });  
 });
