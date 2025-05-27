@@ -52,7 +52,7 @@ export class PurchaseOrderOverseaService {
          WHEN pod.ProductID LIKE '5%' THEN 'Asset'
          ELSE 'Non-Asset'
       END AS CategoryOfPurchase,
-      pod.ProductID as ProductID, po.IsPurchaseOverseas as IsPurchaseOverseas
+      pod.ProductID as ProductID, po.IsPurchaseOverseas as IsPurchaseOverseas, pod.No as ProductNo
       from [Endeavour].[dbo].[PurchaseOrder] po
       left Join [Endeavour].[dbo].[PurchaseOrderDetailed] pod on po.PurchaseID = pod.PurchaseID
       left Join [Endeavour].[dbo].[PurchaseRequest] pr on po.PRNO = pr.PRNO
