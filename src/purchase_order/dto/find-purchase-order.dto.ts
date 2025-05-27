@@ -15,10 +15,10 @@ export class FindPurchaseOrderDto {
     @Transform(({ value }) => Number(value))
     RevisionID?: number;
 
-    @ApiProperty({ required: false, description: 'Search by Asset type', example: 'Asset, Expense, Tools, Spare, Consumable' })
+    @ApiProperty({ required: false, description: 'Search by Asset type', example: 'Asset' })
     @IsString()
     @IsOptional()
-    AssetID?: string;
+    POType?: string;
 
     @ApiProperty({ required: false, description: 'Page number' })
     @IsNumber()

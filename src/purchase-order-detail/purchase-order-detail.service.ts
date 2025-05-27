@@ -32,8 +32,6 @@ export class PurchaseOrderDetailService {
       const limit = params.limit || 10;
       const skip = (page - 1) * limit;
 
-      this.logger.debug(`[find-purchase-order-detail]: ${JSON.stringify(params)}`);
-
       const where: any = {};
 
       if (params.PurchaseID !== undefined) {
@@ -53,6 +51,8 @@ export class PurchaseOrderDetailService {
       }
 
       let purchaseOrderDetailsResult: any = [];
+
+      console.log(where)
 
       const [purchaseOrderDetails, total] = await this.purchaseOrderDetailRepository.findAndCount({
         where,
@@ -80,7 +80,6 @@ export class PurchaseOrderDetailService {
           PurchaseID: purchaseOrderDetail?.PurchaseID,
           RevisionID: purchaseOrderDetail?.RevisionID,
         })
-        this.logger.debug(`[find-purchase-order-detail]: ${JSON.stringify(purchaseOrder)}`);
         const purchaseOrderDetailResult = {
           PurchaseID: purchaseOrderDetail?.PurchaseID,
           RevisionID: purchaseOrderDetail?.RevisionID,
@@ -117,7 +116,6 @@ export class PurchaseOrderDetailService {
         purchaseOrderDetailsResult.push(purchaseOrderDetailResult);
       }
 
-      this.logger.debug(`[find-purchase-order-detail]: ${JSON.stringify(purchaseOrderDetails)}`);
       this.logger.debug(`[find-purchase-order-detail]: total count = ${total}`);
 
       return {

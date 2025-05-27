@@ -3,6 +3,7 @@ import { PurchaseOrderService } from './purchase_order.service';
 import { FindPurchaseOrderDto } from './dto/find-purchase-order.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DeletePurchaseOrderDto } from './dto/delete-purchase-order.dto';
+import { FindPurchaseOrderByTypeDto } from './dto/find-by-type.dto';
 
 @ApiTags('Purchase Order')
 @Controller('purchase-order')
