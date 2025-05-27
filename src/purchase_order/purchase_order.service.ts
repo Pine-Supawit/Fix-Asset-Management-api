@@ -30,10 +30,10 @@ export class PurchaseOrderService {
 
   async findAll(params: FindPurchaseOrderDto) {
     try {
-      const start = Date.now();
       const page = Number(params.page) || 1;
       const limit = Number(params.limit) || 10;
       const skip = (page - 1) * limit;
+
       const AssetTypeMap: Record<string, string> = {
         Asset: "A",
         Tools: "T",
@@ -64,69 +64,50 @@ export class PurchaseOrderService {
         if (params.RevisionID !== undefined) {
           where.RevisionID = Number(params.RevisionID);
         }
-
-        const [purchaseOrders, total] = await this.purchaseOrderRepository.findAndCount({
+        const [purchaseOrderDetails, total] = await this.purchaseOrderDetailRepository.findAndCount({
           where,
           skip,
           take: limit,
-          order: { DateOrder: 'ASC' },
-        });
+        })
 
-        const purchaseOrdersResult: IPurchaseOrder[] = [];
-
+        const purchaseOrderDetailsResult: IPurchaseOrder[] = [];
         await Promise.all(
-          purchaseOrders.map(async (purchaseOrder) => {
-            const [detailsResponse, requestsResponse, supplierResponse] = await Promise.all([
-              this.purchaseOrderDetailService.findAll({
-                PurchaseID: purchaseOrder.PurchaseID.toString(),
-                RevisionID: purchaseOrder.RevisionID.toString(),
-              }),
-              this.purchaseRequestService.findAll({
-                PRNO: purchaseOrder.PRNo?.toString(),
-              }),
-              this.supplierService.findAll({
-                SupplierID: purchaseOrder.SupplierID?.toString(),
-              }),
-            ]);
+          purchaseOrderDetails.map(async (purchaseOrderDetail) => {
+            const purchaseOrder = await this.purchaseOrderRepository.findOne({
+              where: {
+                PurchaseID: purchaseOrderDetail.PurchaseID,
+                RevisionID: purchaseOrderDetail.RevisionID,
+              },
+            });
 
-            const details = detailsResponse?.data || [];
-            const requests = requestsResponse?.data || [];
-            const supplierName = supplierResponse?.data?.[0]?.SupplierName || "";
-
-            if (!details.length) {
-              this.logger.warn(`Skipping PO ${purchaseOrder.PurchaseID} — no details found.`);
+            if (!purchaseOrder) {
+              this.logger.warn(`Purchase order with ID ${purchaseOrderDetail.PurchaseID} not found`);
               return;
             }
 
-            for (const detail of details) {
-              if (!requests.length) {
-                purchaseOrdersResult.push(
-                  this.mapPurchaseOrderFields(purchaseOrder, detail, null, supplierName, POTypeMap, CompanyMap)
-                );
-              } else {
-                for (const request of requests) {
-                  purchaseOrdersResult.push(
-                    this.mapPurchaseOrderFields(purchaseOrder, detail, request, supplierName, POTypeMap, CompanyMap)
-                  );
-                }
-              }
-            }
+            const requests = await this.purchaseRequestService.findAll({
+              PRNO: purchaseOrder?.PRNo?.toString(),
+            });
+            const request: any = requests?.data || [];
+            const supplierResponse = await this.supplierService.findAll({
+              SupplierID: purchaseOrder.SupplierID?.toString(),
+            });
+            const supplierName = supplierResponse?.data?.[0]?.SupplierName || "";
+
+            purchaseOrderDetailsResult.push(
+              this.mapPurchaseOrderFields(purchaseOrder, purchaseOrderDetail, request, supplierName, POTypeMap, CompanyMap)
+            );
           })
         );
-
-        const timeTaken = Date.now() - start;
-
-        this.logger.debug(`[find-many-purchase-order-result]: ${JSON.stringify(purchaseOrdersResult)}\n[total]: ${total}`);
-        this.logger.debug(`[find-many-purchase-order-result]: [length]: ${purchaseOrdersResult.length}`);
-        this.logger.debug(`Time taken to fetch purchase orders: ${timeTaken / 1000} seconds`);
-
+        this.logger.debug(`[find-many-purchase-order-by-type]: ${JSON.stringify(purchaseOrderDetailsResult)}\n[total]: ${total}`);
+        this.logger.debug(`[find-many-purchase-order-by-type]: [length]: ${purchaseOrderDetailsResult.length}`);
         return {
-          data: purchaseOrdersResult,
+          data: purchaseOrderDetailsResult,
           pagination: {
             page,
             limit,
             total,
-            length: purchaseOrdersResult.length,
+            length: purchaseOrderDetailsResult.length,
           },
           status: 200,
         };
