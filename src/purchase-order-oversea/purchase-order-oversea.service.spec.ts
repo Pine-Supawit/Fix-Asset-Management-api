@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PurchaseOrderOverseaService } from './purchase-order-oversea.service';
 import { DataSource } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
 import { PurchaseOrderOversea } from './entities/purchase-order-oversea.entity';
 
 describe('PurchaseOrderOverseaService', () => {
@@ -33,7 +33,7 @@ describe('PurchaseOrderOverseaService', () => {
           },
         },
         {
-          provide: DataSource,
+          provide: getDataSourceToken('Endeavour'),
           useValue: dataSourceMock,
         },
       ],
@@ -110,4 +110,92 @@ describe('PurchaseOrderOverseaService', () => {
   it('should throw an error if page is negative', async () => {
     await expect(service.purchaseOrderOverseaList(-1)).rejects.toThrow();
   });
+
+  it('should throw an error if input parameter is empty in purchaseOrderOverseaList', async () => {
+    await expect(service.purchaseOrderOverseaList('' as any)).rejects.toThrow();
+  });
+
+  it('should throw an error if query fails in purchaseOrderOverseaList', async () => {
+    (dataSourceMock.query as jest.Mock).mockRejectedValueOnce(new Error('DB error'));
+    await expect(service.purchaseOrderOverseaList(1)).rejects.toThrow('Error fetching purchase orders');
+  });
+  
+  it('should return data for Asset type', async () => {
+    const mockResult = [
+      {
+        Companyname: 'Pine-Pacific',
+        ReciveDate: '2022-01-01T00:00:00.000Z',
+        PoDate: '2022-01-02T00:00:00.000Z',
+        PoID: 123,
+        ProductName: 'AssetProduct',
+        SupplierName: 'SupplierA',
+        Purpose: 'PurposeA',
+        Amount: 100,
+        Dep: 'DepA',
+        PurchaseBy: 'UserA',
+        ProductType: 'Asset',
+        ProductID: '50001',
+        ProductNo: 1,
+        IsPurchaseOverseas: true,
+      },
+    ];
+    dataSourceMock.query = jest.fn().mockResolvedValueOnce(mockResult)
+    const result = await service.purchaseOrderOverseaByType('Asset', 1)
+    expect(result).toEqual({
+      data: mockResult,
+      pageNo: 1,
+      total: mockResult.length,
+    });
+  });
+
+  it('should return data for Non-Asset type', async () => {
+    const mockResult = [
+      {
+        Companyname: 'Pine-Pacific',
+        ReciveDate: '2022-01-01T00:00:00.000Z',
+        PoDate: '2022-01-02T00:00:00.000Z',
+        PoID: 124,
+        ProductName: 'NonAssetProduct',
+        SupplierName: 'SupplierB',
+        Purpose: 'PurposeB',
+        Amount: 200,
+        Dep: 'DepB',
+        PurchaseBy: 'UserB',
+        ProductType: 'Non-Asset',
+        ProductID: '40001',
+        ProductNo: 2,
+        IsPurchaseOverseas: false,
+      },
+    ];
+     dataSourceMock.query = jest.fn().mockResolvedValueOnce(mockResult)
+    const result = await service.purchaseOrderOverseaByType('Non-Asset', 1)
+    expect(result).toEqual({
+      data: mockResult,
+      pageNo: 1,
+      total: mockResult.length,
+    });
+  });
+
+  it('should throw an error if query fails', async () => {
+    (dataSourceMock.query as jest.Mock).mockRejectedValueOnce(new Error('DB error'));
+    await expect(service.purchaseOrderOverseaByType('Asset', 1)).rejects.toThrow('Error find by type the Asset is invalid');
+  });
+
+  it('should throw an error if input parameter is invalid', async () => {
+    await expect(service.purchaseOrderOverseaByType('not-asset-type', 1)).rejects.toThrow('Error find by type the not-asset-type is invalid');
+  });
+
+  it('should throw an error if input parameter is empty', async () => {
+    await expect(service.purchaseOrderOverseaByType('', 1)).rejects.toThrow('Error find by type the  is invalid');
+  });
+
+  it('should throw an error if input parameter is a number', async () => {
+    await expect(service.purchaseOrderOverseaByType(123 as any, 1)).rejects.toThrow('Error find by type the 123 is invalid');
+  });
+
+  it('should return empty data if no purchase orders found for purchaseOrderOverseaByType', async () => {
+    dataSourceMock.query = jest.fn().mockResolvedValueOnce([]);
+    const result = await service.purchaseOrderOverseaByType('Asset', 1);
+    expect(result).toEqual({ data: [], pageNo: -1, total: -1 });
+  });  
 });

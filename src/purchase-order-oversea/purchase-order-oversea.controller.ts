@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, BadRequestException } from '@nestjs/common';
 import { PurchaseOrderOverseaService } from './purchase-order-oversea.service';
 import { CreatePurchaseOrderOverseaDto } from './dto/create-purchase-order-oversea.dto';
 import { UpdatePurchaseOrderOverseaDto } from './dto/update-purchase-order-oversea.dto';
@@ -7,14 +7,15 @@ import { UpdatePurchaseOrderOverseaDto } from './dto/update-purchase-order-overs
 export class PurchaseOrderOverseaController {
   constructor(private readonly purchaseOrderOverseaService: PurchaseOrderOverseaService) {}
 
-  @Get('/purchase-oder-list')
+  @Get('/purchaseOderOverseaList')
   purchaseOrderOverseaList(@Query('page') page: number){
     return this.purchaseOrderOverseaService.purchaseOrderOverseaList(+page)
   }
   
-  @Get('/purchaseOrderByType')
-  purchaseOrderOverseaByType(@Query('type') type: string) {
-    return this.purchaseOrderOverseaService.purchaseOrderOverseaByType(type);
-  }
+@Get('/purchaseOrderOverseaByType')
+async purchaseOrderOverseaByType(@Query('type') type: string, @Query('page') page: string) {
+  return this.purchaseOrderOverseaService.purchaseOrderOverseaByType(type, +page);
+}
+
 
 }

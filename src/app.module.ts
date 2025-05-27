@@ -21,6 +21,8 @@ import { PurchaseRequestDetailModule } from './purchase-request-detail/purchase-
 import { PurchaseRequestDetail } from './purchase-request-detail/entities/purchase-request-detail.entity';
 import { PurchaseOrderDetailModule } from './purchase-order-detail/purchase-order-detail.module';
 import { PurchaseOrderDetail } from './purchase-order-detail/entities/purchase-order-detail.entity';
+import { PurchaseOrderOversea } from './purchase-order-oversea/entities/purchase-order-oversea.entity';
+import { PurchaseOrderOverseaModule } from './purchase-order-oversea/purchase-order-oversea.module';
 
 @Module({
   imports: [
@@ -51,6 +53,7 @@ import { PurchaseOrderDetail } from './purchase-order-detail/entities/purchase-o
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME_2,
       // entities: [Invoice, Product],
+      entities:[PurchaseOrderOversea],
       synchronize: false,
       options: {
         encrypt: false
@@ -84,6 +87,7 @@ import { PurchaseOrderDetail } from './purchase-order-detail/entities/purchase-o
     // ProductsModule,
     // InvoiceModule,
     SupplierModule,
+    PurchaseOrderOverseaModule
   ],
   controllers: [],
   providers: [],

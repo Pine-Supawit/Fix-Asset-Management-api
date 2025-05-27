@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PurchaseOrderOverseaController } from './purchase-order-oversea.controller';
 import { PurchaseOrderOverseaService } from './purchase-order-oversea.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { PurchaseOrderOversea } from './entities/purchase-order-oversea.entity';
 
@@ -18,7 +18,7 @@ describe('PurchaseOrderOverseaController', () => {
           useValue: {} as Partial<Repository<PurchaseOrderOversea>>,
         },
         {
-          provide: DataSource,
+          provide: getDataSourceToken('Endeavour'),
           useValue: {
             query: jest.fn(),
           },
