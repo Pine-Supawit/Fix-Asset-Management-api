@@ -1,5 +1,4 @@
 import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-// import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseOrder } from './entities/purchase_order.entity';
 import { IsNull, Not, Repository } from 'typeorm';
@@ -24,24 +23,6 @@ export class PurchaseOrderService {
     @Inject(forwardRef(() => SupplierService))
     private supplierService: SupplierService,
   ) { }
-  // async create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
-  //   try {
-
-  //     const purchaseOrder = {
-  //       ...createPurchaseOrderDto,
-  //     }
-  //     const result = await this.purchaseOrderRepository.save(purchaseOrder);
-  //     this.logger.debug(`[create-purchase-order]: ${JSON.stringify(result)}`);
-  //     return {
-  //       data: result,
-  //       status: 200,
-  //       message: 'Purchase order created successfully',
-  //     };
-  //   } catch (error) {
-  //     this.logger.error('Error creating purchase order', error);
-  //     throw new Error('Error creating purchase order');
-  //   }
-  // }
 
   async findAll(params: FindPurchaseOrderDto) {
     try {
@@ -78,8 +59,8 @@ export class PurchaseOrderService {
       const CompanyMap: Record<string, string> = {
         "P/P": "Pine-Pacific Co., Ltd",
         "PIM": "Pine Industrial Materials Co., Ltd",
-        "S/R": "Saraburi"
-      }
+        "S/R": "Saraburi",
+      };
 
       const purchaseOrdersResult: IPurchaseOrder[] = [];
 
@@ -102,51 +83,22 @@ export class PurchaseOrderService {
           const requests = requestsResponse?.data || [];
           const supplierName = supplierResponse?.data?.[0]?.SupplierName || "";
 
+          if (!details.length) {
+            this.logger.warn(`Skipping PO ${purchaseOrder.PurchaseID} — no details found.`);
+            return;
+          }
+
           for (const detail of details) {
-            for (const request of requests) {
-              purchaseOrdersResult.push({
-                POID: purchaseOrder.PurchaseID?.toString(),
-                RevisionID: purchaseOrder.RevisionID?.toString(),
-                RepairID: purchaseOrder?.TRNO || "",
-                LotShipment: purchaseOrder?.LotShipment || "",
-                DateOrder: purchaseOrder?.DateOrder || null,
-                DateOfDelivery: purchaseOrder?.EstimateArr1 || undefined,
-                InvDate: purchaseOrder?.InvDate || null,
-                BLDate: purchaseOrder?.BLDate || null,
-                Company: CompanyMap[purchaseOrder?.Company] || "",
-                ProductID: detail?.ProductID || "",
-                No: detail?.No || 1,
-                ProductName: detail?.SProductName || "",
-                SupplierID: purchaseOrder?.SupplierID || "",
-                SupplierName: supplierName,
-                Contact: purchaseOrder?.ATTN || "",
-                RequestBy: purchaseOrder?.ShippingAgent || "",
-                PurchaseBy: purchaseOrder?.PurchaseOfficer || "",
-                Department: purchaseOrder?.PRDivision || "",
-                Purpose: request?.Purpose || "",
-                ForDepartment: purchaseOrder?.ForDivision || "",
-                Category: purchaseOrder?.PurchaseType || undefined,
-                InvNo: purchaseOrder?.InvNo || "",
-                BLNO: purchaseOrder?.BLNo || "",
-                POType: POTypeMap[detail?.AssetID] || "",
-                PODate: purchaseOrder?.DateOrder || null,
-                PRDate: purchaseOrder?.PRDate || null,
-                PRNO: purchaseOrder?.PRNo || "",
-                ReceiveDate: purchaseOrder?.DateArrive || null,
-                SendDocDate: purchaseOrder?.SendDocDate || null,
-                ReceiveDocDate: purchaseOrder?.ReceiveDocDate || null,
-                ApprovedBy: purchaseOrder?.ApprovedBy || "",
-                ApprovedDate: purchaseOrder?.ApprovedDate || null,
-                Amount: detail?.Amount || 0,
-                Discount: purchaseOrder?.TotalDiscount || 0,
-                VAT: purchaseOrder?.VAT || 0,
-                GrandTotal: purchaseOrder?.GrandTotal || 0,
-                Total: purchaseOrder?.TotalPrice || 0,
-                InsuranceCompany: purchaseOrder?.InsuranceCompany || "",
-                InsuranceNo: purchaseOrder?.InsuranceNo || "",
-                PINO: purchaseOrder?.PINO || "",
-                PurchasingOfficer: purchaseOrder?.PurchaseOfficer || "",
-              });
+            if (!requests.length) {
+              purchaseOrdersResult.push(
+                this.mapPurchaseOrderFields(purchaseOrder, detail, null, supplierName, POTypeMap, CompanyMap)
+              );
+            } else {
+              for (const request of requests) {
+                purchaseOrdersResult.push(
+                  this.mapPurchaseOrderFields(purchaseOrder, detail, request, supplierName, POTypeMap, CompanyMap)
+                );
+              }
             }
           }
         })
@@ -154,7 +106,7 @@ export class PurchaseOrderService {
 
       const timeTaken = Date.now() - start;
 
-      this.logger.debug(`[find-many-purchase-order-result]: ${JSON.stringify(purchaseOrdersResult)}\n [total]: ${total}`);
+      this.logger.debug(`[find-many-purchase-order-result]: ${JSON.stringify(purchaseOrdersResult)}\n[total]: ${total}`);
       this.logger.debug(`[find-many-purchase-order-result]: [length]: ${purchaseOrdersResult.length}`);
       this.logger.debug(`Time taken to fetch purchase orders: ${timeTaken / 1000} seconds`);
 
@@ -169,9 +121,62 @@ export class PurchaseOrderService {
         status: 200,
       };
     } catch (error) {
-      this.logger.error('Error fetching purchase orders', error);
-      throw new Error('Error fetching purchase orders');
+      this.logger.error("Error fetching purchase orders", error);
+      throw new Error("Error fetching purchase orders");
     }
+  }
+
+  private mapPurchaseOrderFields(
+    purchaseOrder: any,
+    detail: any,
+    request: any,
+    supplierName: string,
+    POTypeMap: Record<string, string>,
+    CompanyMap: Record<string, string>
+  ): IPurchaseOrder {
+    return {
+      POID: purchaseOrder.PurchaseID?.toString(),
+      RevisionID: purchaseOrder.RevisionID?.toString(),
+      RepairID: purchaseOrder?.TRNO || "",
+      LotShipment: purchaseOrder?.LotShipment || "",
+      DateOrder: purchaseOrder?.DateOrder || null,
+      DateOfDelivery: purchaseOrder?.EstimateArr1 || undefined,
+      InvDate: purchaseOrder?.InvDate || null,
+      BLDate: purchaseOrder?.BLDate || null,
+      Company: CompanyMap[purchaseOrder?.Company] || "",
+      ProductID: detail?.ProductID || "",
+      No: detail?.No || 1,
+      ProductName: detail?.SProductName || "",
+      SupplierID: purchaseOrder?.SupplierID || "",
+      SupplierName: supplierName,
+      Contact: purchaseOrder?.ATTN || "",
+      RequestBy: purchaseOrder?.ShippingAgent || "",
+      PurchaseBy: purchaseOrder?.PurchaseOfficer || "",
+      Department: purchaseOrder?.PRDivision || "",
+      Purpose: request?.Purpose || "",
+      ForDepartment: purchaseOrder?.ForDivision || "",
+      Category: purchaseOrder?.PurchaseType || undefined,
+      InvNo: purchaseOrder?.InvNo || "",
+      BLNO: purchaseOrder?.BLNo || "",
+      POType: POTypeMap[detail?.AssetID] || "",
+      PODate: purchaseOrder?.DateOrder || null,
+      PRDate: purchaseOrder?.PRDate || null,
+      PRNO: purchaseOrder?.PRNo || "",
+      ReceiveDate: purchaseOrder?.DateArrive || null,
+      SendDocDate: purchaseOrder?.SendDocDate || null,
+      ReceiveDocDate: purchaseOrder?.ReceiveDocDate || null,
+      ApprovedBy: purchaseOrder?.ApprovedBy || "",
+      ApprovedDate: purchaseOrder?.ApprovedDate || null,
+      Amount: detail?.Amount || 0,
+      Discount: purchaseOrder?.TotalDiscount || 0,
+      VAT: purchaseOrder?.VAT || 0,
+      GrandTotal: purchaseOrder?.GrandTotal || 0,
+      Total: purchaseOrder?.TotalPrice || 0,
+      InsuranceCompany: purchaseOrder?.InsuranceCompany || "",
+      InsuranceNo: purchaseOrder?.InsuranceNo || "",
+      PINO: purchaseOrder?.PINO || "",
+      PurchasingOfficer: purchaseOrder?.PurchaseOfficer || "",
+    };
   }
 
   async findOne(params: FindPurchaseOrderDto) {

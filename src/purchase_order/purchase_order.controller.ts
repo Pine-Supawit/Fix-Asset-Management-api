@@ -1,7 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { PurchaseOrderService } from './purchase_order.service';
-// import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
-// import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 import { FindPurchaseOrderDto } from './dto/find-purchase-order.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DeletePurchaseOrderDto } from './dto/delete-purchase-order.dto';

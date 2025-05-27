@@ -105,7 +105,7 @@ export class PurchaseOrderDetailService {
           PriceNote: purchaseOrderDetail?.PriceNote,
           PRNo: purchaseOrderDetail?.PRNo,
           PRItem: purchaseOrderDetail?.PRItem,
-          AssetID: POTypeMap[purchaseOrderDetail?.AssetID],
+          POType: POTypeMap[purchaseOrderDetail?.AssetID],
           PurchasingOfficer: purchaseOrder.data?.PurchasingOfficer,
           PurchaseBy: purchaseOrder.data?.PurchaseBy,
           InvNo: purchaseOrder.data?.InvNo,
