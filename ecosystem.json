@@ -22,7 +22,7 @@
       "host": ["localhost"],
       "ref": "origin/main",
       "repo": "git@github.com:thampaponn/assets-management.git",
-      "path": "C:/Users/NB-AUS-0005/assets-management",
+      "path": "/home/assets-management/dev-api-assets",
       "ssh_options": ["ForwardAgent=yes"],
       "post-deploy": "npm install && npm run build && pm2 startOrRestart ecosystem.json --env dev-api-assets"
     }
