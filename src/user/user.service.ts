@@ -68,7 +68,7 @@ export class UserService {
             emp_id: 'ASC'
           }
         });
-
+        this.logger.debug(`[find-all-users]: ${JSON.stringify(users)}`);
         return {
           data: users,
           pagination: {
@@ -80,6 +80,7 @@ export class UserService {
         };
       } else {
         const users = await this.userRepository.find();
+        this.logger.debug(`[find-all-users]: ${JSON.stringify(users)}`);
         return {
           data: users,
           status: 200,
