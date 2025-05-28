@@ -12,7 +12,8 @@ import {
 import { PurchaseOrderOverseaService } from './purchase-order-oversea.service';
 import { CreatePurchaseOrderOverseaDto } from './dto/create-purchase-order-oversea.dto';
 import { UpdatePurchaseOrderOverseaDto } from './dto/update-purchase-order-oversea.dto';
-import { validatePageNumber, validateType } from './validation';
+import { NumberValidator, TypeValidator } from '../utils/validation';
+
 
 @Controller('purchase-order-oversea')
 export class PurchaseOrderOverseaController {
@@ -22,7 +23,7 @@ export class PurchaseOrderOverseaController {
 
   @Get('/purchaseOderOverseaList')
   async purchaseOrderOverseaList(@Query('page') page: number) {
-    const pageNum = validatePageNumber(+page);
+    const pageNum = NumberValidator(+page);
   
     return this.purchaseOrderOverseaService.purchaseOrderOverseaList(pageNum);
   }
@@ -32,9 +33,9 @@ export class PurchaseOrderOverseaController {
     @Query('type') type: string,
     @Query('page') page: string,
   ) {
-    const poType = validateType(type);
+    const poType = TypeValidator(type);
 
-    const pageNum = validatePageNumber(+page);
+    const pageNum = NumberValidator(+page);
 
     return this.purchaseOrderOverseaService.purchaseOrderOverseaByType(
       poType.toUpperCase(),

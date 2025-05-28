@@ -45,7 +45,7 @@ export class PurchaseOrderOverseaService {
       }
 
       const query = `
-      select 'Pine-Pacific Corporation Limited' as Companyname, s.DateArrive as ReciveDate, po.DateOrder as PoDate, po.PurchaseID as PoID,
+      select DISTINCT 'Pine-Pacific Corporation Limited' as Companyname, s.DateArrive as ReciveDate, po.DateOrder as PoDate, po.PurchaseID as PoID,
       pod.SProductName as ProductName, sup.SupplierName as SupplierName, pr.Purpose as Purpose,
       pod.Amount as Amount, pr.Division as Dep, po.PurchaseOfficer as PurchaseBy,
       CASE 
@@ -96,7 +96,7 @@ async purchaseOrderOverseaByType(poType: string, page: number) {
     }
 
     const query = `
-      SELECT 'Pine-Pacific' AS Companyname,
+      SELECT 'Pine-Pacific Corporation Limited' AS Companyname,
              s.DateArrive AS ReciveDate,
              po.DateOrder AS PoDate,
              po.PurchaseID AS PoID,
