@@ -83,8 +83,8 @@ describe('PurchaseOrderOverseaService', () => {
     ];
     dataSourceMock.query = jest
       .fn()
-      .mockResolvedValueOnce(MockPoIDs) // First query for PoIDs
-      .mockResolvedValueOnce(MockData); // Second query for full data
+      .mockResolvedValueOnce(MockPoIDs)
+      .mockResolvedValueOnce(MockData)
 
     const result = await service.purchaseOrderOverseaList(1);
 
@@ -174,6 +174,13 @@ describe('PurchaseOrderOverseaService', () => {
       pageNo: 1,
       total: mockResult.length,
     });
+  });
+
+  it('should return empty data if no purchase orders found', async () => {
+    (dataSourceMock.query as jest.Mock).mockResolvedValueOnce([]);
+    const result = await service.purchaseOrderOverseaByType('ASSET', 1);
+    expect(result).toEqual({ data: [], pageNo: -1, total: -1 });
+    expect(loggerMock.warn).toHaveBeenCalledWith('exceed the data for type ASSET');
   });
 
   it('should throw an error if query fails', async () => {
