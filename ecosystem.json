@@ -18,11 +18,11 @@
   ],
   "deploy": {
     "dev-api-assets": {
-      "user": "root",
-      "host": ["localhost"],
+      "user": "tuna",
+      "host": ["100.68.10.55"],
       "ref": "origin/main",
       "repo": "git@github.com:thampaponn/assets-management.git",
-      "path": "/home/assets-management/dev-api-assets",
+      "path": "/home/tuna/assets-management/dev-api-assets",
       "ssh_options": ["ForwardAgent=yes"],
       "post-deploy": "npm install && npm run build && pm2 startOrRestart ecosystem.json --env dev-api-assets"
     }
