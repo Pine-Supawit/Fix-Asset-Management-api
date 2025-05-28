@@ -23,6 +23,7 @@ import { PurchaseOrderDetailModule } from './purchase-order-detail/purchase-orde
 import { PurchaseOrderDetail } from './purchase-order-detail/entities/purchase-order-detail.entity';
 import { PurchaseOrderOversea } from './purchase-order-oversea/entities/purchase-order-oversea.entity';
 import { PurchaseOrderOverseaModule } from './purchase-order-oversea/purchase-order-oversea.module';
+import { PurchaseOrderDetailOverseaModule } from './purchase-order-detail-oversea/purchase-order-detail-oversea.module';
 
 @Module({
   imports: [
@@ -87,7 +88,8 @@ import { PurchaseOrderOverseaModule } from './purchase-order-oversea/purchase-or
     // ProductsModule,
     // InvoiceModule,
     SupplierModule,
-    PurchaseOrderOverseaModule
+    PurchaseOrderOverseaModule,
+    PurchaseOrderDetailOverseaModule
   ],
   controllers: [],
   providers: [],

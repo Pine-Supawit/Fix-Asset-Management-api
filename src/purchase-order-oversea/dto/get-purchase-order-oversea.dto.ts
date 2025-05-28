@@ -12,4 +12,5 @@ export class PurchaseOrderOverseaDto {
   CategoryOfPurchase: 'Asset' | 'Non-Asset';
   ProductID: number;
   IsPurchaseOverseas: boolean;
+  ProductNo: number;
 }
