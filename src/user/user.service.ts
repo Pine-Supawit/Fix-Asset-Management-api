@@ -204,6 +204,29 @@ export class UserService {
     };
   }
 
+  async logout(params: RefreshDto) {
+    try {
+      const payload = this.jwtService.verify(params.refreshToken, {
+        secret: this.configService.get('JWT_REFRESH_SECRET'),
+      });
+
+      const user = await this.userRepository.findOne({ where: { id: payload.sub } });
+      if (!user) throw new NotFoundException('User not found');
+
+      const isValid = await user.compareRefreshToken(params.refreshToken);
+      if (!isValid) throw new UnauthorizedException('Invalid refresh token');
+
+      user.refreshToken = '';
+      await this.userRepository.save(user);
+
+      this.logger.warn(`[logout]: emp_id ${JSON.stringify(user.emp_id)}`);
+      return { status: 200, message: 'Logout successful' };
+    } catch (error) {
+      this.logger.error(error);
+      throw new Error('Failed to logout');
+    }
+  }
+
   async refresh(params: RefreshDto) {
     try {
       const payload = this.jwtService.verify(params.refreshToken, {

@@ -36,6 +36,12 @@ export class UserController {
     return this.userService.login(body);
   }
 
+  @Post('logout')
+  @ApiOperation({ summary: 'Login user', description: 'Returns access token and refresh token' })
+  async logout(@Body() body: RefreshDto) {
+    return this.userService.logout(body);
+  }
+
   @Post('refresh')
   @ApiOperation({ summary: 'Get refresh token if access token is expired', description: 'Returns new access token' })
   async refresh(@Body() body: RefreshDto) {
