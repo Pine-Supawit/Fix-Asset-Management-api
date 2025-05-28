@@ -26,6 +26,10 @@ describe('validatePageNumber', () => {
     expect(() => validatePageNumber(null)).toThrow(BadRequestException);
   });
 
+  it('should return uppercase type with Capital letter', () => {
+    expect(validateType('ABC')).toBe('ABC');
+  });
+
   it('should return uppercase type when valid string is provided', () => {
     expect(validateType('abc')).toBe('ABC');
   });

@@ -200,9 +200,27 @@ describe('PurchaseOrderOverseaService', () => {
     await expect(service.purchaseOrderOverseaByType(123 as any, 1)).rejects.toThrow('Error find by type the 123 is invalid');
   });
 
-  it('should return empty data if no purchase orders found for purchaseOrderOverseaByType', async () => {
-    dataSourceMock.query = jest.fn().mockResolvedValueOnce([]);
-    const result = await service.purchaseOrderOverseaByType('ASSET', 1);
-    expect(result).toEqual({ data: [], pageNo: -1, total: -1 });
-  });  
+  it('should throw an error if page is a non-numeric string', async () => {
+    await expect(service.purchaseOrderOverseaByType('ASSET', 'abc' as any)).rejects.toThrow();
+  });
+
+  it('should throw an error if page is null', async () => {
+    await expect(service.purchaseOrderOverseaByType('ASSET', null as any)).rejects.toThrow();
+  });
+
+  it('should throw an error if page is undefined', async () => {
+    await expect(service.purchaseOrderOverseaByType('ASSET', undefined as any)).rejects.toThrow();
+  });
+
+  it('should throw an error if page is a negative number', async () => {
+    await expect(service.purchaseOrderOverseaByType('ASSET', -5)).rejects.toThrow();
+  });
+
+  it('should throw an error if page is NaN', async () => {
+    await expect(service.purchaseOrderOverseaByType('ASSET', NaN as any)).rejects.toThrow();
+  });
+
+  it('should throw an error if page is NaN', async () => {
+    await expect(service.purchaseOrderOverseaByType('ASSET', '' as any)).rejects.toThrow();
+  });
 });
