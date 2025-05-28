@@ -146,23 +146,30 @@ export class UserService {
     try {
       const user = await this.userRepository.findOne({
         where: {
-          emp_id: params.emp_id
-        }
+          emp_id: params.emp_id,
+        },
       });
       if (!user) {
-        throw new NotFoundException('User not found')
+        throw new NotFoundException('User not found');
       }
+
       await this.userRepository.delete(user.id);
-      this.logger.debug(`[delete-user]: ${JSON.stringify(user)}`)
+      this.logger.debug(`[delete-user]: ${JSON.stringify(user)}`);
+
       return {
         message: 'User deleted successfully',
-        status: 200
-      }
+        status: 200,
+      };
     } catch (error) {
-      this.logger.error(error)
-      throw new InternalServerErrorException('Failed to delete user')
+      this.logger.error(error);
+
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to delete user');
     }
   }
+
 
   async validateUser(emp_id: string, pass: string) {
     const user = await this.findOneByUsername({ emp_id });

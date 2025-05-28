@@ -15,10 +15,10 @@ export class FindUsersDto {
     @ApiProperty({ required: false })
     @IsNumber()
     @IsOptional()
-    page: number;
+    page?: number;
 
     @ApiProperty({ required: false })
     @IsNumber()
     @IsOptional()
-    limit: number;
+    limit?: number;
 }
