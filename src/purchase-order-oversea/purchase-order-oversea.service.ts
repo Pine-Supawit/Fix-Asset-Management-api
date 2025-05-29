@@ -139,10 +139,10 @@ async purchaseOrderOverseaByType(poType: string, page: number) {
     };
   } catch (error) {
     this.logger.error(
-      `Error finding purchase orders by type with ${poType}`,
+      `Error fetching purchase orders ${poType}`,
       error,
     );
-    throw new Error(`Error find by type the ${poType} is invalid`);
+    throw new Error(`Error fetching purchase orders by type ${poType}`);
   }
 }
 }

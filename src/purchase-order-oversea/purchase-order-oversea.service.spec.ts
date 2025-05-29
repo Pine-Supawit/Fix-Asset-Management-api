@@ -185,19 +185,19 @@ describe('PurchaseOrderOverseaService', () => {
 
   it('should throw an error if query fails', async () => {
     (dataSourceMock.query as jest.Mock).mockRejectedValueOnce(new Error('DB error'));
-    await expect(service.purchaseOrderOverseaByType('Asset', 1)).rejects.toThrow('Error find by type the Asset is invalid');
+    await expect(service.purchaseOrderOverseaByType('Asset', 1)).rejects.toThrow('Error fetching purchase orders by type Asset');
   });
 
   it('should throw an error if input parameter is invalid', async () => {
-    await expect(service.purchaseOrderOverseaByType('not-asset-type', 1)).rejects.toThrow('Error find by type the not-asset-type is invalid');
+    await expect(service.purchaseOrderOverseaByType('not-asset-type', 1)).rejects.toThrow('Error fetching purchase orders by type not-asset-type');
   });
 
   it('should throw an error if input parameter is empty', async () => {
-    await expect(service.purchaseOrderOverseaByType('', 1)).rejects.toThrow('Error find by type the  is invalid');
+    await expect(service.purchaseOrderOverseaByType('', 1)).rejects.toThrow('Error fetching purchase orders by type ');
   });
 
   it('should throw an error if input parameter is a number', async () => {
-    await expect(service.purchaseOrderOverseaByType(123 as any, 1)).rejects.toThrow('Error find by type the 123 is invalid');
+    await expect(service.purchaseOrderOverseaByType(123 as any, 1)).rejects.toThrow('Error fetching purchase orders by type 123');
   });
 
   it('should throw an error if page is a non-numeric string', async () => {

@@ -10,7 +10,7 @@ export function NumberValidator(num: number): number {
 
 export function TypeValidator(type: string): string {
   if (!type) {
-    throw new BadRequestException('Type is required');
+    throw new BadRequestException('invalid type it should be a string');
   }
   return type.toUpperCase();
 }
