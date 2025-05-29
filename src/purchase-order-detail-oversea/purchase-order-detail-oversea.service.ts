@@ -51,7 +51,7 @@ WHERE po.PurchaseID = ${poid} and pod.No = ${productNo} and pod.ProductID = ${pr
 
       if (result.length === 0) {
         this.logger.warn('No purchase order details found for the given criteria');
-        return {data: [], pageNo: -1, total: -1};
+        return {data: [], page: -1, total: -1};
       }
 
       this.logger.log('Purchase order details fetched successfully');

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put } from '@nestjs/common';
 import { PurchaseOrderDetailService } from './purchase-order-detail.service';
 import { CreatePurchaseOrderDetailDto } from './dto/create-purchase-order-detail.dto';
 import { UpdatePurchaseOrderDetailDto } from './dto/update-purchase-order-detail.dto';
@@ -20,6 +20,12 @@ export class PurchaseOrderDetailController {
   @ApiOperation({ summary: 'Update purchase order detail' })
   update(@Body() body: UpdatePurchaseOrderDetailDto) {
     return this.purchaseOrderDetailService.update(body);
+  }
+
+  @Put()
+  @ApiOperation({ summary: 'Update all purchase order status to "active"' })
+  updateAll() {
+    return this.purchaseOrderDetailService.updateAll();
   }
 
 }

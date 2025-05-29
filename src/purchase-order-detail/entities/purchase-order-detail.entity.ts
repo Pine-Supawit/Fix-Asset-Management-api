@@ -163,7 +163,7 @@ export class PurchaseOrderDetail {
     H_Quality2: string;
 
     @Column({ type: 'varchar', length: 30, nullable: true })
-    H_Quality3: string;
+    Status: string;
 
     @Column({ type: 'varchar', length: 30, nullable: true })
     H_Quality4: string;

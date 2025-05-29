@@ -110,6 +110,7 @@ export class PurchaseOrderDetailService {
           InsuranceCompany: purchaseOrder.data?.InsuranceCompany,
           InsuranceNo: purchaseOrder.data?.InsuranceNo,
           PINO: purchaseOrder.data?.PINO,
+          Status: purchaseOrderDetail.Status,
         };
         purchaseOrderDetailsResult.push(purchaseOrderDetailResult);
       }
@@ -196,6 +197,23 @@ export class PurchaseOrderDetailService {
         data: [],
         status: 200,
         message: `Purchase Order Detail updated successfully`,
+      }
+    } catch (error) {
+      this.logger.error(error)
+      throw error;
+    }
+  }
+
+  async updateAll() {
+    try {
+      const purchaseOrderDetails = await this.purchaseOrderDetailRepository.updateAll({
+        Status: 'active'
+      })
+      this.logger.debug(`[update-all-purchase-order-detail]: ${JSON.stringify(purchaseOrderDetails)}`);
+      return {
+        data: purchaseOrderDetails,
+        status: 200,
+        message: `All Purchase Order Details updated successfully`,
       }
     } catch (error) {
       this.logger.error(error)

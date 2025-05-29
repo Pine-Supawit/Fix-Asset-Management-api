@@ -41,4 +41,12 @@ export interface IPurchaseOrder {
     InsuranceNo?: string;
     PINO?: string;
     PurchasingOfficer?: string;
+    Status?: string;
+    ExchangeRate?: number;
+    PriceNote?: string;
+    GShow?: boolean;
+    GPUnit?: string;
+    GPUnitCost?: number;
+    UnitCostBaht?: number;
+    Freight?: number;
 }

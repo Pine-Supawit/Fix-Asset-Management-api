@@ -220,6 +220,7 @@ export class PurchaseOrderService {
       InsuranceNo: purchaseOrder?.InsuranceNo || "",
       PINO: purchaseOrder?.PINO || "",
       PurchasingOfficer: purchaseOrder?.PurchaseOfficer || "",
+      Status: detail?.Status || "",
     };
   }
 

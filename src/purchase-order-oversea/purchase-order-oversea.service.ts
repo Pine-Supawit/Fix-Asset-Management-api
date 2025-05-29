@@ -21,7 +21,7 @@ export class PurchaseOrderOverseaService {
     page: number,
   ): Promise<{
     data: PurchaseOrderOverseaDto[];
-    pageNo: number;
+    page: number;
     total: number;
   }> {
     console.time('purchaseOrderOverseaList');
@@ -41,7 +41,7 @@ export class PurchaseOrderOverseaService {
 
       if (poList.length === 0) {
         this.logger.warn('exceed the data');
-        return { data: [], pageNo: -1, total: -1 };
+        return { data: [], page: -1, total: -1 };
       }
 
       const query = `
@@ -65,14 +65,14 @@ export class PurchaseOrderOverseaService {
       console.timeEnd('purchaseOrderOverseaList');
       this.logger.log({
         data: result,
-        pageNo: page,
+        page: page,
         total: result.length,
         list: poList,
       });
 
       return {
         data: result as PurchaseOrderOverseaDto[],
-        pageNo: page,
+        page: page,
         total: result.length,
       };
     } catch (error) {
@@ -129,12 +129,12 @@ async purchaseOrderOverseaByType(poType: string, page: number) {
 
     if (result.length === 0) {
       this.logger.warn(`exceed the data for type ${poType}`);
-      return { data: [], pageNo: -1, total: -1 };
+      return { data: [], page: -1, total: -1 };
     }
 
     return {
       data: result,
-      pageNo: page,
+      page: page,
       total: result.length,
     };
   } catch (error) {
