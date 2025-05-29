@@ -52,8 +52,6 @@ export class PurchaseOrderDetailService {
 
       let purchaseOrderDetailsResult: any = [];
 
-      console.log(where)
-
       const [purchaseOrderDetails, total] = await this.purchaseOrderDetailRepository.findAndCount({
         where,
         skip: skip,
