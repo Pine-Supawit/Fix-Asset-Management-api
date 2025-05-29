@@ -60,7 +60,7 @@ export class PurchaseOrderOverseaService {
       left Join [Endeavour].[dbo].[Shipment] S on s.ShipmentID = sd.ShipmentID
       left Join [Ent_db].[dbo].[Supplier] sup on sup.SupplierID = po.SupplierID
       WHERE po.PurchaseID IN (${poList.join(',')})
-      order by po.PurchaseID desc`;
+      order by po.PurchaseID desc, pod.No ASC`;
       const result = await this.dataSource.query(query);
       console.timeEnd('purchaseOrderOverseaList');
       this.logger.log({
