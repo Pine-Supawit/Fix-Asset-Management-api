@@ -19,7 +19,7 @@
   "deploy": {
     "dev-api-assets": {
       "user": "tuna",
-      "host": ["100.68.10.55"],
+      "host": ["100.114.41.14"],
       "ref": "origin/dev",
       "repo": "git@github.com:thampaponn/assets-management.git",
       "path": "/home/tuna/assets-management/dev-api-assets",
