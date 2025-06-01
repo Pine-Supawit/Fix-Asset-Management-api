@@ -24,7 +24,7 @@
       "repo": "git@github.com:thampaponn/assets-management.git",
       "path": "/home/tuna/assets-management/dev-api-assets",
       "ssh_options": ["ForwardAgent=yes"],
-      "post-deploy": "npm install && npm run build && pm2 startOrRestart ecosystem.json --env dev-api-assets"
+      "post-deploy": "source $NVM_DIR/nvm.sh && nvm use 22 && npm install && npm run build && pm2 startOrRestart ecosystem.json --env dev-api-assets"
     }
   }
 }
