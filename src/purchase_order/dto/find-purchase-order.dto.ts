@@ -24,15 +24,15 @@ export class FindPurchaseOrderDto {
         example: '2024-01-01',
     })
     @IsDateString()
-    @IsNotEmpty()
-    startDate: string;
+    @IsOptional()
+    startDate?: string;
 
     @ApiProperty({
         example: '2024-12-31',
     })
     @IsDateString()
-    @IsNotEmpty()
-    endDate: string;
+    @IsOptional()
+    endDate?: string;
 
     @ApiProperty({ required: false, description: 'Page number' })
     @IsNumber()
