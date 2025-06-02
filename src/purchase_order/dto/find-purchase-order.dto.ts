@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class FindPurchaseOrderDto {
     @ApiProperty({ required: false, description: 'Search by purchase order ID' })
@@ -19,6 +19,20 @@ export class FindPurchaseOrderDto {
     @IsString()
     @IsOptional()
     POType?: string;
+
+    @ApiProperty({
+        example: '2024-01-01',
+    })
+    @IsDateString()
+    @IsNotEmpty()
+    startDate: string;
+
+    @ApiProperty({
+        example: '2024-12-31',
+    })
+    @IsDateString()
+    @IsNotEmpty()
+    endDate: string;
 
     @ApiProperty({ required: false, description: 'Page number' })
     @IsNumber()
