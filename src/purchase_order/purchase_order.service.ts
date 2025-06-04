@@ -13,6 +13,7 @@ import { FindPurchaseOrderByTypeDto } from './dto/find-by-type.dto';
 import { PurchaseOrderDetail } from 'src/purchase-order-detail/entities/purchase-order-detail.entity';
 import { Between, MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
 import { startOfDay, endOfDay } from 'date-fns';
+import { FindProductNameDto } from './dto/find-product-name.dto';
 
 @Injectable()
 export class PurchaseOrderService {
@@ -56,13 +57,6 @@ export class PurchaseOrderService {
         S: "Spare",
         C: "Consumable",
       };
-
-      const CompanyTypeMap: Record<string, string> = {
-        PPC: "P/P",
-        PMC: "PMC",
-        PIM: "PIM",
-      }
-
       const CompanyMap: Record<string, string> = {
         "P/P": "Pine-Pacific Co., Ltd",
         "PIM": "Pine Industrial Materials Co., Ltd",
@@ -82,64 +76,51 @@ export class PurchaseOrderService {
         where: where,
         skip: skip,
         take: limit,
-      })
+      });
 
-      let purchaseOrdersResult: IPurchaseOrder[] = [];
-
-      for (const purchaseOrder of purchaseOrders) {
-        if (params.POType) {
+      const purchaseOrdersResult = await Promise.all(
+        purchaseOrders.map(async (purchaseOrder) => {
           const detail = await this.purchaseOrderDetailRepository.find({
             where: {
               PurchaseID: purchaseOrder.PurchaseID,
               RevisionID: purchaseOrder.RevisionID,
-              AssetID: AssetTypeMap[params.POType],
-            }
-          })
-          const requests = await this.purchaseRequestService.findAll({
-            PRNO: purchaseOrder?.PRNo?.toString(),
+              ...(params.POType && { AssetID: AssetTypeMap[params.POType] }),
+            },
           });
-          const request: any = requests?.data || [];
 
-          const supplierResponse = await this.supplierService.findAll({
-            SupplierID: purchaseOrder.SupplierID?.toString(),
-          });
+          const [requests, supplierResponse] = await Promise.all([
+            this.purchaseRequestService.findAll({
+              PRNO: purchaseOrder?.PRNo?.toString(),
+            }),
+            this.supplierService.findAll({
+              SupplierID: purchaseOrder.SupplierID?.toString(),
+            }),
+          ]);
+
+          const request: any = requests?.data || [];
           const supplierName = supplierResponse?.data?.[0]?.SupplierName || "";
 
-          purchaseOrdersResult.push(
-            this.mapPurchaseOrderFields(purchaseOrder, detail, request, supplierName, POTypeMap, CompanyMap)
+          return this.mapPurchaseOrderFields(
+            purchaseOrder,
+            detail,
+            request,
+            supplierName,
+            POTypeMap,
+            CompanyMap
           );
-        } else {
-          const detail = await this.purchaseOrderDetailRepository.find({
-            where: {
-              PurchaseID: purchaseOrder.PurchaseID,
-              RevisionID: purchaseOrder.RevisionID,
-            }
-          })
-          const requests = await this.purchaseRequestService.findAll({
-            PRNO: purchaseOrder?.PRNo?.toString(),
-          });
-          const request: any = requests?.data || [];
+        })
+      );
 
-          const supplierResponse = await this.supplierService.findAll({
-            SupplierID: purchaseOrder.SupplierID?.toString(),
-          });
-          const supplierName = supplierResponse?.data?.[0]?.SupplierName || "";
-
-          purchaseOrdersResult.push(
-            this.mapPurchaseOrderFields(purchaseOrder, detail, request, supplierName, POTypeMap, CompanyMap)
-          );
-        }
-      }
       return {
         data: purchaseOrdersResult,
         pagination: {
-          page: page,
-          limit: limit,
-          total: total,
+          page,
+          limit,
+          total,
           length: purchaseOrdersResult.length,
         },
         status: 200,
-      }
+      };
     } catch (error) {
       this.logger.error("Error fetching purchase orders", error);
       throw new Error("Error fetching purchase orders");
@@ -175,7 +156,7 @@ export class PurchaseOrderService {
       Department: purchaseOrder?.PRDivision || "",
       Purpose: request?.Purpose || "",
       ForDepartment: purchaseOrder?.ForDivision || "",
-      Category: purchaseOrder?.PurchaseType || undefined,
+      Category: POTypeMap[detail?.AssetID] || "",
       InvNo: purchaseOrder?.InvNo || "",
       BLNO: purchaseOrder?.BLNo || "",
       POType: POTypeMap[detail?.AssetID] || "",
@@ -294,6 +275,39 @@ export class PurchaseOrderService {
     } catch (error) {
       this.logger.error(error);
       throw new Error('Error updating purchase order');
+    }
+  }
+
+  async findAllProductName(params: FindProductNameDto) {
+    try {
+      const page = Number(params.page) || 1;
+      const limit = Number(params.limit) || 10;
+      const skip = (page - 1) * limit;
+
+      const [productsName, total] = await this.purchaseOrderDetailRepository.findAndCount({
+        where: {
+          SProductName: params.ProductName ? params.ProductName : Not(IsNull()),
+        },
+        skip: skip,
+        take: limit,
+      })
+      let productsNameResult = productsName.map(product => ({
+        ProductID: product.ProductID,
+        ProductName: product.SProductName || "",
+      }));
+      return {
+        data: productsNameResult,
+        pagination: {
+          page: page,
+          limit: limit,
+          total: total,
+          length: productsNameResult.length,
+        },
+        status: 200,
+      };
+    } catch (error) {
+      this.logger.error('Error fetching product names', error);
+      throw new Error('Error fetching product names');
     }
   }
 }

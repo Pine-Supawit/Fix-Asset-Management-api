@@ -7,6 +7,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from 'src/common/utils/strategies/jwt.strategy';
 import { LocalStrategy } from 'src/common/utils/strategies/local.strategy';
+import { Log } from 'src/log/entities/log.entity';
+import { LogService } from 'src/log/log.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User], 'off_pp'), JwtModule.registerAsync({
@@ -16,8 +18,10 @@ import { LocalStrategy } from 'src/common/utils/strategies/local.strategy';
       signOptions: { expiresIn: '6h' },
     }),
     inject: [ConfigService],
-  }),],
+  }),
+  TypeOrmModule.forFeature([Log], 'off_pp'),
+  ],
   controllers: [UserController],
-  providers: [UserService, JwtStrategy, LocalStrategy],
+  providers: [UserService, JwtStrategy, LocalStrategy, LogService],
 })
 export class UserModule { }

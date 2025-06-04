@@ -25,6 +25,7 @@ import { PurchaseOrderOversea } from './purchase-order-oversea/entities/purchase
 import { PurchaseOrderOverseaModule } from './purchase-order-oversea/purchase-order-oversea.module';
 import { PurchaseOrderDetailOverseaModule } from './purchase-order-detail-oversea/purchase-order-detail-oversea.module';
 import { LogModule } from './log/log.module';
+import { Log } from './log/entities/log.entity';
 
 @Module({
   imports: [
@@ -40,7 +41,7 @@ import { LogModule } from './log/log.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME_3,
-      entities: [User, PurchaseOrder, PurchaseRequest, PurchaseRequestDetail, PurchaseOrderDetail, Asset, AssetChecklist],
+      entities: [User, PurchaseOrder, PurchaseRequest, PurchaseRequestDetail, PurchaseOrderDetail, Asset, AssetChecklist, Log],
       synchronize: false,
       options: {
         encrypt: false

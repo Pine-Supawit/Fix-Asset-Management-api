@@ -4,6 +4,7 @@ import { FindPurchaseOrderDto } from './dto/find-purchase-order.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DeletePurchaseOrderDto } from './dto/delete-purchase-order.dto';
 import { FindPurchaseOrderByTypeDto } from './dto/find-by-type.dto';
+import { FindProductNameDto } from './dto/find-product-name.dto';
 
 @ApiTags('Purchase Order')
 @Controller('purchase-order')
@@ -14,6 +15,12 @@ export class PurchaseOrderController {
   @ApiOperation({ summary: 'Get all purchase orders' })
   findAll(@Query() body: FindPurchaseOrderDto) {
     return this.purchaseOrderService.findAll(body);
+  }
+
+  @Get('products-name')
+  @ApiOperation({ summary: 'Get all product name' })
+  findAllProductName(@Query() body: FindProductNameDto) {
+    return this.purchaseOrderService.findAllProductName(body);
   }
 
   @Delete()

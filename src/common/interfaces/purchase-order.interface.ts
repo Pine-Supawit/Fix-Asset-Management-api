@@ -27,7 +27,7 @@ export interface IPurchaseOrder {
     BLNO?: string;
     Purpose?: string;
     PurchaseBy?: string;
-    Category?: number;
+    Category?: string;
     POType?: string;
     Action?: string;
     PODate?: Date;

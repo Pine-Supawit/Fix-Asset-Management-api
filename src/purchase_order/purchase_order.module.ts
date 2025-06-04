@@ -9,6 +9,7 @@ import { PurchaseRequest } from 'src/purchase_request/entities/purchase_request.
 import { PurchaseRequestService } from 'src/purchase_request/purchase_request.service';
 import { Supplier } from 'src/supplier/entities/supplier.entity';
 import { SupplierService } from 'src/supplier/supplier.service';
+import { Log } from 'src/log/entities/log.entity';
 
 @Module({
   imports: [

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -10,6 +10,8 @@ import { RefreshDto } from './dto/refresh.dto';
 import { LoginDto } from './dto/login-user.dto';
 import { ForgetPasswordDto } from './dto/update-user.dto';
 import { FindOneByEmpIdDto, FindUsersDto } from './dto/find-user.dto';
+import { LogService } from 'src/log/log.service';
+import { Log } from 'src/log/entities/log.entity';
 
 @Injectable()
 export class UserService {
@@ -17,6 +19,10 @@ export class UserService {
   constructor(
     @InjectRepository(User, 'off_pp')
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Log, 'off_pp')
+    private readonly logRepository: Repository<Log>,
+    @Inject(forwardRef(() => LogService))
+    private logService: LogService,
     private jwtService: JwtService,
     private configService: ConfigService
   ) { }
@@ -39,7 +45,10 @@ export class UserService {
       await this.userRepository.save(user);
 
       this.logger.debug(`[create-user]: ${JSON.stringify(user)}`);
-
+      const log = await this.logRepository.save({
+        emp_id: user.emp_id,
+        login_time: new Date(),
+      })
       return {
         data: user,
         status: 201,
@@ -182,34 +191,51 @@ export class UserService {
   }
 
   async login(params: LoginDto) {
-    const user = await this.userRepository.findOne({ where: { emp_id: params.emp_id } });
-    if (!user) {
-      throw new NotFoundException('User not found');
+    try {
+      const user = await this.userRepository.findOne({ where: { emp_id: params.emp_id } });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      const isPasswordValid = await bcrypt.compare(params.password, user.password);
+      if (!isPasswordValid) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+
+      const payload = { emp_id: user.emp_id, sub: user.id };
+
+      const accessToken = this.jwtService.sign(payload, {
+        expiresIn: '2h',
+      });
+
+      const refreshToken = this.jwtService.sign(payload, {
+        expiresIn: '7d',
+        secret: this.configService.get('JWT_REFRESH_SECRET'),
+      });
+
+      await user.setRefreshToken(refreshToken);
+      await this.userRepository.save(user);
+      await this.logRepository.save({
+        emp_id: user.emp_id,
+        login_time: new Date(),
+      });
+      this.logger.debug(`[login]: emp_id ${JSON.stringify(user.emp_id)}`);
+      this.logService.create({
+        emp_id: user.emp_id,
+        login_time: new Date(),
+      });
+      return {
+        accessToken,
+        refreshToken,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      if (error instanceof NotFoundException || error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to login');
     }
 
-    const isPasswordValid = await bcrypt.compare(params.password, user.password);
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const payload = { emp_id: user.emp_id, sub: user.id };
-
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: '2h',
-    });
-
-    const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: '7d',
-      secret: this.configService.get('JWT_REFRESH_SECRET'),
-    });
-
-    await user.setRefreshToken(refreshToken);
-    await this.userRepository.save(user);
-
-    return {
-      accessToken,
-      refreshToken,
-    };
   }
 
   async logout(params: RefreshDto) {
