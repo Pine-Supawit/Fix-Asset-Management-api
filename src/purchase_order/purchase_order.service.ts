@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseOrder } from './entities/purchase_order.entity';
-import { IsNull, Not, Repository } from 'typeorm';
+import { IsNull, Like, Not, Repository } from 'typeorm';
 import { FindPurchaseOrderDto } from './dto/find-purchase-order.dto';
 import { DeletePurchaseOrderDto } from './dto/delete-purchase-order.dto';
 import { PurchaseOrderDetailService } from 'src/purchase-order-detail/purchase-order-detail.service';
@@ -284,23 +284,30 @@ export class PurchaseOrderService {
       const limit = Number(params.limit) || 10;
       const skip = (page - 1) * limit;
 
+      const whereCondition = params.ProductName
+        ? { SProductName: Like(`%${params.ProductName}%`) }
+        : { SProductName: Not(IsNull()) };
+
       const [productsName, total] = await this.purchaseOrderDetailRepository.findAndCount({
-        where: {
-          SProductName: params.ProductName ? params.ProductName : Not(IsNull()),
-        },
-        skip: skip,
+        where: whereCondition,
+        skip,
         take: limit,
-      })
-      let productsNameResult = productsName.map(product => ({
+        order: {
+          SProductName: 'ASC',
+        }
+      });
+
+      const productsNameResult = productsName.map(product => ({
         ProductID: product.ProductID,
         ProductName: product.SProductName || "",
       }));
+
       return {
         data: productsNameResult,
         pagination: {
-          page: page,
-          limit: limit,
-          total: total,
+          page,
+          limit,
+          total,
           length: productsNameResult.length,
         },
         status: 200,
