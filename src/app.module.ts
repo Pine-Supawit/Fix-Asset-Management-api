@@ -26,6 +26,7 @@ import { PurchaseOrderOverseaModule } from './purchase-order-oversea/purchase-or
 import { PurchaseOrderDetailOverseaModule } from './purchase-order-detail-oversea/purchase-order-detail-oversea.module';
 import { LogModule } from './log/log.module';
 import { Log } from './log/entities/log.entity';
+import { SupplierOverseaModule } from './supplier-oversea/supplier-oversea.module';
 
 @Module({
   imports: [
@@ -92,7 +93,9 @@ import { Log } from './log/entities/log.entity';
     SupplierModule,
     PurchaseOrderOverseaModule,
     PurchaseOrderDetailOverseaModule,
+    SupplierOverseaModule,
     LogModule
+    
   ],
   controllers: [],
   providers: [],

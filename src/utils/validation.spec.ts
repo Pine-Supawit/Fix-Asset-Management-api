@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { NumberValidator, TypeValidator, DateValidator } from './validation';
+import { NumberValidator, DateValidator, StringValidator } from './validation';
 
 describe('validation', () => {
 
@@ -30,23 +30,23 @@ describe('validation', () => {
   });
 
   it('should return uppercase type with Capital letter', () => {
-    expect(TypeValidator('ABC')).toBe('ABC');
+    expect(StringValidator('ABC')).toBe('ABC');
   });
 
   it('should return uppercase type when valid string is provided', () => {
-    expect(TypeValidator('abc')).toBe('ABC');
+    expect(StringValidator('abc')).toBe('ABC');
   });
 
   it('should throw BadRequestException when type is an empty string', () => {
-    expect(() => TypeValidator('')).toThrow(BadRequestException);
+    expect(() => StringValidator('')).toThrow(BadRequestException);
   });
 
   it('should throw BadRequestException when type is undefined', () => {
-    expect(() => TypeValidator(undefined as any)).toThrow(BadRequestException);
+    expect(() => StringValidator(undefined as any)).toThrow(BadRequestException);
   });
 
   it('should throw BadRequestException when type is null', () => {
-    expect(() => TypeValidator(null as any)).toThrow(BadRequestException);
+    expect(() => StringValidator(null as any)).toThrow(BadRequestException);
   });
 
   it('should return the date string if valid (YYYY-MM-DD)', () => {
@@ -81,6 +81,12 @@ describe('validation', () => {
   it('should throw if input is null or undefined', () => {
     expect(() => DateValidator(undefined as any)).toThrow(BadRequestException);
     expect(() => DateValidator(null as any)).toThrow(BadRequestException);
+  });
+
+    it('should return trimmed string if valid', () => {
+    expect(StringValidator('hello')).toBe('HELLO');
+    expect(StringValidator('  hello  ')).toBe('HELLO');
+    expect(StringValidator('a')).toBe('A');
   });
 
 });

@@ -8,11 +8,11 @@ export function NumberValidator(num: number): number {
   return num;
 }
 
-export function TypeValidator(type: string): string {
-  if (!type) {
-    throw new BadRequestException('invalid type it should be a string');
+export function StringValidator(str: string): string {
+  if (!str || str.trim() === '') {
+    throw new BadRequestException('invalid parameter, it should be a string');
   }
-  return type.toUpperCase();
+  return str.trim().toUpperCase();
 }
 
 export function DateValidator(dateStr: string): string {

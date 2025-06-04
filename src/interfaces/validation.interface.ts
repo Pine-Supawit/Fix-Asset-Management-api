@@ -6,6 +6,6 @@ export interface TypeValidator {
   (value: string): string;
 }
 
-export interface TypeVavalidateDatelidator {
+export interface StringValidator {
   (value: string): string;
 }

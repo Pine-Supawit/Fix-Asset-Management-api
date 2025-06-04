@@ -15,7 +15,7 @@ import { UpdatePurchaseOrderOverseaDto } from './dto/update-purchase-order-overs
 import {
   DateValidator,
   NumberValidator,
-  TypeValidator,
+  StringValidator,
 } from '../utils/validation';
 import { ApiTags } from '@nestjs/swagger';
 import { listOverseaDto } from './dto/list-oversea.dto';
@@ -43,7 +43,7 @@ export class PurchaseOrderOverseaController {
   @Get('type')
   async purchaseOrderOverseaByType(
     @Query() body: listByTypeOverseaDto, ) {
-    const poType = TypeValidator(body.type)
+    const poType = StringValidator(body.type)
     const pageNum = NumberValidator(+body.page)
     const startDateValid = DateValidator(body.startDate)
     const endDateValid = DateValidator(body.endDate)
