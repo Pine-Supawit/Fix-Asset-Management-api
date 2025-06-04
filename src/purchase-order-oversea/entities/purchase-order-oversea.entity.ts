@@ -136,4 +136,7 @@ export class PurchaseOrderOversea {
 
   @Column({type: 'bit'})
   IsActive: boolean
+
+  @Column({type: 'bit'})
+  checkPoType: boolean
 }

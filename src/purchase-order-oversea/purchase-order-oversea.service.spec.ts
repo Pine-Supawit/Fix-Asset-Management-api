@@ -65,6 +65,8 @@ describe('PurchaseOrderOverseaService', () => {
         CategoryOfPurchase: 'Non-Asset',
         ProductID: '1400708013',
         IsPurchaseOverseas: true,
+        Status: "Active",
+        PoType: true
       },
       {
         Companyname: 'Pine-Pacific Corporation Limited',
@@ -80,6 +82,8 @@ describe('PurchaseOrderOverseaService', () => {
         CategoryOfPurchase: 'Asset',
         ProductID: '1400709009',
         IsPurchaseOverseas: true,
+        Status: "Active",
+        PoType: true
       },
     ];
     (dataSourceMock.query as jest.Mock)

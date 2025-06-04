@@ -14,4 +14,5 @@ export class PurchaseOrderOverseaDto {
   IsPurchaseOverseas: boolean;
   ProductNo: number;
   Status: boolean;
+  PoType: string;
 }

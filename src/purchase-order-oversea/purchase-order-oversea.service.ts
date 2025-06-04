@@ -81,11 +81,12 @@ export class PurchaseOrderOverseaService {
          WHEN pod.ProductID LIKE '5%' THEN 'Asset'
          ELSE 'Non-Asset'
       END AS CategoryOfPurchase,
-      pod.ProductID as ProductID, po.IsPurchaseOverseas as IsPurchaseOverseas, pod.No as ProductNo,
+      pod.ProductID as ProductID, pod.No as ProductNo, po.IsPurchaseOverseas as IsPurchaseOverseas,
       Case
           When IsActive = '1' then 'Active'
           Else 'Inactive'
-      End as Status
+      End as Status,
+      po.checkPoType as PoType
       from [Endeavour].[dbo].[PurchaseOrder] po
       left Join [Endeavour].[dbo].[PurchaseOrderDetailed] pod on po.PurchaseID = pod.PurchaseID
       left Join [Endeavour].[dbo].[PurchaseRequest] pr on po.PRNO = pr.PRNO
@@ -143,14 +144,15 @@ export class PurchaseOrderOverseaService {
              CASE
                WHEN pod.ProductID LIKE '5%' THEN 'Asset'
                ELSE 'Non-Asset'
-             END AS ProductType,
+             END AS CategoryOfPurchase,
              pod.ProductID AS ProductID,
              pod.No AS ProductNo,
              po.IsPurchaseOverseas AS IsPurchaseOverseas,
              Case
                When IsActive = '1' then 'Active'
                Else 'Inactive'
-             End as Status
+             End as Status,
+             po.checkPoType as PoType
       FROM [Endeavour].[dbo].[PurchaseOrder] po
       LEFT JOIN [Endeavour].[dbo].[PurchaseOrderDetailed] pod ON po.PurchaseID = pod.PurchaseID
       LEFT JOIN [Endeavour].[dbo].[PurchaseRequest] pr ON po.PRNO = pr.PRNO
