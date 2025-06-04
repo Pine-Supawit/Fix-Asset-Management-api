@@ -15,4 +15,9 @@ export class SupplierController {
     return this.supplierService.findAll(body);
   }
 
+  @Get('supplier-name')
+  @ApiOperation({ summary: 'Get all supplier names' })
+  findAllSupplierName(@Query() body: FindSupplierDto) {
+    return this.supplierService.findAllSupplierName(body);
+  }
 }

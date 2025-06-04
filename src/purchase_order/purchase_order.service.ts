@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseOrder } from './entities/purchase_order.entity';
-import { IsNull, Like, Not, Repository } from 'typeorm';
+import { And, IsNull, Like, Not, Repository } from 'typeorm';
 import { FindPurchaseOrderDto } from './dto/find-purchase-order.dto';
 import { DeletePurchaseOrderDto } from './dto/delete-purchase-order.dto';
 import { PurchaseOrderDetailService } from 'src/purchase-order-detail/purchase-order-detail.service';
@@ -284,31 +284,37 @@ export class PurchaseOrderService {
       const limit = Number(params.limit) || 10;
       const skip = (page - 1) * limit;
 
-      const whereCondition = params.ProductName
-        ? { SProductName: Like(`%${params.ProductName}%`) }
-        : { SProductName: Not(IsNull()) };
+      const where = params.ProductName
+        ? {
+          SProductName: And(
+            Like(`%${params.ProductName}%`),
+            Not('')
+          ),
+        }
+        : {
+          SProductName: And(
+            Not(IsNull()),
+            Not('')
+          ),
+        };
 
       const [productsName, total] = await this.purchaseOrderDetailRepository.findAndCount({
-        where: whereCondition,
+        select: ['ProductID', 'SProductName'],
+        where: where,
         skip,
         take: limit,
         order: {
-          SProductName: 'ASC',
+          SProductID: 'ASC',
         }
       });
 
-      const productsNameResult = productsName.map(product => ({
-        ProductID: product.ProductID,
-        ProductName: product.SProductName || "",
-      }));
-
       return {
-        data: productsNameResult,
+        data: productsName,
         pagination: {
-          page,
-          limit,
+          page: Number(page),
+          limit: Number(limit),
           total,
-          length: productsNameResult.length,
+          length: productsName.length,
         },
         status: 200,
       };

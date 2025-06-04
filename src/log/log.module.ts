@@ -8,7 +8,7 @@ import { Log } from './entities/log.entity';
   imports: [
     TypeOrmModule.forFeature([Log], 'off_pp'),
   ],
-  controllers: [LogController],
+  // controllers: [LogController],
   providers: [LogService],
   exports: [LogService],
 })

@@ -77,4 +77,37 @@ export class SupplierService {
   // remove(id: number) {
   //   return `This action removes a #${id} supplier`;
   // }
+
+  async findAllSupplierName(params: FindSupplierDto) {
+    try {
+      const page = params.page || 1;
+      const limit = params.limit || 10;
+      const skip = (page - 1) * limit;
+      const [suppliers, total] = await this.supplierRepository.findAndCount({
+        select: ['SupplierID', 'SupplierName'],
+        where: {
+          SupplierID: params.SupplierID,
+        },
+        skip: skip,
+        take: limit,
+        order: {
+          SupplierName: 'ASC',
+        },
+      });
+      this.logger.debug(`[find-many-supplier-names]: ${JSON.stringify(suppliers)}\n [total]: ${total}`);
+      this.logger.debug(`[find-many-supplier-names]: ${JSON.stringify(suppliers.length)}`);
+      return {
+        data: suppliers,
+        pagination: {
+          page: Number(page),
+          limit: Number(limit),
+          total: total,
+          length: suppliers.length,
+        },
+        status: 200,
+      };
+    } catch (error) {
+      
+    }
+  }
 }
