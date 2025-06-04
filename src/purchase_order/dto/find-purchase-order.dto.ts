@@ -20,11 +20,6 @@ export class FindPurchaseOrderDto {
     @IsOptional()
     POType?: string;
 
-    @ApiProperty({ required: false, description: 'Search by Company (PPC, PMC, PIM)', example: 'PPC' })
-    @IsString()
-    @IsOptional()
-    Company?: string;
-
     @ApiProperty({
         required: false,
         example: '2020-01-01',

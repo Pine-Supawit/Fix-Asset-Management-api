@@ -74,7 +74,6 @@ export class PurchaseOrderService {
       const where: any = {};
       if (params.PurchaseID !== undefined) where.PurchaseID = Number(params.PurchaseID);
       if (params.RevisionID !== undefined) where.RevisionID = Number(params.RevisionID);
-      if (params.Company) where.Company = CompanyTypeMap[params.Company];
       if (startDate && endDate) {
         where.DateOrder = Between(startDate, endDate);
       }
