@@ -328,4 +328,23 @@ export class PurchaseOrderService {
       throw new Error('Error fetching product names');
     }
   }
+
+  async findTypes() {
+    try {
+      const types = [
+        { type: 'Asset', value: 'A' },
+        { type: 'Tools', value: 'T' },
+        { type: 'Expense', value: 'E' },
+        { type: 'Spare', value: 'S' },
+        { type: 'Consumable', value: 'C' }
+      ]
+      return {
+        data: types,
+        status: 200,
+      };
+    } catch (error) {
+      this.logger.error('Error fetching purchase order types', error);
+      throw new Error('Error fetching purchase order types');
+    }
+  }
 }

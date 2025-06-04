@@ -23,6 +23,12 @@ export class PurchaseOrderController {
     return this.purchaseOrderService.findAllProductName(body);
   }
 
+  @Get('category')
+  @ApiOperation({ summary: 'Get purchase order types' })
+  findTypes() {
+    return this.purchaseOrderService.findTypes();
+  }
+
   @Delete()
   remove(@Query() id: DeletePurchaseOrderDto) {
     return this.purchaseOrderService.remove(id);
