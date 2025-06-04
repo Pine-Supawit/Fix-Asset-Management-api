@@ -24,6 +24,7 @@ import { PurchaseOrderDetail } from './purchase-order-detail/entities/purchase-o
 import { PurchaseOrderOversea } from './purchase-order-oversea/entities/purchase-order-oversea.entity';
 import { PurchaseOrderOverseaModule } from './purchase-order-oversea/purchase-order-oversea.module';
 import { PurchaseOrderDetailOverseaModule } from './purchase-order-detail-oversea/purchase-order-detail-oversea.module';
+import { LogModule } from './log/log.module';
 
 @Module({
   imports: [
@@ -89,7 +90,8 @@ import { PurchaseOrderDetailOverseaModule } from './purchase-order-detail-overse
     // InvoiceModule,
     SupplierModule,
     PurchaseOrderOverseaModule,
-    PurchaseOrderDetailOverseaModule
+    PurchaseOrderDetailOverseaModule,
+    LogModule
   ],
   controllers: [],
   providers: [],
