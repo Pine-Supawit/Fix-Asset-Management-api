@@ -300,7 +300,7 @@ export class PurchaseOrderService {
 
       const [productsName, total] = await this.purchaseOrderDetailRepository.findAndCount({
         select: ['ProductID', 'SProductName'],
-        where: where,
+        where,
         skip,
         take: limit,
         order: {
@@ -308,13 +308,18 @@ export class PurchaseOrderService {
         }
       });
 
+      const formattedProducts = productsName.map(product => ({
+        ProductID: product.ProductID,
+        ProductName: product.SProductName,
+      }));
+
       return {
-        data: productsName,
+        data: formattedProducts,
         pagination: {
           page: Number(page),
           limit: Number(limit),
           total,
-          length: productsName.length,
+          length: formattedProducts.length,
         },
         status: 200,
       };
