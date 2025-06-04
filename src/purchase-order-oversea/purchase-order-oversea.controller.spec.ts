@@ -27,36 +27,67 @@ describe('PurchaseOrderOverseaController', () => {
   it('should call service with page as number', async () => {
     const mockResult = ['po1', 'po2'];
     (service.purchaseOrderOverseaList as jest.Mock).mockResolvedValue(mockResult);
+     const mockrequest = {
+        page: '2',
+        startDate: '2025-01-01',
+        endDate: '2025-03-31',
+    }
 
-    const result = await controller.purchaseOrderOverseaList(5); 
-    expect(service.purchaseOrderOverseaList).toHaveBeenCalledWith(5);
+    const result = await controller.purchaseOrderOverseaList(mockrequest); 
+    expect(service.purchaseOrderOverseaList).toHaveBeenCalledWith(2, '2025-01-01', '2025-03-31');
     expect(result).toBe(mockResult);
   });
 
-  it('should throw error if page is not a number', async () => {
-    await expect(controller.purchaseOrderOverseaList('Non-number' as any)).rejects.toThrow(BadRequestException);
-  });
+  it('should handle missing optional query values gracefully', async () => {
+      const mockResult = ['po3'];
+      (service.purchaseOrderOverseaList as jest.Mock).mockResolvedValue(mockResult);
 
-  it('should throw BadRequestException for negative page number', async () => {
-    await expect(controller.purchaseOrderOverseaList(-1)).rejects.toThrow(BadRequestException);
-});
-
-  it('should throw BadRequestException if page is missing', async () => {
-      await expect(controller.purchaseOrderOverseaList(undefined as any)).rejects.toThrow(BadRequestException);
+      const mockrequest = {}; // no page or dates
+      const result = await controller.purchaseOrderOverseaList(mockrequest);
+      expect(service.purchaseOrderOverseaList).toHaveBeenCalledWith(undefined, undefined, undefined);
+      expect(result).toBe(mockResult);
     });
 
-  it('should call service with correct page value', async () => {
-    const spy = jest.spyOn(service, 'purchaseOrderOverseaList');
-    controller.purchaseOrderOverseaList(3);
-    expect(spy).toHaveBeenCalledWith(3);
-  });
-  
-  it('should call service with uppercase type and page as number', async () => {
-    const mockResult = ['typeA item1', 'typeA item2'];
-    (service.purchaseOrderOverseaByType as jest.Mock).mockResolvedValue(mockResult);
+    it('should call service with uppercase type and validated inputs', async () => {
+      const mockResult = ['typeA item1', 'typeA item2'];
+      (service.purchaseOrderOverseaByType as jest.Mock).mockResolvedValue(mockResult);
 
-    const result = await controller.purchaseOrderOverseaByType('typea', '2');
-    expect(service.purchaseOrderOverseaByType).toHaveBeenCalledWith('TYPEA', 2);
-    expect(result).toBe(mockResult);
-  });
+      const query = {
+        type: 'asset',
+        page: '1',
+        startDate: '2025-01-01',
+        endDate: '2025-01-31',
+      };
+
+      const result = await controller.purchaseOrderOverseaByType(query as any);
+      expect(service.purchaseOrderOverseaByType).toHaveBeenCalledWith(
+        'ASSET',
+        1,
+        '2025-01-01',
+        '2025-01-31'
+      );
+      expect(result).toBe(mockResult);
+    });
+
+    it('should throw BadRequestException for invalid type', async () => {
+      const query = {
+        type: '',
+        page: '1',
+        startDate: '2025-01-01',
+        endDate: '2025-01-31',
+      };
+
+      await expect(controller.purchaseOrderOverseaByType(query as any)).rejects.toThrow(BadRequestException);
+    });
+
+    it('should throw BadRequestException for invalid page number', async () => {
+      const query = {
+        type: 'non-asset',
+        page: '-3',
+        startDate: '2025-01-01',
+        endDate: '2025-01-31',
+      };
+
+      await expect(controller.purchaseOrderOverseaByType(query as any)).rejects.toThrow(BadRequestException);
+    });
 });

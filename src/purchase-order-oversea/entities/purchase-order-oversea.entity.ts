@@ -133,4 +133,7 @@ export class PurchaseOrderOversea {
 
   @Column()
   UID: number;
+
+  @Column({type: 'bit'})
+  IsActive: boolean
 }

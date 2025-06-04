@@ -39,6 +39,10 @@ pod.Quantity as quantity,
 pod.Amount as amount,
 s.InvNO as invoiceNum,
 s.InvDate as invoiceDate
+Case
+          When IsActive = '1' then 'Active'
+          Else 'Inactive'
+End as Status
 from [Endeavour].[dbo].[PurchaseOrder] po
 left Join [Endeavour].[dbo].[PurchaseOrderDetailed] pod on po.PurchaseID = pod.PurchaseID
 left Join [Endeavour].[dbo].[PurchaseRequest] pr on po.PRNO = pr.PRNO

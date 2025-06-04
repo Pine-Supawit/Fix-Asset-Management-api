@@ -5,3 +5,7 @@ export interface NumberValidator {
 export interface TypeValidator {
   (value: string): string;
 }
+
+export interface TypeVavalidateDatelidator {
+  (value: string): string;
+}

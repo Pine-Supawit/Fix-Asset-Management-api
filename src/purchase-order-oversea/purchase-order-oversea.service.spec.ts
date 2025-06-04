@@ -46,8 +46,9 @@ describe('PurchaseOrderOverseaService', () => {
     (service as any).logger = loggerMock;
   });
 
-  it('should return paginated data when data exists', async () => {
-    expect(service).toBeDefined();
+
+
+  it('should return paginated data when data exists (page only)', async () => {
     const MockPoIDs = [{ PoID: 202505001 }, { PoID: 202504099 }];
     const MockData = [
       {
@@ -81,45 +82,82 @@ describe('PurchaseOrderOverseaService', () => {
         IsPurchaseOverseas: true,
       },
     ];
-    dataSourceMock.query = jest
-      .fn()
+    (dataSourceMock.query as jest.Mock)
       .mockResolvedValueOnce(MockPoIDs)
-      .mockResolvedValueOnce(MockData)
+      .mockResolvedValueOnce(MockData);
 
     const result = await service.purchaseOrderOverseaList(1);
 
     expect(result).toEqual({
       data: MockData,
-      pageNo: 1,
+      page: 1,
       total: MockData.length,
     });
   });
 
-  it('should return empty data if no purchase orders found', async () => {
+
+  it('should return all data when no page, startDate, or enddate are provided', async () => {
+    const mockData = [
+      {
+        Companyname: 'Pine-Pacific Corporation Limited',
+        ReciveDate: '2022-08-01T00:00:00.000Z',
+        PoDate: '2022-07-15T00:00:00.000Z',
+        PoID: 123456,
+        ProductName: 'Product A',
+        SupplierName: 'Supplier A',
+        Purpose: 'Purpose A',
+        Amount: 100,
+        Dep: 'Dep A',
+        PurchaseBy: 'User A',
+        CategoryOfPurchase: 'Asset',
+        ProductID: '50000123',
+        ProductNo: 1,
+        IsPurchaseOverseas: true,
+        Status: 'Active',
+      },
+    ];
+    (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockData);
+
+    const result = await service.purchaseOrderOverseaList();
+
+    expect(result).toEqual({
+      data: mockData,
+      page: undefined,
+      total: mockData.length,
+    });
+  });
+
+
+  it('should return empty data if no purchase orders found (page only)', async () => {
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce([]);
     const result = await service.purchaseOrderOverseaList(1);
-    expect(result).toEqual({ data: [], pageNo: -1, total: -1 });
+    expect(result).toEqual({ data: [], page: -1, total: -1 });
     expect(loggerMock.warn).toHaveBeenCalledWith('exceed the data');
   });
+
 
   it('should throw an error if page is not a number', async () => {
     // @ts-ignore
     await expect(service.purchaseOrderOverseaList('not-a-number')).rejects.toThrow();
   });
 
+
   it('should throw an error if page is negative', async () => {
     await expect(service.purchaseOrderOverseaList(-1)).rejects.toThrow();
   });
 
+
   it('should throw an error if input parameter is empty in purchaseOrderOverseaList', async () => {
     await expect(service.purchaseOrderOverseaList('' as any)).rejects.toThrow();
   });
+
 
   it('should throw an error if query fails in purchaseOrderOverseaList', async () => {
     (dataSourceMock.query as jest.Mock).mockRejectedValueOnce(new Error('DB error'));
     await expect(service.purchaseOrderOverseaList(1)).rejects.toThrow('Error fetching purchase orders');
   });
   
+
   it('should return data for Asset type', async () => {
     const mockResult = [
       {
@@ -139,15 +177,16 @@ describe('PurchaseOrderOverseaService', () => {
         IsPurchaseOverseas: true,
       },
     ];
-    dataSourceMock.query = jest.fn().mockResolvedValueOnce(mockResult)
-    const result = await service.purchaseOrderOverseaByType('ASSET', 1)
+    (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
+    const result = await service.purchaseOrderOverseaByType('ASSET', 1, '2025-01-01', '2025-01-31');
     expect(result).toEqual({
       data: mockResult,
-      pageNo: 1,
+      page: 1,
       total: mockResult.length,
     });
   });
   
+
   it('should return data for Non-Asset type', async () => {
     const mockResult = [
       {
@@ -167,60 +206,71 @@ describe('PurchaseOrderOverseaService', () => {
         IsPurchaseOverseas: false,
       },
     ];
-     dataSourceMock.query = jest.fn().mockResolvedValueOnce(mockResult)
-    const result = await service.purchaseOrderOverseaByType('NON-ASSET', 1)
+    (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
+    const result = await service.purchaseOrderOverseaByType('NON-ASSET', 1, '2025-01-01', '2025-01-31');
     expect(result).toEqual({
       data: mockResult,
-      pageNo: 1,
+      page: 1,
       total: mockResult.length,
     });
   });
 
-  it('should return empty data if no purchase orders found', async () => {
+
+  it('should return empty data if no purchase orders found for type', async () => {
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce([]);
-    const result = await service.purchaseOrderOverseaByType('ASSET', 1);
-    expect(result).toEqual({ data: [], pageNo: -1, total: -1 });
+    const result = await service.purchaseOrderOverseaByType('ASSET', 1, '2025-01-01', '2025-01-31');
+    expect(result).toEqual({ data: [], page: -1, total: -1 });
     expect(loggerMock.warn).toHaveBeenCalledWith('exceed the data for type ASSET');
   });
 
-  it('should throw an error if query fails', async () => {
+
+  it('should throw an error if query fails in purchaseOrderOverseaByType', async () => {
     (dataSourceMock.query as jest.Mock).mockRejectedValueOnce(new Error('DB error'));
-    await expect(service.purchaseOrderOverseaByType('Asset', 1)).rejects.toThrow('Error fetching purchase orders by type Asset');
+    await expect(service.purchaseOrderOverseaByType('ASSET', 1, '2025-01-01', '2025-01-31')).rejects.toThrow('Error fetching purchase orders by type ASSET');
   });
+
 
   it('should throw an error if input parameter is invalid', async () => {
-    await expect(service.purchaseOrderOverseaByType('not-asset-type', 1)).rejects.toThrow('Error fetching purchase orders by type not-asset-type');
+    await expect(service.purchaseOrderOverseaByType('not-asset-type', 1, '2025-01-01', '2025-01-31')).rejects.toThrow('Error fetching purchase orders by type not-asset-type');
   });
+
 
   it('should throw an error if input parameter is empty', async () => {
-    await expect(service.purchaseOrderOverseaByType('', 1)).rejects.toThrow('Error fetching purchase orders by type ');
+    await expect(service.purchaseOrderOverseaByType('', 1, '2025-01-01', '2025-01-31')).rejects.toThrow('Error fetching purchase orders by type ');
   });
+
 
   it('should throw an error if input parameter is a number', async () => {
-    await expect(service.purchaseOrderOverseaByType(123 as any, 1)).rejects.toThrow('Error fetching purchase orders by type 123');
+    await expect(service.purchaseOrderOverseaByType(123 as any, 1, '2025-01-01', '2025-01-31')).rejects.toThrow('Error fetching purchase orders by type 123');
   });
+
 
   it('should throw an error if page is a non-numeric string', async () => {
-    await expect(service.purchaseOrderOverseaByType('ASSET', 'abc' as any)).rejects.toThrow();
+    await expect(service.purchaseOrderOverseaByType('ASSET', 'abc' as any, '2025-01-01', '2025-01-31')).rejects.toThrow();
   });
+
 
   it('should throw an error if page is null', async () => {
-    await expect(service.purchaseOrderOverseaByType('ASSET', null as any)).rejects.toThrow();
+    await expect(service.purchaseOrderOverseaByType('ASSET', null as any, '2025-01-01', '2025-01-31')).rejects.toThrow();
   });
+
 
   it('should throw an error if page is undefined', async () => {
-    await expect(service.purchaseOrderOverseaByType('ASSET', undefined as any)).rejects.toThrow();
+    await expect(service.purchaseOrderOverseaByType('ASSET', undefined as any, '2025-01-01', '2025-01-31')).rejects.toThrow();
   });
+
 
   it('should throw an error if page is a negative number', async () => {
-    await expect(service.purchaseOrderOverseaByType('ASSET', -5)).rejects.toThrow();
+    await expect(service.purchaseOrderOverseaByType('ASSET', -5, '2025-01-01', '2025-01-31')).rejects.toThrow();
   });
 
-  it('should throw an error if page is NaN', async () => {
-    await expect(service.purchaseOrderOverseaByType('ASSET', NaN as any)).rejects.toThrow();
-  });
 
   it('should throw an error if page is NaN', async () => {
-    await expect(service.purchaseOrderOverseaByType('ASSET', '' as any)).rejects.toThrow();
+    await expect(service.purchaseOrderOverseaByType('ASSET', NaN as any, '2025-01-01', '2025-01-31')).rejects.toThrow();
+  });
+
+
+  it('should throw an error if page is empty string', async () => {
+    await expect(service.purchaseOrderOverseaByType('ASSET', '' as any, '2025-01-01', '2025-01-31')).rejects.toThrow();
   });
 });

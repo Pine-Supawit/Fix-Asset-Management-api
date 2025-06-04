@@ -55,6 +55,7 @@ describe('PurchaseOrderDetailOverseaService', () => {
         amount: 1000,
         invoiceNum: 'INV001',
         invoiceDate: '2024-01-01T00:00:00.000Z',
+        Status: 'Active',
       },
     ];
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
@@ -67,7 +68,7 @@ describe('PurchaseOrderDetailOverseaService', () => {
   it('should return empty data if no details found', async () => {
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce([]);
     const result = await service.purchaseOrderDetailOversea(1, 50001, 1);
-    expect(result).toEqual({ data: [], pageNo: -1, total: -1 });
+    expect(result).toEqual({ data: [], page: -1, total: -1 });
     expect(loggerMock.warn).toHaveBeenCalledWith('No purchase order details found for the given criteria');
   });
 
