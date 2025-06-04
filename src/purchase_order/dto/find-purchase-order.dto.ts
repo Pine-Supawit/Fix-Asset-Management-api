@@ -15,20 +15,27 @@ export class FindPurchaseOrderDto {
     @Transform(({ value }) => Number(value))
     RevisionID?: number;
 
-    @ApiProperty({ required: false, description: 'Search by Asset type', example: 'Asset' })
+    @ApiProperty({ required: false, description: 'Search by Asset type (Asset, Expense, Tools, Spare, Consumable)', example: 'Asset' })
     @IsString()
     @IsOptional()
     POType?: string;
 
+    @ApiProperty({ required: false, description: 'Search by Company (PPC, PMC, PIM)', example: 'PPC' })
+    @IsString()
+    @IsOptional()
+    Company?: string;
+
     @ApiProperty({
-        example: '2024-01-01',
+        required: false,
+        example: '2020-01-01',
     })
     @IsDateString()
     @IsOptional()
     startDate?: string;
 
     @ApiProperty({
-        example: '2024-12-31',
+        required: false,
+        example: '2020-12-31',
     })
     @IsDateString()
     @IsOptional()
