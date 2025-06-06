@@ -1,15 +1,8 @@
 {
-<<<<<<< HEAD
-  "name": "nestjs",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
-=======
   "name": "assets-management-api",
   "version": "1.0.0",
   "description": "NestJS-based API for managing assets, purchase orders, suppliers, and related business operations",
   "author": "Development Team",
->>>>>>> 9508433732339c0beb36f2acfb69f5cc9d9e409d
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
