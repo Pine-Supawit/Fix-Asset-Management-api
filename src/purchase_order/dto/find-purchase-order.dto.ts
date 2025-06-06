@@ -15,7 +15,22 @@ export class FindPurchaseOrderDto {
     @Transform(({ value }) => Number(value))
     RevisionID?: number;
 
-    @ApiProperty({ required: false, description: 'Search by Asset type (Asset, Expense, Tools, Spare, Consumable)', example: 'Asset' })
+    @ApiProperty({ required: false, description: 'Search by RepairID' })
+    @IsString()
+    @IsOptional()
+    RepairID?: string;
+
+    @ApiProperty({ required: false, description: 'Search by Department (IT, EN)' })
+    @IsString()
+    @IsOptional()
+    Department?: string;
+
+    @ApiProperty({ required: false, description: 'Search by Asset type (Asset, Expense, Tools, Spare, Consumable)' })
+    @IsString()
+    @IsOptional()
+    Category?: string;
+
+    @ApiProperty({ required: false, description: 'Search by Asset type (Asset, Expense, Tools, Spare, Consumable)' })
     @IsString()
     @IsOptional()
     POType?: string;

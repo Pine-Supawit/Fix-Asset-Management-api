@@ -68,14 +68,22 @@ export class PurchaseOrderService {
       const where: any = {};
       if (params.PurchaseID !== undefined) where.PurchaseID = Number(params.PurchaseID);
       if (params.RevisionID !== undefined) where.RevisionID = Number(params.RevisionID);
+      if (params.RepairID) where.TRNO = Like(`%${params.RepairID}%`);
+      if (params.Department) where.PRDivision = Like(params.Department.toUpperCase());
       if (startDate && endDate) {
         where.DateOrder = Between(startDate, endDate);
       }
-
+      where.ReceiveDocDate = Not(IsNull());
       const [purchaseOrders, total] = await this.purchaseOrderRepository.findAndCount({
         where: where,
         skip: skip,
         take: limit,
+        order: {
+          ReceiveDocDate: 'DESC',
+          PurchaseID: 'ASC',
+          RevisionID: 'ASC',
+          TRNO: 'ASC',
+        }
       });
 
       const purchaseOrdersResult = await Promise.all(
@@ -84,7 +92,7 @@ export class PurchaseOrderService {
             where: {
               PurchaseID: purchaseOrder.PurchaseID,
               RevisionID: purchaseOrder.RevisionID,
-              ...(params.POType && { AssetID: AssetTypeMap[params.POType] }),
+              ...(params.Category && { AssetID: AssetTypeMap[params.Category] }),
             },
           });
 
