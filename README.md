@@ -256,12 +256,60 @@ pm2 start ecosystem.json
 
 ### Using Docker
 ```bash
-# unit tests
-$ npm run test
+docker-compose up -d --build
+```
 
-# e2e tests
-$ npm run test:e2e
+### Environment Variables for Production
+Ensure all environment variables are properly set in your production environment.
 
-# test coverage
-$ npm run test:cov
-``` -->
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the UNLICENSED License.
+
+## 🔧 Tech Stack
+
+- **Framework**: NestJS
+- **Language**: TypeScript
+- **Database**: SQL Server
+- **ORM**: TypeORM
+- **Authentication**: JWT + Passport
+- **Documentation**: Swagger/OpenAPI
+- **Testing**: Jest
+- **Process Manager**: PM2
+- **Code Quality**: ESLint + Prettier
+
+## 📚 Documentation
+
+### Complete Documentation Set
+
+- **[API Guide](docs/API_GUIDE.md)** - Comprehensive API documentation with examples
+- **[Deployment Guide](docs/DEPLOYMENT.md)** - Production deployment instructions
+- **[Development Guide](docs/DEVELOPMENT.md)** - Developer setup and workflow
+- **[Project Structure](docs/PROJECT_STRUCTURE.md)** - Detailed project organization
+- **[Changelog](docs/CHANGELOG.md)** - Version history and changes
+
+### Quick Links
+
+- **Swagger UI**: `http://localhost:3000/api` (when running)
+- **Health Check**: `http://localhost:3000/` 
+- **API Base URL**: `http://localhost:3000`
+
+## 📞 Support
+
+For support and questions:
+- 📖 Check the [documentation](docs/) first
+- 🐛 Report bugs via GitHub issues
+- 💬 Contact the development team
+- 📧 Email: [support@company.com]
+
+---
+
+*Built with ❤️ using NestJS*
