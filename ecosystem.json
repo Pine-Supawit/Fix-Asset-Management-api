@@ -20,7 +20,7 @@
     "dev-api-assets": {
       "user": "tuna",
       "host": ["100.114.41.14"],
-      "ref": "origin/dev",
+      "ref": "origin/main",
       "repo": "git@github.com:thampaponn/assets-management-api.git",
       "path": "/home/tuna/assets-management/dev-api-assets",
       "ssh_options": ["ForwardAgent=yes"],
