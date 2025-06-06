@@ -1,15 +1,4 @@
 ## Project setup
-create .env file
-## .env
-JWT_SECRET=access-secret
-JWT_REFRESH_SECRET=refresh-secret
-DATABASE_HOST=203.146.94.243
-DATABASE_NAME_1=Ent_db
-DATABASE_NAME_2=Endeavour
-DATABASE_NAME_3=off_pp
-DATABASE_USER=samyan
-DATABASE_PASSWORD=Drowssap1
-DATABASE_PORT=1433
 
 ```bash
 $ npm install
