@@ -1,46 +1,3 @@
-<<<<<<< HEAD
-## Project setup
-
-```bash
-$ npm install
-```
-
-## create .env file
-```
-JWT_SECRET=access-secret
-JWT_REFRESH_SECRET=refresh-secret
-DATABASE_HOST=203.146.94.243
-DATABASE_NAME_1=Ent_db
-DATABASE_NAME_2=Endeavour
-DATABASE_NAME_3=off_pp
-DATABASE_USER=samyan
-DATABASE_PASSWORD=Drowssap1
-DATABASE_PORT=1433
-```
-
-## Compile and run the project
-
-```bash
-# development mode (use this one if you are testing)
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod 
-```
-<!-- 
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-``` -->
-=======
 # Assets Management API
 
 > NestJS-based API for managing assets, purchase orders, suppliers, and related business operations.
@@ -356,4 +313,4 @@ For support and questions:
 ---
 
 *Built with ❤️ using NestJS*
->>>>>>> 9508433732339c0beb36f2acfb69f5cc9d9e409d
+
