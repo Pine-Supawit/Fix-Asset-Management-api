@@ -1,0 +1,36 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { PurchaseOrderService } from './purchase_order.service';
+import { FindPurchaseOrderDto } from './dto/find-purchase-order.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { DeletePurchaseOrderDto } from './dto/delete-purchase-order.dto';
+import { FindPurchaseOrderByTypeDto } from './dto/find-by-type.dto';
+import { FindProductNameDto } from './dto/find-product-name.dto';
+
+@ApiTags('Purchase Order')
+@Controller('purchase-order')
+export class PurchaseOrderController {
+  constructor(private readonly purchaseOrderService: PurchaseOrderService) { }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all purchase orders' })
+  findAll(@Query() body: FindPurchaseOrderDto) {
+    return this.purchaseOrderService.findAll(body);
+  }
+
+  @Get('products-name')
+  @ApiOperation({ summary: 'Get all product name' })
+  findAllProductName(@Query() body: FindProductNameDto) {
+    return this.purchaseOrderService.findAllProductName(body);
+  }
+
+  @Get('category')
+  @ApiOperation({ summary: 'Get purchase order types' })
+  findTypes() {
+    return this.purchaseOrderService.findTypes();
+  }
+
+  @Delete()
+  remove(@Query() id: DeletePurchaseOrderDto) {
+    return this.purchaseOrderService.remove(id);
+  }
+}
