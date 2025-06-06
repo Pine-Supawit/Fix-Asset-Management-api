@@ -21,7 +21,7 @@
       "user": "tuna",
       "host": ["100.114.41.14"],
       "ref": "origin/dev",
-      "repo": "git@appiot.pinepacific.com:10222/Samyan/assets-management-api.git",
+      "repo": "git@appiot.pinepacific.com:10222/FixAsset/assets-management-api.git",
       "path": "/home/tuna/assets-management/dev-api-assets",
       "ssh_options": ["ForwardAgent=yes"],
       "post-deploy": "npm install && npm run build && /home/tuna/.nvm/versions/node/v22.16.0/bin/pm2 startOrRestart ecosystem.json --env dev-api-assets"
