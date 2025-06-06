@@ -4,7 +4,7 @@
 $ npm install
 ```
 
-## create .env file
+## Create .env file
 ```
 JWT_SECRET=access-secret
 JWT_REFRESH_SECRET=refresh-secret
