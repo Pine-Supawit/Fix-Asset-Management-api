@@ -20,10 +20,15 @@ export class FindPurchaseOrderDto {
     @IsOptional()
     RepairID?: string;
 
-    @ApiProperty({ required: false, description: 'Search by Department (IT, EN)' })
+    @ApiProperty({ required: false, description: 'Search by RequestBy' })
     @IsString()
     @IsOptional()
-    Department?: string;
+    RequestBy?: string;
+
+    @ApiProperty({ required: false, description: 'Search by PurchaseBy' })
+    @IsString()
+    @IsOptional()
+    PurchaseBy?: string;
 
     @ApiProperty({ required: false, description: 'Search by Asset type (A, E, T, S, C)' })
     @IsString()

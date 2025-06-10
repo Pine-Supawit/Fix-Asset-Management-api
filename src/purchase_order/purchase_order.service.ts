@@ -67,8 +67,11 @@ export class PurchaseOrderService {
       if (params.RevisionID) {
         query.andWhere("detail.RevisionID = :revisionID", { revisionID: Number(params.RevisionID) });
       }
-      if (params.Department) {
-        query.andWhere("po.PRDivision LIKE :dept", { dept: `%${params.Department.toUpperCase()}%` });
+      if (params.PurchaseBy) {
+        query.andWhere("po.PurchaseOfficer LIKE :purchaseBy", { purchaseBy: `%${params.PurchaseBy}%` });
+      }
+      if (params.RequestBy) {
+        query.andWhere("po.ShippingAgent LIKE :requestBy", { requestBy: `%${params.RequestBy}%` });
       }
       if (startDate && endDate) {
         query.andWhere("po.DateOrder BETWEEN :startDate AND :endDate", { startDate, endDate });
