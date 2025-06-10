@@ -19,8 +19,6 @@ import {
 } from '../utils/validation';
 import { ApiTags } from '@nestjs/swagger';
 import { listOverseaDto } from './dto/list-oversea.dto';
-import { listByTypeOverseaDto } from './dto/list-by-type-oversea.dto';
-import { listByFiltersOverseaDto} from './dto/get-list-by-filters-oversea.dto';
 
 @ApiTags('Purchase Order Oversea')
 @Controller('purchase-order-oversea')
@@ -31,31 +29,14 @@ export class PurchaseOrderOverseaController {
 
   @Get('list')
   async purchaseOrderOverseaList(@Query() body: listOverseaDto) {
-    const poid = body.poid? NumberValidator(+body.poid): undefined;
-    const poType = body.poType ? StringValidator(body.poType) : undefined;
-    const purchaseBy = body.purchaseBy? StringValidator(body.purchaseBy): undefined
-    const resquestBy = body.resquestBy? StringValidator(body.resquestBy): undefined;
+    const poid = body.PurchaseID? NumberValidator(+body.PurchaseID): undefined;
+    const poType = body.Category ? StringValidator(body.Category) : undefined;
+    const purchaseBy = body.PurchaseBy? StringValidator(body.PurchaseBy): undefined
+    const resquestBy = body.RequestBy? StringValidator(body.RequestBy): undefined;
     const pageNum = body.page ? NumberValidator(+body.page) : undefined;
     const startDateValid = body.startDate ? DateValidator(body.startDate) : undefined;
     const endDateValid = body.endDate? DateValidator(body.endDate) : undefined;
     const limit = body.limit ? NumberValidator(+body.limit) : undefined;
     return this.purchaseOrderOverseaService.purchaseOrderOverseaList(poid, poType, purchaseBy, resquestBy, pageNum, limit, startDateValid, endDateValid);
   }
-
-  @Get('type')
-  async purchaseOrderOverseaByType(
-    @Query() body: listByTypeOverseaDto, ) {
-    const poType = StringValidator(body.type)
-    const pageNum = NumberValidator(+body.page)
-    const startDateValid = DateValidator(body.startDate)
-    const endDateValid = DateValidator(body.endDate)
-
-    return this.purchaseOrderOverseaService.purchaseOrderOverseaByType(
-      poType.toUpperCase(),
-      pageNum,
-      startDateValid,
-      endDateValid,
-    );
-  }
-
 }

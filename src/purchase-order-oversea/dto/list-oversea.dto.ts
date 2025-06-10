@@ -2,19 +2,26 @@ import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class listOverseaDto {
-  @ApiPropertyOptional({ type: Number, description: 'find by POID' })
+  @ApiPropertyOptional({ type: Number, description: 'find by PurchaseID' })
   @IsOptional()
   @IsNumber()
-  poid: Number;
+  PurchaseID: Number;
 
   @ApiPropertyOptional({
     type: String,
-    description: 'find by poType',
+    description: 'find by Category before acount comfirm',
   })
-  
   @IsOptional()
   @IsString()
-  poType: string;
+  Category: string;
+
+  @ApiPropertyOptional({
+    type: String,
+    description: 'find by POType',
+  })
+  @IsOptional()
+  @IsString()
+  POType: string;
 
   @ApiPropertyOptional({
     type: String,
@@ -22,7 +29,7 @@ export class listOverseaDto {
   })
   @IsOptional()
   @IsString()
-  purchaseBy: string;
+  PurchaseBy: string;
 
   @ApiPropertyOptional({
     type: String,
@@ -30,7 +37,7 @@ export class listOverseaDto {
   })
   @IsOptional()
   @IsString()
-  resquestBy: string;
+  RequestBy: string;
 
   @ApiPropertyOptional({ type: Number, description: 'Defind page number' })
   @IsOptional()

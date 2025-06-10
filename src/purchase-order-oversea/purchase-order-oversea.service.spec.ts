@@ -25,12 +25,7 @@ describe('PurchaseOrderOverseaService', () => {
         PurchaseOrderOverseaService,
         {
           provide: getRepositoryToken(PurchaseOrderOversea, 'Endeavour'),
-          useValue: {
-            find: jest.fn(),
-            findOne: jest.fn(),
-            save: jest.fn(),
-            count: jest.fn(),
-          },
+          useValue: {},
         },
         {
           provide: getDataSourceToken('Endeavour'),
@@ -39,250 +34,191 @@ describe('PurchaseOrderOverseaService', () => {
       ],
     }).compile();
 
-    service = module.get<PurchaseOrderOverseaService>(
-      PurchaseOrderOverseaService,
-    );
-
+    service = module.get<PurchaseOrderOverseaService>(PurchaseOrderOverseaService);
     (service as any).logger = loggerMock;
   });
 
-
-
-  it('should return paginated data when data exists (page only)', async () => {
-    const MockData = [
+  it('should return data with correct structure for valid input', async () => {
+    const mockResult = [
       {
         Company: 'Pine-Pacific Corporation Limited',
-        ReceiveDate: '2002-07-03T17:00:00.000Z',
-        PODate: '2002-06-10T17:00:00.000Z',
-        POID: 202505001,
-        ProductName: 'MockName1',
-        SupplierName: 'Mocksupplier1',
-        Purpose: null,
-        Amount: 0,
-        Department: null,
-        PurchaseBy: 'MockPurchaseBy1',
-        RequestBy: undefined,
-        Category: 'Non-Asset',
-        ProductID: '1400708013',
-        ProductNo: undefined,
-        IsPurchaseOverseas: true,
-        Status: "Active",
-        PoType: true,
-        Totalrecrod: 2
-      },
-      {
-        Company: 'Pine-Pacific Corporation Limited',
-        ReceiveDate: '2002-07-04T17:00:00.000Z',
-        PODate: '2002-06-10T17:00:00.000Z',
-        POID: 202504099,
-        ProductName: 'MockName2',
-        SupplierName: 'Mocksupplier2',
-        Purpose: null,
-        Amount: 0,
-        Department: null,
-        PurchaseBy: 'MockPurchaseBy2',
-        RequestBy: undefined,
+        ReceiveDate: '2022-01-01',
+        PODate: '2022-01-02',
+        POID: 1,
+        ProductName: 'Test',
+        SupplierName: 'Supplier',
+        Purpose: 'Purpose',
+        Amount: 100,
+        Department: 'Dept',
+        PurchaseBy: 'User',
+        RequestBy: 'Req',
         Category: 'Asset',
-        ProductID: '1400709009',
-        ProductNo: undefined,
+        ProductID: '50001',
+        ProductNo: 1,
         IsPurchaseOverseas: true,
-        Status: "Active",
-        PoType: true,
-        Totalrecrod: 2
+        Status: 'Active',
+        PoType: 'Type',
+        Totalrecrod: 1,
       },
     ];
-    (dataSourceMock.query as jest.Mock)
-      .mockResolvedValueOnce(MockData);
-
-    const result = await service.purchaseOrderOverseaList(1, undefined, undefined, 2);
-
+    (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
+    const result = await service.purchaseOrderOverseaList(1, undefined, undefined, undefined, 1, 10, '2022-01-01', '2022-01-31');
     expect(result).toEqual({
-      data: MockData,
+      data: mockResult,
       page: 1,
-      totalInPage: MockData.length,
-      total: 2,
-    });
-  });
-
-
-  it('should return all data when no page, startDate, or enddate are provided', async () => {
-    const mockData = [
-      {
-        Company: 'Pine-Pacific Corporation Limited',
-        ReceiveDate: '2002-07-03T17:00:00.000Z',
-        PODate: '2002-06-10T17:00:00.000Z',
-        POID: 202505001,
-        ProductName: 'MockName1',
-        SupplierName: 'Mocksupplier1',
-        Purpose: null,
-        Amount: 0,
-        Department: null,
-        PurchaseBy: 'MockPurchaseBy1',
-        RequestBy: undefined,
-        Category: 'Non-Asset',
-        ProductID: '1400708013',
-        ProductNo: undefined,
-        IsPurchaseOverseas: true,
-        Status: "Active",
-        PoType: true,
-        Totalrecrod: 1
-      },
-    ];
-    (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockData);
-
-    const result = await service.purchaseOrderOverseaList(undefined,undefined,undefined, undefined);
-
-    expect(result).toEqual({
-      data: mockData,
-      totalInPage: mockData.length,
+      totalInPage: 1,
       total: 1,
     });
   });
 
-
-  it('should return empty data if no purchase orders found (page only)', async () => {
+  it('should return empty data if no purchase orders found', async () => {
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce([]);
-    const result = await service.purchaseOrderOverseaList(1);
+    const result = await service.purchaseOrderOverseaList(1, undefined, undefined, undefined, 1, 10, '2022-01-01', '2022-01-31');
     expect(result).toEqual({ data: [], page: -1, totalInPage: -1, total: -1 });
     expect(loggerMock.warn).toHaveBeenCalledWith('exceed the data');
   });
 
-
-  it('should throw an error if page is not a number', async () => {
-    // @ts-ignore
-    await expect(service.purchaseOrderOverseaList('not-a-number')).rejects.toThrow();
+  it('should throw error if more than one filter is provided', async () => {
+    await expect(service.purchaseOrderOverseaList(1, 'type', 'officer', undefined, 1, 10, '2022-01-01', '2022-01-31')).rejects.toThrow(
+      'Error fetching purchase orders'
+    );
   });
 
-
-  it('should throw an error if page is negative', async () => {
-    await expect(service.purchaseOrderOverseaList(-1)).rejects.toThrow();
-  });
-
-
-  it('should throw an error if input parameter is empty in purchaseOrderOverseaList', async () => {
-    await expect(service.purchaseOrderOverseaList('' as any)).rejects.toThrow();
-  });
-
-
-  it('should throw an error if query fails in purchaseOrderOverseaList', async () => {
+  it('should throw error if query fails', async () => {
     (dataSourceMock.query as jest.Mock).mockRejectedValueOnce(new Error('DB error'));
-    await expect(service.purchaseOrderOverseaList(1)).rejects.toThrow('Error fetching purchase orders');
+    await expect(service.purchaseOrderOverseaList(1, undefined, undefined, undefined, 1, 10, '2022-01-01', '2022-01-31')).rejects.toThrow('Error fetching purchase orders');
+    expect(loggerMock.error).toHaveBeenCalledWith('Error fetching purchase orders', expect.any(Error));
   });
-  
 
-  it('should return data for Asset type', async () => {
+  it('should handle only poid filter', async () => {
     const mockResult = [
       {
-        Companyname: 'Pine-Pacific',
-        ReciveDate: '2022-01-01T00:00:00.000Z',
-        PoDate: '2022-01-02T00:00:00.000Z',
-        PoID: 123,
-        ProductName: 'AssetProduct',
-        SupplierName: 'SupplierA',
-        Purpose: 'PurposeA',
+        Company: 'Pine-Pacific Corporation Limited',
+        ReceiveDate: '2022-01-01',
+        PODate: '2022-01-02',
+        POID: 1,
+        ProductName: 'Test',
+        SupplierName: 'Supplier',
+        Purpose: 'Purpose',
         Amount: 100,
-        Dep: 'DepA',
-        PurchaseBy: 'UserA',
-        ProductType: 'Asset',
+        Department: 'Dept',
+        PurchaseBy: 'User',
+        RequestBy: 'Req',
+        Category: 'Asset',
         ProductID: '50001',
         ProductNo: 1,
         IsPurchaseOverseas: true,
+        Status: 'Active',
+        PoType: 'Type',
+        Totalrecrod: 1,
       },
     ];
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
-    const result = await service.purchaseOrderOverseaByType('ASSET', 1, '2025-01-01', '2025-01-31');
+    const result = await service.purchaseOrderOverseaList(1, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
     expect(result).toEqual({
       data: mockResult,
-      page: 1,
-      total: mockResult.length,
+      page: undefined,
+      totalInPage: 1,
+      total: 1,
     });
   });
-  
 
-  it('should return data for Non-Asset type', async () => {
+  it('should handle only type filter', async () => {
     const mockResult = [
       {
-        Companyname: 'Pine-Pacific',
-        ReciveDate: '2022-01-01T00:00:00.000Z',
-        PoDate: '2022-01-02T00:00:00.000Z',
-        PoID: 124,
-        ProductName: 'NonAssetProduct',
-        SupplierName: 'SupplierB',
-        Purpose: 'PurposeB',
-        Amount: 200,
-        Dep: 'DepB',
-        PurchaseBy: 'UserB',
-        ProductType: 'Non-Asset',
-        ProductID: '40001',
-        ProductNo: 2,
-        IsPurchaseOverseas: false,
+        Company: 'Pine-Pacific Corporation Limited',
+        ReceiveDate: '2022-01-01',
+        PODate: '2022-01-02',
+        POID: 1,
+        ProductName: 'Test',
+        SupplierName: 'Supplier',
+        Purpose: 'Purpose',
+        Amount: 100,
+        Department: 'Dept',
+        PurchaseBy: 'User',
+        RequestBy: 'Req',
+        Category: 'Asset',
+        ProductID: '50001',
+        ProductNo: 1,
+        IsPurchaseOverseas: true,
+        Status: 'Active',
+        PoType: 'Type',
+        Totalrecrod: 1,
       },
     ];
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
-    const result = await service.purchaseOrderOverseaByType('NON-ASSET', 1, '2025-01-01', '2025-01-31');
+    const result = await service.purchaseOrderOverseaList(undefined, 'Asset', undefined, undefined, undefined, undefined, undefined, undefined);
     expect(result).toEqual({
       data: mockResult,
-      page: 1,
-      total: mockResult.length,
+      page: undefined,
+      totalInPage: 1,
+      total: 1,
     });
   });
 
-
-  it('should return empty data if no purchase orders found for type', async () => {
-    (dataSourceMock.query as jest.Mock).mockResolvedValueOnce([]);
-    const result = await service.purchaseOrderOverseaByType('ASSET', 1, '2025-01-01', '2025-01-31');
-    expect(result).toEqual({ data: [], page: -1, total: -1 });
-    expect(loggerMock.warn).toHaveBeenCalledWith('exceed the data for type ASSET');
+  it('should handle only purchaseOfficer filter', async () => {
+    const mockResult = [
+      {
+        Company: 'Pine-Pacific Corporation Limited',
+        ReceiveDate: '2022-01-01',
+        PODate: '2022-01-02',
+        POID: 1,
+        ProductName: 'Test',
+        SupplierName: 'Supplier',
+        Purpose: 'Purpose',
+        Amount: 100,
+        Department: 'Dept',
+        PurchaseBy: 'User',
+        RequestBy: 'Req',
+        Category: 'Asset',
+        ProductID: '50001',
+        ProductNo: 1,
+        IsPurchaseOverseas: true,
+        Status: 'Active',
+        PoType: 'Type',
+        Totalrecrod: 1,
+      },
+    ];
+    (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
+    const result = await service.purchaseOrderOverseaList(undefined, undefined, 'User', undefined, undefined, undefined, undefined, undefined);
+    expect(result).toEqual({
+      data: mockResult,
+      page: undefined,
+      totalInPage: 1,
+      total: 1,
+    });
   });
 
-
-  it('should throw an error if query fails in purchaseOrderOverseaByType', async () => {
-    (dataSourceMock.query as jest.Mock).mockRejectedValueOnce(new Error('DB error'));
-    await expect(service.purchaseOrderOverseaByType('ASSET', 1, '2025-01-01', '2025-01-31')).rejects.toThrow('Error fetching purchase orders by type ASSET');
-  });
-
-
-  it('should throw an error if input parameter is invalid', async () => {
-    await expect(service.purchaseOrderOverseaByType('not-asset-type', 1, '2025-01-01', '2025-01-31')).rejects.toThrow('Error fetching purchase orders by type not-asset-type');
-  });
-
-
-  it('should throw an error if input parameter is empty', async () => {
-    await expect(service.purchaseOrderOverseaByType('', 1, '2025-01-01', '2025-01-31')).rejects.toThrow('Error fetching purchase orders by type ');
-  });
-
-
-  it('should throw an error if input parameter is a number', async () => {
-    await expect(service.purchaseOrderOverseaByType(123 as any, 1, '2025-01-01', '2025-01-31')).rejects.toThrow('Error fetching purchase orders by type 123');
-  });
-
-
-  it('should throw an error if page is a non-numeric string', async () => {
-    await expect(service.purchaseOrderOverseaByType('ASSET', 'abc' as any, '2025-01-01', '2025-01-31')).rejects.toThrow();
-  });
-
-
-  it('should throw an error if page is null', async () => {
-    await expect(service.purchaseOrderOverseaByType('ASSET', null as any, '2025-01-01', '2025-01-31')).rejects.toThrow();
-  });
-
-
-  it('should throw an error if page is undefined', async () => {
-    await expect(service.purchaseOrderOverseaByType('ASSET', undefined as any, '2025-01-01', '2025-01-31')).rejects.toThrow();
-  });
-
-
-  it('should throw an error if page is a negative number', async () => {
-    await expect(service.purchaseOrderOverseaByType('ASSET', -5, '2025-01-01', '2025-01-31')).rejects.toThrow();
-  });
-
-
-  it('should throw an error if page is NaN', async () => {
-    await expect(service.purchaseOrderOverseaByType('ASSET', NaN as any, '2025-01-01', '2025-01-31')).rejects.toThrow();
-  });
-
-
-  it('should throw an error if page is empty string', async () => {
-    await expect(service.purchaseOrderOverseaByType('ASSET', '' as any, '2025-01-01', '2025-01-31')).rejects.toThrow();
+  it('should handle only requestOfficer filter', async () => {
+    const mockResult = [
+      {
+        Company: 'Pine-Pacific Corporation Limited',
+        ReceiveDate: '2022-01-01',
+        PODate: '2022-01-02',
+        POID: 1,
+        ProductName: 'Test',
+        SupplierName: 'Supplier',
+        Purpose: 'Purpose',
+        Amount: 100,
+        Department: 'Dept',
+        PurchaseBy: 'User',
+        RequestBy: 'Req',
+        Category: 'Asset',
+        ProductID: '50001',
+        ProductNo: 1,
+        IsPurchaseOverseas: true,
+        Status: 'Active',
+        PoType: 'Type',
+        Totalrecrod: 1,
+      },
+    ];
+    (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
+    const result = await service.purchaseOrderOverseaList(undefined, undefined, undefined, 'Req', undefined, undefined, undefined, undefined);
+    expect(result).toEqual({
+      data: mockResult,
+      page: undefined,
+      totalInPage: 1,
+      total: 1,
+    });
   });
 });
