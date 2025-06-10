@@ -19,17 +19,17 @@ export class PurchaseOrderController {
     return this.purchaseOrderService.findAll(body);
   }
 
-  @Get('request-by')
-  @ApiOperation({ summary: 'Get all Request By employee name' })
-  findRequestBy(@Query() body: FindPurchaseOrderByRequestByDto) {
-    return this.purchaseOrderService.findRequestBy(body);
-  }
+  // @Get('request-by')
+  // @ApiOperation({ summary: 'Get all Request By employee name' })
+  // findRequestBy(@Query() body: FindPurchaseOrderByRequestByDto) {
+  //   return this.purchaseOrderService.findRequestBy(body);
+  // }
 
-  @Get('purchase-by')
-  @ApiOperation({ summary: 'Get all Purchase By employee name' })
-  findPurchaseBy(@Query() body: FindPurchaseOrderByPurchaseByDto) {
-    return this.purchaseOrderService.findPurchaseBy(body);
-  }
+  // @Get('purchase-by')
+  // @ApiOperation({ summary: 'Get all Purchase By employee name' })
+  // findPurchaseBy(@Query() body: FindPurchaseOrderByPurchaseByDto) {
+  //   return this.purchaseOrderService.findPurchaseBy(body);
+  // }
 
   @Delete()
   remove(@Query() id: DeletePurchaseOrderDto) {
