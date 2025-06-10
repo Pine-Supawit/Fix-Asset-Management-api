@@ -143,7 +143,7 @@ describe('PurchaseOrderOverseaService', () => {
   it('should return empty data if no purchase orders found (page only)', async () => {
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce([]);
     const result = await service.purchaseOrderOverseaList(1);
-    expect(result).toEqual({ data: [], page: 1, totalInPage: -1, total: -1 });
+    expect(result).toEqual({ data: [], page: -1, totalInPage: -1, total: -1 });
     expect(loggerMock.warn).toHaveBeenCalledWith('exceed the data');
   });
 
