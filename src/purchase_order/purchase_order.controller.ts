@@ -31,8 +31,8 @@ export class PurchaseOrderController {
   //   return this.purchaseOrderService.findPurchaseBy(body);
   // }
 
-  @Delete()
-  remove(@Query() id: DeletePurchaseOrderDto) {
-    return this.purchaseOrderService.remove(id);
-  }
+  // @Delete()
+  // remove(@Query() id: DeletePurchaseOrderDto) {
+  //   return this.purchaseOrderService.remove(id);
+  // }
 }
