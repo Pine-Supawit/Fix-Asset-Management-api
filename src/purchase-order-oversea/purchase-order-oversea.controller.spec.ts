@@ -28,13 +28,14 @@ describe('PurchaseOrderOverseaController', () => {
     const mockResult = ['po1', 'po2'];
     (service.purchaseOrderOverseaList as jest.Mock).mockResolvedValue(mockResult);
      const mockrequest = {
-        page: '2',
+        page: 2,
         startDate: '2025-01-01',
         endDate: '2025-03-31',
+        limit: 10
     }
 
     const result = await controller.purchaseOrderOverseaList(mockrequest); 
-    expect(service.purchaseOrderOverseaList).toHaveBeenCalledWith(2, '2025-01-01', '2025-03-31');
+    expect(service.purchaseOrderOverseaList).toHaveBeenCalledWith(2, '2025-01-01', '2025-03-31', 10);
     expect(result).toBe(mockResult);
   });
 
@@ -44,7 +45,7 @@ describe('PurchaseOrderOverseaController', () => {
 
       const mockrequest = {}; // no page or dates
       const result = await controller.purchaseOrderOverseaList(mockrequest);
-      expect(service.purchaseOrderOverseaList).toHaveBeenCalledWith(undefined, undefined, undefined);
+      expect(service.purchaseOrderOverseaList).toHaveBeenCalledWith(undefined, undefined, undefined, undefined);
       expect(result).toBe(mockResult);
     });
 

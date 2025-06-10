@@ -32,52 +32,30 @@ export class PurchaseOrderOverseaService {
     console.time('purchaseOrderOverseaList');
     try {
       let filterQuery = '';
-      let Queryrecord = ''
+      let queryrecord = ''
+      let dateQuery = '';
       let poList = [];
-      let totalRecord = 0;
       if (startDate && enddate && !page && !limit) {
-        filterQuery = `WHERE PoCTE.PODate between '${startDate}' and '${enddate}'`;
-        // totalRecord = await this.totalRecordCount(startDate, enddate);
-        Queryrecord = `Where po.DateOrder between '${startDate}' and '${enddate}'`
+        dateQuery = `WHERE PoCTE.PODate between '${startDate}' and '${enddate}'`;
+        queryrecord = `WHERE po.DateOrder between '${startDate}' and '${enddate}'`
       } else if (page && limit && !startDate && !enddate) {
-        const poListSize = limit;
-        const offset = (page - 1) * poListSize;
-
-        const poListquery = `
-    SELECT DISTINCT po.PurchaseID AS PoID
-    FROM [Endeavour].[dbo].[PurchaseOrder] po
-    ORDER BY po.PurchaseID DESC
-    OFFSET ${offset} ROWS
-    FETCH NEXT ${poListSize} ROWS ONLY`;
-        const polistResult = await this.dataSource.query(poListquery);
-        poList = polistResult.map((row) => row.PoID);
-
-        if (poList.length === 0) {
-          this.logger.warn('exceed the data');
-          return { data: [], page: -1, totalInPage: -1, total: -1 };
-        }
-        filterQuery = `WHERE PoCTE.POID IN (${poList.join(',')})`;
-        // totalRecord = await this.totalRecordCount(startDate, enddate);
+        const resultLimit = limit;
+        const offset = (page - 1) * resultLimit;
+        // if (poList.length === 0) {
+        //   this.logger.warn('exceed the data');
+        //   return { data: [], page: -1, totalInPage: -1, total: -1 };
+        // }
+        filterQuery = `OFFSET ${offset} ROWS FETCH NEXT ${resultLimit} ROWS ONLY`;
       } else if (startDate && enddate && page && limit) {
-        const poListSize = limit;
-        const offset = (page - 1) * poListSize;
+        const resultLimit = limit;
+        const offset = (page - 1) * resultLimit;
 
-        const poListquery = `
-    SELECT DISTINCT po.PurchaseID AS PoID
-    FROM [Endeavour].[dbo].[PurchaseOrder] po
-    Where po.DateOrder between '${startDate}' and '${enddate}'
-    ORDER BY po.PurchaseID DESC
-    OFFSET ${offset} ROWS
-    FETCH NEXT ${poListSize} ROWS ONLY`;
-        const polistResult = await this.dataSource.query(poListquery);
-        poList = polistResult.map((row) => row.PoID);
-
-        if (poList.length === 0) {
-          this.logger.warn('exceed the data');
-          return { data: [], page: -1, totalInPage: -1, total: -1 };
-        }
-        filterQuery = `WHERE PoCTE.POID IN (${poList.join(',')})`;
-        // totalRecord = await this.totalRecordCount(startDate, enddate)
+        // if (poList.length === 0) {
+        //   this.logger.warn('exceed the data');
+        //   return { data: [], page: -1, totalInPage: -1, total: -1 };
+        // }
+        filterQuery = `OFFSET ${offset} ROWS FETCH NEXT ${resultLimit} ROWS ONLY`
+        queryrecord = `Where po.DateOrder between '${startDate}' and '${enddate}'`
       }
 
       const query = `
@@ -101,13 +79,14 @@ export class PurchaseOrderOverseaService {
             left Join [Endeavour].[dbo].[ShipmentDetail] sd on sd.PurchaseID = po.PurchaseID and sd.NO = pod.No
             left Join [Endeavour].[dbo].[Shipment] S on s.ShipmentID = sd.ShipmentID
             left Join [Ent_db].[dbo].[Supplier] sup on sup.SupplierID = po.SupplierID
-            ${Queryrecord}
+            ${queryrecord}
         )
 
         select *, (SELECT COUNT(*) FROM PoCTE) AS Totalrecrod
         from PoCTE
-      ${filterQuery}
+        ${dateQuery}
         order by PoCTE.POID desc, PoCTE.ProductNo ASC
+        ${filterQuery}
       `
       const result = await this.dataSource.query(query);
       console.timeEnd('purchaseOrderOverseaList');
