@@ -1,18 +1,20 @@
 export class PurchaseOrderOverseaDto {
-  Companyname: string;
+  Company: string;
   ReciveDate: Date;
   PoDate: Date;
-  PoID: number;
+  POID: number;
   ProductName: string;
   SupplierName: string;
   Purpose: string;
   Amount: number;
-  Dep: string;
+  Department: string;
   PurchaseBy: string;
-  CategoryOfPurchase: 'Asset' | 'Non-Asset';
+  RequestBy: string;
+  Category: 'Asset' | 'Non-Asset';
   ProductID: number;
   IsPurchaseOverseas: boolean;
   ProductNo: number;
   Status: boolean;
   PoType: string;
+  Totalrecrod: number;
 }

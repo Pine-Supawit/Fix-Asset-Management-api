@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Query } from '@nestjs/common';
 import { CreatePurchaseOrderOverseaDto } from './dto/create-purchase-order-oversea.dto';
 import { UpdatePurchaseOrderOverseaDto } from './dto/update-purchase-order-oversea.dto';
 import { PurchaseOrderOverseaDto } from './dto/get-purchase-order-oversea.dto';
@@ -16,27 +16,31 @@ export class PurchaseOrderOverseaService {
     private dataSource: DataSource,
   ) {}
 
-
-
   private logger = new Logger();
 
   async purchaseOrderOverseaList(
     page?: number,
     startDate?: string,
     enddate?: string,
+    limit?: number,
   ): Promise<{
     data: PurchaseOrderOverseaDto[];
     page?: number;
+    totalInPage: number;
     total: number;
-  }> {  
+  }> {
     console.time('purchaseOrderOverseaList');
     try {
       let filterQuery = '';
+      let Queryrecord = ''
       let poList = [];
-      if (startDate && enddate && !page) {
-        filterQuery = `WHERE po.DateOrder between '${startDate}' and '${enddate}'`;
-      } else if (page && !startDate && !enddate) {
-        const poListSize = 10;
+      let totalRecord = 0;
+      if (startDate && enddate && !page && !limit) {
+        filterQuery = `WHERE PoCTE.PODate between '${startDate}' and '${enddate}'`;
+        // totalRecord = await this.totalRecordCount(startDate, enddate);
+        Queryrecord = `Where po.DateOrder between '${startDate}' and '${enddate}'`
+      } else if (page && limit && !startDate && !enddate) {
+        const poListSize = limit;
         const offset = (page - 1) * poListSize;
 
         const poListquery = `
@@ -50,11 +54,12 @@ export class PurchaseOrderOverseaService {
 
         if (poList.length === 0) {
           this.logger.warn('exceed the data');
-          return { data: [], page: -1, total: -1 };
+          return { data: [], page: -1, totalInPage: -1, total: -1 };
         }
-        filterQuery = `WHERE po.PurchaseID IN (${poList.join(',')})`
-      } else if (startDate && enddate && page){
-        const poListSize = 10;
+        filterQuery = `WHERE PoCTE.POID IN (${poList.join(',')})`;
+        // totalRecord = await this.totalRecordCount(startDate, enddate);
+      } else if (startDate && enddate && page && limit) {
+        const poListSize = limit;
         const offset = (page - 1) * poListSize;
 
         const poListquery = `
@@ -69,46 +74,57 @@ export class PurchaseOrderOverseaService {
 
         if (poList.length === 0) {
           this.logger.warn('exceed the data');
-          return { data: [], page: -1, total: -1 };
+          return { data: [], page: -1, totalInPage: -1, total: -1 };
         }
-        filterQuery = `WHERE po.PurchaseID IN (${poList.join(',')})`
+        filterQuery = `WHERE PoCTE.POID IN (${poList.join(',')})`;
+        // totalRecord = await this.totalRecordCount(startDate, enddate)
       }
 
-      const query = `select DISTINCT 'Pine-Pacific Corporation Limited' as Companyname, s.DateArrive as ReciveDate, po.DateOrder as PoDate, po.PurchaseID as PoID,
-      pod.SProductName as ProductName, sup.SupplierName as SupplierName, pr.Purpose as Purpose,
-      pod.Amount as Amount, pr.Division as Dep, po.PurchaseOfficer as PurchaseBy,
-      CASE 
-         WHEN pod.ProductID LIKE '5%' THEN 'Asset'
-         ELSE 'Non-Asset'
-      END AS CategoryOfPurchase,
-      pod.ProductID as ProductID, pod.No as ProductNo, po.IsPurchaseOverseas as IsPurchaseOverseas,
-      Case
-          When IsActive = '1' then 'Active'
-          Else 'Inactive'
-      End as Status,
-      po.checkPoType as PoType
-      from [Endeavour].[dbo].[PurchaseOrder] po
-      left Join [Endeavour].[dbo].[PurchaseOrderDetailed] pod on po.PurchaseID = pod.PurchaseID
-      left Join [Endeavour].[dbo].[PurchaseRequest] pr on po.PRNO = pr.PRNO
-      left Join [Endeavour].[dbo].[ShipmentDetail] sd on sd.PurchaseID = po.PurchaseID and sd.NO = pod.No
-      left Join [Endeavour].[dbo].[Shipment] S on s.ShipmentID = sd.ShipmentID
-      left Join [Ent_db].[dbo].[Supplier] sup on sup.SupplierID = po.SupplierID
+      const query = `
+        with PoCTE as(
+	        select DISTINCT 'Pine-Pacific Corporation Limited' as Company, s.DateArrive as ReceiveDate, po.DateOrder as PODate, po.PurchaseID as POID,
+            pod.SProductName as ProductName, sup.SupplierName as SupplierName, pr.Purpose as Purpose,
+            pod.Amount as Amount, pr.Division as Department, po.PurchaseOfficer as PurchaseBy, pr.RequestBy as RequestBy,
+            CASE 
+              WHEN pod.ProductID LIKE '5%' THEN 'Asset'
+              ELSE 'Non-Asset'
+            END AS Category,
+            pod.ProductID as ProductID, pod.No as ProductNo, po.IsPurchaseOverseas as IsPurchaseOverseas,
+            Case
+                When IsActive = '1' then 'Active'
+                Else 'Inactive'
+            End as Status,
+            po.checkPoType as PoType
+            from [Endeavour].[dbo].[PurchaseOrder] po
+            left Join [Endeavour].[dbo].[PurchaseOrderDetailed] pod on po.PurchaseID = pod.PurchaseID
+            left Join [Endeavour].[dbo].[PurchaseRequest] pr on po.PRNO = pr.PRNO
+            left Join [Endeavour].[dbo].[ShipmentDetail] sd on sd.PurchaseID = po.PurchaseID and sd.NO = pod.No
+            left Join [Endeavour].[dbo].[Shipment] S on s.ShipmentID = sd.ShipmentID
+            left Join [Ent_db].[dbo].[Supplier] sup on sup.SupplierID = po.SupplierID
+            ${Queryrecord}
+        )
+
+        select *, (SELECT COUNT(*) FROM PoCTE) AS Totalrecrod
+        from PoCTE
       ${filterQuery}
-      order by po.PurchaseID desc, pod.No ASC`;
+        order by PoCTE.POID desc, PoCTE.ProductNo ASC
+      `
       const result = await this.dataSource.query(query);
       console.timeEnd('purchaseOrderOverseaList');
       this.logger.log({
-        data: result,
+        // data: result,
         page: page,
         total: result.length,
         list: poList,
         query: query,
+        totalrecord: result[0]['Totalrecrod'] || 0,
       });
 
       return {
         data: result as PurchaseOrderOverseaDto[],
         page: page,
-        total: result.length,
+        totalInPage: result.length,
+        total: result[0]['Totalrecrod'] || 0, 
       };
     } catch (error) {
       this.logger.error('Error fetching purchase orders', error);
@@ -116,7 +132,12 @@ export class PurchaseOrderOverseaService {
     }
   }
 
-  async purchaseOrderOverseaByType(poType: string, page: number, startDate: string, enddate: string){
+  async purchaseOrderOverseaByType(
+    poType: string,
+    page: number,
+    startDate: string,
+    enddate: string,
+  ) {
     try {
       const poListSize = 10;
       const offset = (page - 1) * poListSize;

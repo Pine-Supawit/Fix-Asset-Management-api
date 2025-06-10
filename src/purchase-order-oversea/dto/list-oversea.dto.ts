@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class listOverseaDto {
@@ -16,4 +16,9 @@ export class listOverseaDto {
   @IsOptional()
   @IsString()
   endDate?: string;
+
+  @ApiPropertyOptional({ type: Number, description: 'the limit amount of po in pagination' })
+  @IsOptional()
+  @IsNumber()
+  limit?: number;
 }

@@ -33,10 +33,12 @@ export class PurchaseOrderOverseaController {
     const pageNum = body.page ? NumberValidator(+body.page) : undefined;
     const startDateValid = body.startDate ? DateValidator(body.startDate) : undefined;
     const endDateValid = body.endDate? DateValidator(body.endDate) : undefined;
+    const limit = body.limit ? NumberValidator(+body.limit) : undefined;
     return this.purchaseOrderOverseaService.purchaseOrderOverseaList(
       pageNum,
       startDateValid,
-      endDateValid
+      endDateValid,
+      limit
     );
   }
 
@@ -52,7 +54,7 @@ export class PurchaseOrderOverseaController {
       poType.toUpperCase(),
       pageNum,
       startDateValid,
-      endDateValid
+      endDateValid,
     );
   }
 }
