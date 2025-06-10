@@ -20,9 +20,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { listOverseaDto } from './dto/list-oversea.dto';
 import { listByTypeOverseaDto } from './dto/list-by-type-oversea.dto';
-import { listByPOIDOverseaDto } from './dto/get-list-by-poid-oversea.dto';
-import { listByPurchaseOfficerOverseaDto } from './dto/get-list-by-purchase-officer-oversea.dto';
-import { listByResquestOfficerOverseaDto } from './dto/get-list-by-request-officer-oversea.dto';
+import { listByFiltersOverseaDto} from './dto/get-list-by-filters-oversea.dto';
 
 @ApiTags('Purchase Order Oversea')
 @Controller('purchase-order-oversea')
@@ -61,33 +59,16 @@ export class PurchaseOrderOverseaController {
     );
   }
 
-  @Get('poid')
-  async purchaseOrderOverseaByPOID(@Query() body: listByPOIDOverseaDto) {
-    const poid = NumberValidator(+body.poid);
+  @Get('filters')
+  async purchaseOrderOverseaByFilters(@Query() body: listByFiltersOverseaDto) {
+    const poid = body.poid? NumberValidator(+body.poid): undefined;
+    const purchaseBy = body.purchaseBy? StringValidator(body.purchaseBy): undefined
+    const resquestBy = body.resquestBy? StringValidator(body.resquestBy): undefined;
     const pageNum = body.page ? NumberValidator(+body.page) : undefined;
     const startDateValid = body.startDate ? DateValidator(body.startDate) : undefined;
     const endDateValid = body.endDate? DateValidator(body.endDate) : undefined;
     const limit = body.limit ? NumberValidator(+body.limit) : undefined;
-    return this.purchaseOrderOverseaService.purchaseOrderOverseaByPOID(poid, pageNum, limit, startDateValid, endDateValid);
+    return this.purchaseOrderOverseaService.purchaseOrderOverseaByFilters(poid, purchaseBy, resquestBy, pageNum, limit, startDateValid, endDateValid);
   }
 
-   @Get('PurchaseOfficer')
-  async purchaseOrderOverseaByPurchaseOfficer(@Query() body: listByPurchaseOfficerOverseaDto) {
-    const purchaseOfficer = StringValidator(body.purchaseBy);
-    const pageNum = body.page ? NumberValidator(+body.page) : undefined;
-    const startDateValid = body.startDate ? DateValidator(body.startDate) : undefined;
-    const endDateValid = body.endDate? DateValidator(body.endDate) : undefined;
-    const limit = body.limit ? NumberValidator(+body.limit) : undefined;
-    return this.purchaseOrderOverseaService.purchaseOrderOverseaByPurchaseOfficer(purchaseOfficer, pageNum, limit, startDateValid, endDateValid);
-  }
-
-   @Get('RequestOfficer')
-  async purchaseOrderOverseaByRequestOfficer(@Query() body: listByResquestOfficerOverseaDto) {
-    const requestOfficer = StringValidator(body.resquestBy);
-    const pageNum = body.page ? NumberValidator(+body.page) : undefined;
-    const startDateValid = body.startDate ? DateValidator(body.startDate) : undefined;
-    const endDateValid = body.endDate? DateValidator(body.endDate) : undefined;
-    const limit = body.limit ? NumberValidator(+body.limit) : undefined;
-    return this.purchaseOrderOverseaService.purchaseOrderOverseaByRequestOfficer(requestOfficer, pageNum, limit, startDateValid, endDateValid);
-  }
 }

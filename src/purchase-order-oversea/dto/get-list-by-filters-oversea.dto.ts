@@ -1,10 +1,21 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class listByPurchaseOfficerOverseaDto {
-    @ApiProperty({ type: String, description: 'find by Purchaser Officer' })
+export class listByFiltersOverseaDto {
+    @ApiPropertyOptional({ type: Number, description: 'find by POID' })
+    @IsOptional()
+    @IsNumber()
+    poid: Number;
+
+    @ApiPropertyOptional({ type: String, description: 'find by Purchaser Officer' })
+    @IsOptional()
     @IsString()
     purchaseBy: string;
+
+    @ApiPropertyOptional({ type: String, description: 'find by Resquest Officer' })
+    @IsOptional()
+    @IsString()
+    resquestBy: string;
 
     @ApiPropertyOptional({ type: Number, description: 'Defind page number' })
     @IsOptional()

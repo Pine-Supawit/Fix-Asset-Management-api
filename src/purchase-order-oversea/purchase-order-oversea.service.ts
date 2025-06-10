@@ -6,6 +6,7 @@ import { PurchaseOrderOversea } from './entities/purchase-order-oversea.entity';
 import { getDataSourceToken, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import e from 'express';
+import { start } from 'repl';
 
 @Injectable()
 export class PurchaseOrderOverseaService {
@@ -176,29 +177,50 @@ export class PurchaseOrderOverseaService {
     }
   }
 
-  async purchaseOrderOverseaByPOID(
-    poid: number,
+  async purchaseOrderOverseaByFilters(
+    poid?: number,
+    purchaseOfficer?: string,
+    requestOfficer?: string,
     page?: number,
     limit?: number,
-    starDate?: string,
+    startDate?: string,
     endDate?: string,
   ) {
     try {
+      const filtersProvided = [
+        poid ? 1 : 0,
+        purchaseOfficer ? 1 : 0,
+        requestOfficer ? 1 : 0,
+      ].reduce((a, b) => a + b, 0);
+      if (filtersProvided > 1) {
+        throw new Error(
+          'Only one of poid, purchaseOfficer, or requestOfficer can be provided at a time.',
+        );
+      }
+
       let dateFilter = '';
       let paginator = '';
-      if(poid && page && limit && starDate && endDate) {
-        const resultLimit = limit;
-        const offset = (page - 1) * resultLimit;
-        dateFilter = `WHERE po.DateOrder BETWEEN '${starDate}' AND '${endDate}'`;
-        paginator = `OFFSET ${offset} ROWS FETCH NEXT ${resultLimit} ROWS ONLY`
-      }
-      else if (poid && page && limit && !starDate && !endDate) {
+      let filters = '';
+      let countRecord = '';
+      if (page && limit) {
         const resultLimit = limit;
         const offset = (page - 1) * resultLimit;
         paginator = `OFFSET ${offset} ROWS FETCH NEXT ${resultLimit} ROWS ONLY`;
       }
-      else if (poid && !page && !limit && starDate && endDate) {
-        dateFilter = `WHERE po.DateOrder BETWEEN '${starDate}' AND '${endDate}'`;
+      if (startDate && endDate) {
+        dateFilter = `WHERE po.DateOrder BETWEEN '${startDate}' AND '${endDate}'`;
+      }
+      if (poid) {
+        filters = `WHERE PoCTE.POID = ${poid}`;
+        countRecord = 'PoCTE.POID';
+      }
+      if (purchaseOfficer) {
+        filters = `WHERE PoCTE.PurchaseBy like '%${purchaseOfficer}%'`;
+        countRecord = 'PoCTE.PurchaseBy';
+      }
+      if (requestOfficer) {
+        filters = `WHERE PoCTE.RequestBy like '%${requestOfficer}%'`;
+        countRecord = 'PoCTE.RequestBy';
       }
       let query = `
       with PoCTE as(
@@ -224,9 +246,9 @@ export class PurchaseOrderOverseaService {
             ${dateFilter}
         )
 
-        select *, (SELECT COUNT(*) FROM PoCTE) AS Totalrecrod
+        select *, (SELECT COUNT(${countRecord}) FROM PoCTE ${filters}) AS Totalrecrod
         from PoCTE
-		    WHERE PoCTE.POID = ${poid}
+        ${filters}
         order by PoCTE.POID desc, PoCTE.ProductNo ASC
         ${paginator}
       `;
@@ -246,167 +268,11 @@ export class PurchaseOrderOverseaService {
         data: result,
         page: page,
         totalInPage: result.length,
-        total: result[0]['Totalrecrod'] || 0
-      }
+        total: result[0]['Totalrecrod'] || 0,
+      };
     } catch (error) {
-      this.logger.error('Error fetching purchase orders by POID', error);
-      throw new Error('Error fetching purchase orders by POID');
-    }
-  }
-
-  async purchaseOrderOverseaByPurchaseOfficer(
-    purchaseOfficer: string,
-    page?: number,
-    limit?: number,
-    starDate?: string,
-    endDate?: string,
-  ) {
-    try {
-      let dateFilter = '';
-      let paginator = '';
-      if(purchaseOfficer && page && limit && starDate && endDate) {
-        const resultLimit = limit;
-        const offset = (page - 1) * resultLimit;
-        dateFilter = `WHERE po.DateOrder BETWEEN '${starDate}' AND '${endDate}'`;
-        paginator = `OFFSET ${offset} ROWS FETCH NEXT ${resultLimit} ROWS ONLY`
-      }
-      else if (purchaseOfficer && page && limit && !starDate && !endDate) {
-        const resultLimit = limit;
-        const offset = (page - 1) * resultLimit;
-        paginator = `OFFSET ${offset} ROWS FETCH NEXT ${resultLimit} ROWS ONLY`;
-      }
-      else if (purchaseOfficer && !page && !limit && starDate && endDate) {
-        dateFilter = `WHERE po.DateOrder BETWEEN '${starDate}' AND '${endDate}'`;
-      }
-      let query = `
-      with PoCTE as(
-	        select DISTINCT 'Pine-Pacific Corporation Limited' as Company, s.DateArrive as ReceiveDate, po.DateOrder as PODate, po.PurchaseID as POID,
-            pod.SProductName as ProductName, sup.SupplierName as SupplierName, pr.Purpose as Purpose,
-            pod.Amount as Amount, pr.Division as Department, po.PurchaseOfficer as PurchaseBy, pr.RequestBy as RequestBy,
-            CASE 
-              WHEN pod.ProductID LIKE '5%' THEN 'Asset'
-              ELSE 'Non-Asset'
-            END AS Category,
-            pod.ProductID as ProductID, pod.No as ProductNo, po.IsPurchaseOverseas as IsPurchaseOverseas,
-            Case
-                When IsActive = '1' then 'Active'
-                Else 'Inactive'
-            End as Status,
-            po.checkPoType as PoType
-            from [Endeavour].[dbo].[PurchaseOrder] po
-            left Join [Endeavour].[dbo].[PurchaseOrderDetailed] pod on po.PurchaseID = pod.PurchaseID
-            left Join [Endeavour].[dbo].[PurchaseRequest] pr on po.PRNO = pr.PRNO
-            left Join [Endeavour].[dbo].[ShipmentDetail] sd on sd.PurchaseID = po.PurchaseID and sd.NO = pod.No
-            left Join [Endeavour].[dbo].[Shipment] S on s.ShipmentID = sd.ShipmentID
-            left Join [Ent_db].[dbo].[Supplier] sup on sup.SupplierID = po.SupplierID
-            ${dateFilter}
-        )
-
-        select *, (SELECT COUNT(*) FROM PoCTE) AS Totalrecrod
-        from PoCTE
-		    WHERE PoCTE.PurchaseBy like '%${purchaseOfficer}%'
-        order by PoCTE.POID desc, PoCTE.ProductNo ASC
-        ${paginator}
-      `;
-      const result = await this.dataSource.query(query);
-      if (result.length === 0) {
-        this.logger.warn({message:'exceed the data', query: query});
-        return { data: [], page: -1, totalInPage: -1, total: -1 };
-      }
-      this.logger.log({
-        data: result,
-        page: page,
-        total: result.length,
-        totalrecord: result[0]['Totalrecrod'] || 0,
-        query: query,
-      });
-      return {
-        data: result,
-        page: page,
-        totalInPage: result.length,
-        total: result[0]['Totalrecrod'] || 0
-      }
-    } catch (error) {
-      this.logger.error('Error fetching purchase orders by POID', error);
-      throw new Error('Error fetching purchase orders by POID');
-    }
-  }
-
-  async purchaseOrderOverseaByRequestOfficer(
-    requestOfficer: string,
-    page?: number,
-    limit?: number,
-    starDate?: string,
-    endDate?: string,
-  ) {
-    try {
-      let dateFilter = '';
-      let paginator = '';
-      if(requestOfficer && page && limit && starDate && endDate) {
-        const resultLimit = limit;
-        const offset = (page - 1) * resultLimit;
-        dateFilter = `WHERE po.DateOrder BETWEEN '${starDate}' AND '${endDate}'`;
-        paginator = `OFFSET ${offset} ROWS FETCH NEXT ${resultLimit} ROWS ONLY`
-      }
-      else if (requestOfficer && page && limit && !starDate && !endDate) {
-        const resultLimit = limit;
-        const offset = (page - 1) * resultLimit;
-        paginator = `OFFSET ${offset} ROWS FETCH NEXT ${resultLimit} ROWS ONLY`;
-      }
-      else if (requestOfficer && !page && !limit && starDate && endDate) {
-        dateFilter = `WHERE po.DateOrder BETWEEN '${starDate}' AND '${endDate}'`;
-      }
-      let query = `
-      with PoCTE as(
-	        select DISTINCT 'Pine-Pacific Corporation Limited' as Company, s.DateArrive as ReceiveDate, po.DateOrder as PODate, po.PurchaseID as POID,
-            pod.SProductName as ProductName, sup.SupplierName as SupplierName, pr.Purpose as Purpose,
-            pod.Amount as Amount, pr.Division as Department, po.PurchaseOfficer as PurchaseBy, pr.RequestBy as RequestBy,
-            CASE 
-              WHEN pod.ProductID LIKE '5%' THEN 'Asset'
-              ELSE 'Non-Asset'
-            END AS Category,
-            pod.ProductID as ProductID, pod.No as ProductNo, po.IsPurchaseOverseas as IsPurchaseOverseas,
-            Case
-                When IsActive = '1' then 'Active'
-                Else 'Inactive'
-            End as Status,
-            po.checkPoType as PoType
-            from [Endeavour].[dbo].[PurchaseOrder] po
-            left Join [Endeavour].[dbo].[PurchaseOrderDetailed] pod on po.PurchaseID = pod.PurchaseID
-            left Join [Endeavour].[dbo].[PurchaseRequest] pr on po.PRNO = pr.PRNO
-            left Join [Endeavour].[dbo].[ShipmentDetail] sd on sd.PurchaseID = po.PurchaseID and sd.NO = pod.No
-            left Join [Endeavour].[dbo].[Shipment] S on s.ShipmentID = sd.ShipmentID
-            left Join [Ent_db].[dbo].[Supplier] sup on sup.SupplierID = po.SupplierID
-            ${dateFilter}
-        )
-
-        select *, (SELECT COUNT(*) FROM PoCTE) AS Totalrecrod
-        from PoCTE
-		    WHERE PoCTE.RequestBy like '%${requestOfficer}%'
-        order by PoCTE.POID desc, PoCTE.ProductNo ASC
-        ${paginator}
-      `;
-      const result = await this.dataSource.query(query);
-      if (result.length === 0) {
-        this.logger.warn({message:'exceed the data', query: query});
-        return { data: [], page: -1, totalInPage: -1, total: -1 };
-      }
-      this.logger.log({
-        data: result,
-        page: page,
-        total: result.length,
-        totalrecord: result[0]['Totalrecrod'] || 0,
-        query: query,
-      });
-      return {
-        data: result,
-        page: page,
-        totalInPage: result.length,
-        total: result[0]['Totalrecrod'] || 0
-      }
-    } catch (error) {
-      this.logger.error('Error fetching purchase orders by POID', error);
-      throw new Error('Error fetching purchase orders by POID');
+      this.logger.error('Error fetching purchase orders by filter', error);
+      throw new Error('Error fetching purchase orders by filter');
     }
   }
 }
