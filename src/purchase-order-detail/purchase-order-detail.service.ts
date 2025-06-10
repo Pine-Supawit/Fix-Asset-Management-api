@@ -5,8 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseOrderDetail } from './entities/purchase-order-detail.entity';
 import { FindPurchaseOrderDetailedDto } from './dto/find-detailed-purchasing.dto';
 import { In, Repository } from 'typeorm';
-import { PurchaseOrderService } from 'src/purchase_order/purchase_order.service';
-import { PurchaseRequestService } from 'src/purchase_request/purchase_request.service';
+import { PurchaseOrderService } from 'src/purchase-order/purchase_order.service';
+import { PurchaseRequestService } from 'src/purchase-request/purchase_request.service';
 import { SupplierService } from 'src/supplier/supplier.service';
 
 @Injectable()

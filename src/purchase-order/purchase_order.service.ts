@@ -6,7 +6,7 @@ import { FindPurchaseOrderDto } from './dto/find-purchase-order.dto';
 import { DeletePurchaseOrderDto } from './dto/delete-purchase-order.dto';
 import { PurchaseOrderDetailService } from 'src/purchase-order-detail/purchase-order-detail.service';
 import { IPurchaseOrder } from 'src/common/interfaces/purchase-order.interface';
-import { PurchaseRequestService } from 'src/purchase_request/purchase_request.service';
+import { PurchaseRequestService } from 'src/purchase-request/purchase_request.service';
 import { SupplierService } from 'src/supplier/supplier.service';
 import { UpdatePurchaseOrderDto } from './dto/update-purcahse-order.dto';
 import { FindPurchaseOrderByTypeDto } from './dto/find-by-type.dto';
