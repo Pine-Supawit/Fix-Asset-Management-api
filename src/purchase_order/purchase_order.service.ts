@@ -14,6 +14,8 @@ import { PurchaseOrderDetail } from 'src/purchase-order-detail/entities/purchase
 import { Between, MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
 import { startOfDay, endOfDay } from 'date-fns';
 import { FindProductNameDto } from './dto/find-product-name.dto';
+import { FindPurchaseOrderByRequestByDto } from './dto/find-by-request-by.dto';
+import { FindPurchaseOrderByPurchaseByDto } from './dto/find-by-purchase-by.dto';
 
 @Injectable()
 export class PurchaseOrderService {
@@ -218,7 +220,6 @@ export class PurchaseOrderService {
       InsuranceCompany: purchaseOrder?.InsuranceCompany || "",
       InsuranceNo: purchaseOrder?.InsuranceNo || "",
       PINO: purchaseOrder?.PINO || "",
-      PurchasingOfficer: purchaseOrder?.PurchaseOfficer || "",
       Status: detail?.Status || "",
     };
   }
@@ -255,7 +256,6 @@ export class PurchaseOrderService {
           InsuranceCompany: purchaseOrder?.InsuranceCompany || "",
           InsuranceNo: purchaseOrder?.InsuranceNo || "",
           PINO: purchaseOrder?.PINO || "",
-          PurchasingOfficer: purchaseOrder?.PurchaseOfficer || "",
         },
         status: 200,
       }
@@ -389,4 +389,81 @@ export class PurchaseOrderService {
       throw new Error('Error fetching purchase order types');
     }
   }
+
+  async findRequestBy(params: FindPurchaseOrderByRequestByDto) {
+    try {
+      const page = Number(params.page) || 1;
+      const limit = Number(params.limit) || 10;
+      const skip = (page - 1) * limit;
+      const requestBy = params.RequestBy?.trim() || '';
+
+      const query = this.purchaseOrderRepository
+        .createQueryBuilder("po")
+        .select("DISTINCT po.ShippingAgent", "RequestBy")
+        .where("po.ShippingAgent IS NOT NULL")
+        .andWhere("po.ShippingAgent != ''");
+
+      if (requestBy) {
+        query.andWhere("po.ShippingAgent LIKE :requestBy", { requestBy: `%${requestBy}%` });
+      }
+
+      const [rawResults, total] = await Promise.all([
+        query.clone().orderBy("po.ShippingAgent", "ASC").offset(skip).limit(limit).getRawMany(),
+        query.clone().getCount(),
+      ]);
+
+      return {
+        data: rawResults,
+        pagination: {
+          page,
+          limit,
+          total,
+          length: rawResults.length,
+        },
+        status: 200,
+      };
+    } catch (error) {
+      this.logger.error("Error fetching request by", error);
+      throw new Error("Error fetching request by");
+    }
+  }
+
+  async findPurchaseBy(params: FindPurchaseOrderByPurchaseByDto) {
+    try {
+      const page = Number(params.page) || 1;
+      const limit = Number(params.limit) || 10;
+      const skip = (page - 1) * limit;
+      const purchaseOfficer = params.PurchaseBy?.trim() || '';
+
+      const query = this.purchaseOrderRepository
+        .createQueryBuilder("po")
+        .select("DISTINCT po.PurchaseOfficer", "PurchaseBy")
+        .where("po.PurchaseOfficer IS NOT NULL")
+        .andWhere("po.PurchaseOfficer != ''");
+
+      if (purchaseOfficer) {
+        query.andWhere("po.PurchaseOfficer LIKE :purchaseBy", { purchaseBy: `%${purchaseOfficer}%` });
+      }
+
+      const [rawResults, total] = await Promise.all([
+        query.clone().orderBy("po.PurchaseOfficer", "ASC").offset(skip).limit(limit).getRawMany(),
+        query.clone().getCount(),
+      ]);
+
+      return {
+        data: rawResults,
+        pagination: {
+          page,
+          limit,
+          total,
+          length: rawResults.length,
+        },
+        status: 200,
+      };
+    } catch (error) {
+      this.logger.error("Error fetching purchase by", error);
+      throw new Error("Error fetching purchase by");
+    }
+  }
+
 }
