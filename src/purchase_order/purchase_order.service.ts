@@ -185,10 +185,10 @@ export class PurchaseOrderService {
       RevisionID: purchaseOrder.RevisionID?.toString(),
       RepairID: purchaseOrder?.TRNO || "",
       LotShipment: purchaseOrder?.LotShipment || "",
-      DateOrder: purchaseOrder?.DateOrder || null,
-      DateOfDelivery: purchaseOrder?.EstimateArr1 || undefined,
-      InvDate: purchaseOrder?.InvDate || null,
-      BLDate: purchaseOrder?.BLDate || null,
+      DateOrder: this.adjustToLocalTime(purchaseOrder?.DateOrder) || undefined,
+      DateOfDelivery: this.adjustToLocalTime(purchaseOrder?.EstimateArr1) || undefined,
+      InvDate: this.adjustToLocalTime(purchaseOrder?.InvDate) || undefined,
+      BLDate: this.adjustToLocalTime(purchaseOrder?.BLDate) || undefined,
       Company: CompanyMap[purchaseOrder?.Company] || "",
       ProductID: detail?.ProductID || "",
       No: detail?.No || 1,
@@ -205,14 +205,14 @@ export class PurchaseOrderService {
       InvNo: purchaseOrder?.InvNo || "",
       BLNO: purchaseOrder?.BLNo || "",
       POType: "",
-      PODate: purchaseOrder?.DateOrder || null,
-      PRDate: purchaseOrder?.PRDate || null,
+      PODate: this.adjustToLocalTime(purchaseOrder?.DateOrder) || undefined,
+      PRDate: this.adjustToLocalTime(purchaseOrder?.PRDate) || undefined,
       PRNO: purchaseOrder?.PRNo || "",
-      ReceiveDate: purchaseOrder?.DateArrive || null,
-      SendDocDate: purchaseOrder?.SendDocDate || null,
-      ReceiveDocDate: purchaseOrder?.ReceiveDocDate || null,
+      ReceiveDate: this.adjustToLocalTime(purchaseOrder?.DateArrive) || undefined,
+      SendDocDate: this.adjustToLocalTime(purchaseOrder?.SendDocDate) || undefined,
+      ReceiveDocDate: this.adjustToLocalTime(purchaseOrder?.ReceiveDocDate) || undefined,
       ApprovedBy: purchaseOrder?.ApprovedBy || "",
-      ApprovedDate: purchaseOrder?.ApprovedDate || null,
+      ApprovedDate: this.adjustToLocalTime(purchaseOrder?.ApprovedDate) || undefined,
       Amount: detail?.Amount || 0,
       Discount: purchaseOrder?.TotalDiscount || 0,
       VAT: purchaseOrder?.VAT || 0,
@@ -223,6 +223,13 @@ export class PurchaseOrderService {
       PINO: purchaseOrder?.PINO || "",
       Status: detail?.Status || "",
     };
+  }
+
+  private adjustToLocalTime(date: Date | string | null): Date | null {
+    if (!date) return null;
+    const dt = new Date(date);
+    dt.setHours(dt.getHours() + 7);
+    return dt;
   }
 
   async findOne(params: FindPurchaseOrderDto) {
