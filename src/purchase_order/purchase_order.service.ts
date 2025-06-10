@@ -40,6 +40,14 @@ export class PurchaseOrderService {
       const limit = Number(params.limit) || 10;
       const skip = (page - 1) * limit;
 
+      const AssetTypeMap: Record<string, string> = {
+        Asset: "A",
+        Tools: "T",
+        Expense: "E",
+        Spare: "S",
+        Consumable: "C",
+      };
+
       const POTypeMap: Record<string, string> = {
         A: "Asset",
         T: "Tools",
@@ -47,6 +55,7 @@ export class PurchaseOrderService {
         S: "Spare",
         C: "Consumable",
       };
+
       const CompanyMap: Record<string, string> = {
         "P/P": "Pine-Pacific Co., Ltd",
         "PIM": "Pine Industrial Materials Co., Ltd",
@@ -55,26 +64,53 @@ export class PurchaseOrderService {
 
       const query = this.purchaseOrderDetailRepository
         .createQueryBuilder("detail")
-        .innerJoinAndSelect("Purchasing", "po", "po.PurchaseID = detail.PurchaseID AND po.RevisionID = detail.RevisionID")
+        .innerJoinAndSelect(
+          "Purchasing",
+          "po",
+          "po.PurchaseID = detail.PurchaseID AND po.RevisionID = detail.RevisionID"
+        )
         .where("po.ReceiveDocDate IS NOT NULL");
 
       if (params.Category) {
-        query.andWhere("detail.AssetID = :assetID", { assetID: params.Category.toUpperCase() });
+        const assetTypeKey = Object.keys(AssetTypeMap).find((key) =>
+          params.Category && key.toLowerCase().startsWith(params.Category.toLowerCase())
+        );
+        if (assetTypeKey) {
+          query.andWhere("detail.AssetID = :assetID", {
+            assetID: AssetTypeMap[assetTypeKey],
+          });
+        }
       }
+
       if (params.PurchaseID) {
-        query.andWhere("detail.PurchaseID = :purchaseID", { purchaseID: Number(params.PurchaseID) });
+        query.andWhere("detail.PurchaseID = :purchaseID", {
+          purchaseID: Number(params.PurchaseID),
+        });
       }
+
       if (params.RevisionID) {
-        query.andWhere("detail.RevisionID = :revisionID", { revisionID: Number(params.RevisionID) });
+        query.andWhere("detail.RevisionID = :revisionID", {
+          revisionID: Number(params.RevisionID),
+        });
       }
+
       if (params.PurchaseBy) {
-        query.andWhere("po.PurchaseOfficer LIKE :purchaseBy", { purchaseBy: `%${params.PurchaseBy}%` });
+        query.andWhere("po.PurchaseOfficer LIKE :purchaseBy", {
+          purchaseBy: `%${params.PurchaseBy}%`,
+        });
       }
+
       if (params.RequestBy) {
-        query.andWhere("po.ShippingAgent LIKE :requestBy", { requestBy: `%${params.RequestBy}%` });
+        query.andWhere("po.ShippingAgent LIKE :requestBy", {
+          requestBy: `%${params.RequestBy}%`,
+        });
       }
+
       if (startDate && endDate) {
-        query.andWhere("po.DateOrder BETWEEN :startDate AND :endDate", { startDate, endDate });
+        query.andWhere("po.DateOrder BETWEEN :startDate AND :endDate", {
+          startDate,
+          endDate,
+        });
       }
 
       const [details, total] = await query
@@ -113,6 +149,9 @@ export class PurchaseOrderService {
           );
         })
       );
+
+      this.logger.debug(`[find-all-purchase-order]: length = ${JSON.stringify(result.length)}`);
+      this.logger.debug(`[find-all-purchase-order]: total = ${JSON.stringify(total)}`);
 
       return {
         data: result,
