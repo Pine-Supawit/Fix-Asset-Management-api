@@ -31,16 +31,15 @@ export class PurchaseOrderOverseaController {
 
   @Get('list')
   async purchaseOrderOverseaList(@Query() body: listOverseaDto) {
+    const poid = body.poid? NumberValidator(+body.poid): undefined;
+    const poType = body.poType ? StringValidator(body.poType) : undefined;
+    const purchaseBy = body.purchaseBy? StringValidator(body.purchaseBy): undefined
+    const resquestBy = body.resquestBy? StringValidator(body.resquestBy): undefined;
     const pageNum = body.page ? NumberValidator(+body.page) : undefined;
     const startDateValid = body.startDate ? DateValidator(body.startDate) : undefined;
     const endDateValid = body.endDate? DateValidator(body.endDate) : undefined;
     const limit = body.limit ? NumberValidator(+body.limit) : undefined;
-    return this.purchaseOrderOverseaService.purchaseOrderOverseaList(
-      pageNum,
-      startDateValid,
-      endDateValid,
-      limit
-    );
+    return this.purchaseOrderOverseaService.purchaseOrderOverseaList(poid, poType, purchaseBy, resquestBy, pageNum, limit, startDateValid, endDateValid);
   }
 
   @Get('type')
@@ -57,18 +56,6 @@ export class PurchaseOrderOverseaController {
       startDateValid,
       endDateValid,
     );
-  }
-
-  @Get('filters')
-  async purchaseOrderOverseaByFilters(@Query() body: listByFiltersOverseaDto) {
-    const poid = body.poid? NumberValidator(+body.poid): undefined;
-    const purchaseBy = body.purchaseBy? StringValidator(body.purchaseBy): undefined
-    const resquestBy = body.resquestBy? StringValidator(body.resquestBy): undefined;
-    const pageNum = body.page ? NumberValidator(+body.page) : undefined;
-    const startDateValid = body.startDate ? DateValidator(body.startDate) : undefined;
-    const endDateValid = body.endDate? DateValidator(body.endDate) : undefined;
-    const limit = body.limit ? NumberValidator(+body.limit) : undefined;
-    return this.purchaseOrderOverseaService.purchaseOrderOverseaByFilters(poid, purchaseBy, resquestBy, pageNum, limit, startDateValid, endDateValid);
   }
 
 }

@@ -20,37 +20,57 @@ export class PurchaseOrderOverseaService {
   private logger = new Logger();
 
   async purchaseOrderOverseaList(
+    poid?: number,
+    type?: string,
+    purchaseOfficer?: string,
+    requestOfficer?: string,
     page?: number,
-    startDate?: string,
-    enddate?: string,
     limit?: number,
-  ): Promise<{
-    data: PurchaseOrderOverseaDto[];
-    page?: number;
-    totalInPage: number;
-    total: number;
-  }> {
+    startDate?: string,
+    endDate?: string,
+  ){
     console.time('purchaseOrderOverseaList');
     try {
-      let filterQuery = '';
-      let queryrecord = '';
-      let dateQuery = '';
-      if (startDate && enddate && !page && !limit) {
-        dateQuery = `WHERE PoCTE.PODate between '${startDate}' and '${enddate}'`;
-        queryrecord = `WHERE po.DateOrder between '${startDate}' and '${enddate}'`;
-      } else if (page && limit && !startDate && !enddate) {
-        const resultLimit = limit;
-        const offset = (page - 1) * resultLimit;
-        filterQuery = `OFFSET ${offset} ROWS FETCH NEXT ${resultLimit} ROWS ONLY`;
-      } else if (startDate && enddate && page && limit) {
-        const resultLimit = limit;
-        const offset = (page - 1) * resultLimit;
-        filterQuery = `OFFSET ${offset} ROWS FETCH NEXT ${resultLimit} ROWS ONLY`;
-        queryrecord = `Where po.DateOrder between '${startDate}' and '${enddate}'`;
+      const filtersProvided = [
+        poid ? 1 : 0,
+        type ? 1 : 0,
+        purchaseOfficer ? 1 : 0,
+        requestOfficer ? 1 : 0,
+      ].reduce((a, b) => a + b, 0);
+      if (filtersProvided > 1) {
+        throw new Error(
+          'Only one of poid, purchaseOfficer, or requestOfficer can be provided at a time.',
+        );
       }
-
-      const query = `
-        with PoCTE as(
+      let dateFilter = '';
+      let paginator = '';
+      let filters = '';
+      let countRecord = '*';
+      if (page && limit) {
+        const resultLimit = limit;
+        const offset = (page - 1) * resultLimit;
+        paginator = `OFFSET ${offset} ROWS FETCH NEXT ${resultLimit} ROWS ONLY`;
+      }
+      if (startDate && endDate) {
+        dateFilter = `WHERE po.DateOrder BETWEEN '${startDate}' AND '${endDate}'`;
+      }
+      if (poid) {
+        filters = `WHERE PoCTE.POID = ${poid}`;
+        countRecord = 'PoCTE.POID';
+      }
+      if (type){
+        filters = `WHERE PoCTE.Category = '${type}'`;
+      }
+      if (purchaseOfficer) {
+        filters = `WHERE PoCTE.PurchaseBy like '%${purchaseOfficer}%'`;
+        countRecord = 'PoCTE.PurchaseBy';
+      }
+      if (requestOfficer) {
+        filters = `WHERE PoCTE.RequestBy like '%${requestOfficer}%'`;
+        countRecord = 'PoCTE.RequestBy';
+      }
+      let query = `
+      with PoCTE as(
 	        select DISTINCT 'Pine-Pacific Corporation Limited' as Company, s.DateArrive as ReceiveDate, po.DateOrder as PODate, po.PurchaseID as POID,
             pod.SProductName as ProductName, sup.SupplierName as SupplierName, pr.Purpose as Purpose,
             pod.Amount as Amount, pr.Division as Department, po.PurchaseOfficer as PurchaseBy, pr.RequestBy as RequestBy,
@@ -70,30 +90,29 @@ export class PurchaseOrderOverseaService {
             left Join [Endeavour].[dbo].[ShipmentDetail] sd on sd.PurchaseID = po.PurchaseID and sd.NO = pod.No
             left Join [Endeavour].[dbo].[Shipment] S on s.ShipmentID = sd.ShipmentID
             left Join [Ent_db].[dbo].[Supplier] sup on sup.SupplierID = po.SupplierID
-            ${queryrecord}
+            ${dateFilter}
         )
 
-        select *, (SELECT COUNT(*) FROM PoCTE) AS Totalrecrod
+        select *, (SELECT COUNT(${countRecord}) FROM PoCTE ${filters}) AS Totalrecrod
         from PoCTE
-        ${dateQuery}
+        ${filters}
         order by PoCTE.POID desc, PoCTE.ProductNo ASC
-        ${filterQuery}
+        ${paginator}
       `;
       const result = await this.dataSource.query(query);
       if (result.length === 0) {
         this.logger.warn('exceed the data');
         return { data: [], page: -1, totalInPage: -1, total: -1 };
       }
-      console.timeEnd('purchaseOrderOverseaList');
       this.logger.log({
+        data: result,
         page: page,
         total: result.length,
-        query: query,
         totalrecord: result[0]['Totalrecrod'] || 0,
+        query: query,
       });
-
       return {
-        data: result as PurchaseOrderOverseaDto[],
+        data: result,
         page: page,
         totalInPage: result.length,
         total: result[0]['Totalrecrod'] || 0,
