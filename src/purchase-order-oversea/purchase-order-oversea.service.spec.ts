@@ -49,7 +49,6 @@ describe('PurchaseOrderOverseaService', () => {
 
 
   it('should return paginated data when data exists (page only)', async () => {
-    const MockPoIDs = [{ PoID: 202505001 }, { PoID: 202504099 }];
     const MockData = [
       {
         Company: 'Pine-Pacific Corporation Limited',
@@ -93,7 +92,6 @@ describe('PurchaseOrderOverseaService', () => {
       },
     ];
     (dataSourceMock.query as jest.Mock)
-      .mockResolvedValueOnce(MockPoIDs)
       .mockResolvedValueOnce(MockData);
 
     const result = await service.purchaseOrderOverseaList(1, undefined, undefined, 2);

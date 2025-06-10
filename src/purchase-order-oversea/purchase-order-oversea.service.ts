@@ -41,19 +41,10 @@ export class PurchaseOrderOverseaService {
       } else if (page && limit && !startDate && !enddate) {
         const resultLimit = limit;
         const offset = (page - 1) * resultLimit;
-        // if (poList.length === 0) {
-        //   this.logger.warn('exceed the data');
-        //   return { data: [], page: -1, totalInPage: -1, total: -1 };
-        // }
         filterQuery = `OFFSET ${offset} ROWS FETCH NEXT ${resultLimit} ROWS ONLY`;
       } else if (startDate && enddate && page && limit) {
         const resultLimit = limit;
         const offset = (page - 1) * resultLimit;
-
-        // if (poList.length === 0) {
-        //   this.logger.warn('exceed the data');
-        //   return { data: [], page: -1, totalInPage: -1, total: -1 };
-        // }
         filterQuery = `OFFSET ${offset} ROWS FETCH NEXT ${resultLimit} ROWS ONLY`
         queryrecord = `Where po.DateOrder between '${startDate}' and '${enddate}'`
       }
@@ -89,9 +80,12 @@ export class PurchaseOrderOverseaService {
         ${filterQuery}
       `
       const result = await this.dataSource.query(query);
+      if (result.length === 0) {
+          this.logger.warn('exceed the data');
+          return { data: [], page: -1, totalInPage: -1, total: -1 };
+        }
       console.timeEnd('purchaseOrderOverseaList');
       this.logger.log({
-        // data: result,
         page: page,
         total: result.length,
         list: poList,
