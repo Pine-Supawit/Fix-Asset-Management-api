@@ -129,6 +129,7 @@ export class PurchaseOrderService {
             where: {
               PurchaseID: detail.PurchaseID,
               RevisionID: detail.RevisionID,
+              ReceiveDocDate: Not(IsNull()),
             },
           });
 
