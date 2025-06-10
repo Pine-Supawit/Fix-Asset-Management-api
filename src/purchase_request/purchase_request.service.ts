@@ -68,7 +68,6 @@ export class PurchaseRequestService {
           status: 200
         }
       }
-      this.logger.debug(`[find-one-purchase-request]: ${JSON.stringify(purchaseRequest)}`);
       return {
         data: purchaseRequest,
         status: 200,
@@ -99,7 +98,7 @@ export class PurchaseRequestService {
         { PRNO: params.PRNO },
         update
       );
-      
+
     } catch (error) {
       this.logger.error('Error updating purchase request', error);
       throw new Error('Error updating purchase request');

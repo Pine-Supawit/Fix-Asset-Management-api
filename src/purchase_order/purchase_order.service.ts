@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseOrder } from './entities/purchase_order.entity';
-import { And, IsNull, Like, Not, Repository } from 'typeorm';
+import { And, In, IsNull, Like, Not, Repository } from 'typeorm';
 import { FindPurchaseOrderDto } from './dto/find-purchase-order.dto';
 import { DeletePurchaseOrderDto } from './dto/delete-purchase-order.dto';
 import { PurchaseOrderDetailService } from 'src/purchase-order-detail/purchase-order-detail.service';
@@ -36,9 +36,6 @@ export class PurchaseOrderService {
       const startDate = params.startDate ? `${params.startDate} 00:00:00` : undefined;
       const endDate = params.endDate ? `${params.endDate} 23:59:59` : undefined;
 
-      this.logger.debug(`[StartDate]: ${startDate}`);
-      this.logger.debug(`[EndDate]: ${endDate}`);
-
       const page = Number(params.page) || 1;
       const limit = Number(params.limit) || 10;
       const skip = (page - 1) * limit;
@@ -56,62 +53,58 @@ export class PurchaseOrderService {
         "S/R": "Saraburi",
       };
 
-      this.logger.debug(`[find-many-purchase-order]: ${JSON.stringify(params)}`);
+      const query = this.purchaseOrderDetailRepository
+        .createQueryBuilder("detail")
+        .innerJoinAndSelect("Purchasing", "po", "po.PurchaseID = detail.PurchaseID AND po.RevisionID = detail.RevisionID")
+        .where("po.ReceiveDocDate IS NOT NULL");
 
-      const where: any = {};
-      if (params.PurchaseID !== undefined) where.PurchaseID = Number(params.PurchaseID);
-      if (params.RevisionID !== undefined) where.RevisionID = Number(params.RevisionID);
-      if (params.RepairID) where.TRNO = Like(`%${params.RepairID}%`);
-      if (params.Department) where.PRDivision = Like(params.Department.toUpperCase());
-      if (startDate && endDate) {
-        where.DateOrder = Between(startDate, endDate);
+      if (params.Category) {
+        query.andWhere("detail.AssetID = :assetID", { assetID: params.Category.toUpperCase() });
       }
-      where.ReceiveDocDate = Not(IsNull());
+      if (params.PurchaseID) {
+        query.andWhere("detail.PurchaseID = :purchaseID", { purchaseID: Number(params.PurchaseID) });
+      }
+      if (params.RevisionID) {
+        query.andWhere("detail.RevisionID = :revisionID", { revisionID: Number(params.RevisionID) });
+      }
+      if (params.Department) {
+        query.andWhere("po.PRDivision LIKE :dept", { dept: `%${params.Department.toUpperCase()}%` });
+      }
+      if (startDate && endDate) {
+        query.andWhere("po.DateOrder BETWEEN :startDate AND :endDate", { startDate, endDate });
+      }
 
-      const [purchaseOrders, total] = await this.purchaseOrderRepository.findAndCount({
-        where: where,
-        skip: skip,
-        take: limit,
-        order: {
-          ReceiveDocDate: 'DESC',
-          PurchaseID: 'ASC',
-          RevisionID: 'ASC',
-        }
-      });
+      const [details, total] = await query
+        .skip(skip)
+        .take(limit)
+        .orderBy("po.ReceiveDocDate", "DESC")
+        .addOrderBy("detail.PurchaseID", "ASC")
+        .addOrderBy("detail.RevisionID", "ASC")
+        .getManyAndCount();
 
-      const purchaseOrdersResult = await Promise.all(
-        purchaseOrders.map(async (purchaseOrder) => {
-          const detailWhere: any = {
-            PurchaseID: purchaseOrder.PurchaseID,
-            RevisionID: purchaseOrder.RevisionID,
-          };
-          if (params.Category && POTypeMap[params.Category]) {
-            detailWhere.AssetID = params.Category;
-          }
-
-          const detailList = await this.purchaseOrderDetailRepository.find({
-            where: detailWhere,
+      const result = await Promise.all(
+        details.map(async (detail) => {
+          const purchaseOrder = await this.purchaseOrderRepository.findOne({
+            where: {
+              PurchaseID: detail.PurchaseID,
+              RevisionID: detail.RevisionID,
+            },
           });
 
-          const selectedDetail = detailList[0] || {};
-
-          const [requests, supplierResponse] = await Promise.all([
-            this.purchaseRequestService.findAll({
+          const [request, supplier] = await Promise.all([
+            this.purchaseRequestService.findOne({
               PRNO: purchaseOrder?.PRNo?.toString(),
             }),
-            this.supplierService.findAll({
-              SupplierID: purchaseOrder.SupplierID?.toString(),
+            this.supplierService.findOne({
+              SupplierID: purchaseOrder?.SupplierID,
             }),
           ]);
 
-          const request: any = requests?.data || [];
-          const supplierName = supplierResponse?.data?.[0]?.SupplierName || "";
-
           return this.mapPurchaseOrderFields(
             purchaseOrder,
-            selectedDetail,
+            detail,
             request,
-            supplierName,
+            supplier?.data.SupplierName || "",
             POTypeMap,
             CompanyMap
           );
@@ -119,12 +112,12 @@ export class PurchaseOrderService {
       );
 
       return {
-        data: purchaseOrdersResult,
+        data: result,
         pagination: {
           page,
           limit,
           total,
-          length: purchaseOrdersResult.length,
+          length: result.length,
         },
         status: 200,
       };
