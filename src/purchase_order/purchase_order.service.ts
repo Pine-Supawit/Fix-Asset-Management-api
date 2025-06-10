@@ -159,7 +159,7 @@ export class PurchaseOrderService {
       Category: POTypeMap[detail?.AssetID] || "",
       InvNo: purchaseOrder?.InvNo || "",
       BLNO: purchaseOrder?.BLNo || "",
-      POType: POTypeMap[detail?.AssetID] || "",
+      POType: "",
       PODate: purchaseOrder?.DateOrder || null,
       PRDate: purchaseOrder?.PRDate || null,
       PRNO: purchaseOrder?.PRNo || "",
