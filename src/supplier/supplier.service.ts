@@ -28,7 +28,6 @@ export class SupplierService {
           SupplierID: 'DESC',
         },
       });
-      this.logger.debug(`[find-many-suppliers]: ${JSON.stringify(suppliers)}\n [total]: ${total}`);
       this.logger.debug(`[find-many-suppliers]: ${JSON.stringify(suppliers.length)}`);
       return {
         data: suppliers,

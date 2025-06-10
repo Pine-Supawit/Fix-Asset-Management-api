@@ -43,13 +43,6 @@ export class PurchaseOrderService {
       const limit = Number(params.limit) || 10;
       const skip = (page - 1) * limit;
 
-      const AssetTypeMap: Record<string, string> = {
-        Asset: "A",
-        Tools: "T",
-        Expense: "E",
-        Spare: "S",
-        Consumable: "C",
-      };
       const POTypeMap: Record<string, string> = {
         A: "Asset",
         T: "Tools",
@@ -74,6 +67,7 @@ export class PurchaseOrderService {
         where.DateOrder = Between(startDate, endDate);
       }
       where.ReceiveDocDate = Not(IsNull());
+
       const [purchaseOrders, total] = await this.purchaseOrderRepository.findAndCount({
         where: where,
         skip: skip,
@@ -82,19 +76,24 @@ export class PurchaseOrderService {
           ReceiveDocDate: 'DESC',
           PurchaseID: 'ASC',
           RevisionID: 'ASC',
-          TRNO: 'ASC',
         }
       });
 
       const purchaseOrdersResult = await Promise.all(
         purchaseOrders.map(async (purchaseOrder) => {
-          const detail = await this.purchaseOrderDetailRepository.find({
-            where: {
-              PurchaseID: purchaseOrder.PurchaseID,
-              RevisionID: purchaseOrder.RevisionID,
-              ...(params.Category && { AssetID: AssetTypeMap[params.Category] }),
-            },
+          const detailWhere: any = {
+            PurchaseID: purchaseOrder.PurchaseID,
+            RevisionID: purchaseOrder.RevisionID,
+          };
+          if (params.Category && POTypeMap[params.Category]) {
+            detailWhere.AssetID = params.Category;
+          }
+
+          const detailList = await this.purchaseOrderDetailRepository.find({
+            where: detailWhere,
           });
+
+          const selectedDetail = detailList[0] || {};
 
           const [requests, supplierResponse] = await Promise.all([
             this.purchaseRequestService.findAll({
@@ -110,7 +109,7 @@ export class PurchaseOrderService {
 
           return this.mapPurchaseOrderFields(
             purchaseOrder,
-            detail,
+            selectedDetail,
             request,
             supplierName,
             POTypeMap,

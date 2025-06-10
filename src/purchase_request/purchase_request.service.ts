@@ -38,7 +38,6 @@ export class PurchaseRequestService {
           status: 200
         }
       }
-      this.logger.debug(`[find-many-purchase-request]: ${JSON.stringify(purchaseRequests)}\n [total]: ${total}`);
       this.logger.debug(`[find-many-purchase-request]: ${JSON.stringify(purchaseRequests.length)}`);
 
       return {

@@ -25,12 +25,12 @@ export class FindPurchaseOrderDto {
     @IsOptional()
     Department?: string;
 
-    @ApiProperty({ required: false, description: 'Search by Asset type (Asset, Expense, Tools, Spare, Consumable)' })
+    @ApiProperty({ required: false, description: 'Search by Asset type (A, E, T, S, C)' })
     @IsString()
     @IsOptional()
     Category?: string;
 
-    @ApiProperty({ required: false, description: 'Search by Asset type (Asset, Expense, Tools, Spare, Consumable)' })
+    @ApiProperty({ required: false, description: 'Search by Asset type (A, E, T, S, C)' })
     @IsString()
     @IsOptional()
     POType?: string;
