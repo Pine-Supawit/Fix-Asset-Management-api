@@ -15,7 +15,7 @@ export class PurchaseOrderOverseaService {
     private purchaseOrderOverseaRepo: Repository<PurchaseOrderOversea>,
     @Inject(getDataSourceToken('Endeavour'))
     private dataSource: DataSource,
-  ) {}
+  ) { }
 
   private logger = new Logger();
 
@@ -28,7 +28,7 @@ export class PurchaseOrderOverseaService {
     limit?: number,
     startDate?: string,
     endDate?: string,
-  ){
+  ) {
     console.time('purchaseOrderOverseaList');
     try {
       const filtersProvided = [
@@ -58,7 +58,7 @@ export class PurchaseOrderOverseaService {
         filters = `WHERE PoCTE.POID = ${poid}`;
         countRecord = 'PoCTE.POID';
       }
-      if (type){
+      if (type) {
         filters = `WHERE PoCTE.Category = '${type}'`;
       }
       if (purchaseOfficer) {
@@ -101,7 +101,7 @@ export class PurchaseOrderOverseaService {
       `;
       const result = await this.dataSource.query(query);
       if (result.length === 0) {
-        this.logger.warn('exceed the data');
+        this.logger.warn('No more data found');
         return { data: [], page: -1, totalInPage: -1, total: -1 };
       }
       this.logger.log({

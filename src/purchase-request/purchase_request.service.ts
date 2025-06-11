@@ -33,12 +33,6 @@ export class PurchaseRequestService {
           PRNO: 'DESC',
         },
       });
-      if (purchaseRequests.length === 0) {
-        return {
-          data: [],
-          status: 200
-        }
-      }
       this.logger.debug(`[find-many-purchase-request]: length = ${JSON.stringify(purchaseRequests.length)}`);
       this.logger.debug(`[find-many-purchase-request]: total = ${total}`);
 
@@ -46,8 +40,8 @@ export class PurchaseRequestService {
       return {
         data: purchaseRequests,
         pagination: {
-          page: page,
-          limit: limit,
+          page: Number(page),
+          limit: Number(limit),
           total: total,
         },
         status: 200,

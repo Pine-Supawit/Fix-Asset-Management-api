@@ -156,15 +156,15 @@ export class PurchaseOrderService {
 
       this.logger.debug(`[find-many-purchase-order]: length = ${JSON.stringify(result.length)}`);
       this.logger.debug(`[find-many-purchase-order]: total = ${JSON.stringify(total)}`);
-      
+
       console.timeEnd('find-many-purchase-order');
 
       return {
         data: result,
         pagination: {
-          page,
-          limit,
-          total,
+          page: Number(page),
+          limit: Number(limit),
+          total: total,
           length: result.length,
         },
         status: 200,

@@ -121,9 +121,9 @@ export class PurchaseOrderDetailService {
       return {
         data: purchaseOrderDetailsResult,
         pagination: {
-          page,
-          limit,
-          total,
+          page: Number(page),
+          limit: Number(limit),
+          total: total,
         },
         status: 200,
       };
