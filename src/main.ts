@@ -11,7 +11,6 @@ async function bootstrap() {
     .setTitle('Assets Management API')
     .setDescription('The API for managing assets')
     .setVersion('1.0')
-    // .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
