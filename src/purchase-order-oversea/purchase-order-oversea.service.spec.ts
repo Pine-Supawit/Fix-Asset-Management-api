@@ -58,7 +58,7 @@ describe('PurchaseOrderOverseaService', () => {
         IsPurchaseOverseas: true,
         Status: 'Active',
         PoType: 'Type',
-        Totalrecrod: 1,
+        Totalrecord: 1,
       },
     ];
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
@@ -110,7 +110,7 @@ describe('PurchaseOrderOverseaService', () => {
         IsPurchaseOverseas: true,
         Status: 'Active',
         PoType: 'Type',
-        Totalrecrod: 1,
+        Totalrecord: 1,
       },
     ];
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
@@ -143,7 +143,7 @@ describe('PurchaseOrderOverseaService', () => {
         IsPurchaseOverseas: true,
         Status: 'Active',
         PoType: 'Type',
-        Totalrecrod: 1,
+        Totalrecord: 1,
       },
     ];
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
@@ -176,7 +176,7 @@ describe('PurchaseOrderOverseaService', () => {
         IsPurchaseOverseas: true,
         Status: 'Active',
         PoType: 'Type',
-        Totalrecrod: 1,
+        Totalrecord: 1,
       },
     ];
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
@@ -209,7 +209,7 @@ describe('PurchaseOrderOverseaService', () => {
         IsPurchaseOverseas: true,
         Status: 'Active',
         PoType: 'Type',
-        Totalrecrod: 1,
+        Totalrecord: 1,
       },
     ];
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);

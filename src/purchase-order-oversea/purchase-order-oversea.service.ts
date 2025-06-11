@@ -93,7 +93,7 @@ export class PurchaseOrderOverseaService {
             ${dateFilter}
         )
 
-        select *, (SELECT COUNT(${countRecord}) FROM PoCTE ${filters}) AS Totalrecrod
+        select *, (SELECT COUNT(${countRecord}) FROM PoCTE ${filters}) AS Totalrecord
         from PoCTE
         ${filters}
         order by PoCTE.POID desc, PoCTE.ProductNo ASC
@@ -108,7 +108,7 @@ export class PurchaseOrderOverseaService {
         data: result,
         page: page,
         total: result.length,
-        totalrecord: result[0]['Totalrecrod'] || 0,
+        totalrecord: result[0]['Totalrecord'] || 0,
         query: query,
       });
       console.timeEnd('purchaseOrderOverseaList');
@@ -116,7 +116,7 @@ export class PurchaseOrderOverseaService {
         data: result,
         page: page,
         totalInPage: result.length,
-        total: result[0]['Totalrecrod'] || 0,
+        total: result[0]['Totalrecord'] || 0,
       };
     } catch (error) {
       this.logger.error('Error fetching purchase orders', error);

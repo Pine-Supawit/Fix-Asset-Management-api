@@ -16,5 +16,5 @@ export class PurchaseOrderOverseaDto {
   ProductNo: number;
   Status: boolean;
   PoType: string;
-  Totalrecrod: number;
+  Totalrecord: number;
 }
