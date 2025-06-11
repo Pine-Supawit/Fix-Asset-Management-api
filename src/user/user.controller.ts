@@ -41,7 +41,6 @@ export class UserController {
     return this.userService.logout(body);
   }
 
-  @ApiBearerAuth()
   @Post('refresh')
   @ApiOperation({ summary: 'Get refresh token if access token is expired', description: 'Returns new access token' })
   async refresh(@Body() body: RefreshDto) {
