@@ -49,4 +49,5 @@ export interface IPurchaseOrder {
     GPUnitCost?: number;
     UnitCostBaht?: number;
     Freight?: number;
+    NoteForShipmentReport?: string;
 }

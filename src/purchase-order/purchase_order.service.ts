@@ -8,7 +8,7 @@ import { PurchaseOrderDetailService } from 'src/purchase-order-detail/purchase-o
 import { IPurchaseOrder } from 'src/common/interfaces/purchase-order.interface';
 import { PurchaseRequestService } from 'src/purchase-request/purchase_request.service';
 import { SupplierService } from 'src/supplier/supplier.service';
-import { UpdatePurchaseOrderDto } from './dto/update-purcahse-order.dto';
+import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 import { FindPurchaseOrderByTypeDto } from './dto/find-by-type.dto';
 import { PurchaseOrderDetail } from 'src/purchase-order-detail/entities/purchase-order-detail.entity';
 import { Between, MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
@@ -224,6 +224,7 @@ export class PurchaseOrderService {
       InsuranceNo: purchaseOrder?.InsuranceNo || "",
       PINO: purchaseOrder?.PINO || "",
       Status: detail?.Status || "",
+      NoteForShipmentReport: purchaseOrder?.NoteForShipmentReport || "",
     };
   }
 
@@ -302,28 +303,51 @@ export class PurchaseOrderService {
 
   async update(params: UpdatePurchaseOrderDto) {
     try {
-      const purchaseOrder = await this.purchaseOrderRepository.findOne({
-        where: {
-          PurchaseID: Number(params.POID),
-          RevisionID: Number(params.RevisionID),
-        },
-      })
-      if (!purchaseOrder) {
-        this.logger.warn(`Purchase order with ID ${params.POID} not found`);
-        throw new NotFoundException(`Purchase order with ID ${params.POID} not found`);
-      }
       this.logger.debug(`[update-purchase-order]: ${JSON.stringify(params)}`);
-      const update = {
-        PurchaseID: Number(params.POID) || purchaseOrder.PurchaseID,
-        RevisionID: Number(params.RevisionID) || purchaseOrder.RevisionID,
-        InvNo: params.InvNo || purchaseOrder.InvNo,
-        InvDate: params.InvDate || purchaseOrder.InvDate,
+
+      const AssetTypeMap: Record<string, string> = {
+        Asset: "A",
+        Tools: "T",
+        Expense: "E",
+        Spare: "S",
+        Consumable: "C",
+      };
+
+      for (const item of params.POObject) {
+        const purchaseOrderDetail = await this.purchaseOrderDetailRepository.findOne({
+          where: {
+            PurchaseID: item.POID,
+            RevisionID: item.RevisionID,
+            No: item.No,
+          },
+        });
+
+        if (!purchaseOrderDetail) {
+          this.logger.warn(`Purchase Order Detail with PurchaseID: ${item.POID}, RevisionID: ${item.RevisionID}, No: ${item.No} not found`);
+          throw new NotFoundException('Purchase Order Detail not found');
+        }
+
+        if (params.Category) {
+          const updatePODetail = {
+            AssetID: AssetTypeMap[params.Category] || purchaseOrderDetail.AssetID,
+          }
+
+          await this.purchaseOrderDetailRepository.update({
+            PurchaseID: item.POID,
+            RevisionID: item.RevisionID,
+            No: item.No,
+          }, {
+            ...updatePODetail,
+          })
+        }
+
+        this.logger.debug(`[update-purchase-order]: Updated Purchase Order Detail with PurchaseID: ${item.POID}, RevisionID: ${item.RevisionID}, No: ${item.No}`);
+
+        return {
+          status: 200,
+          message: 'Purchase order updated successfully',
+        }
       }
-      const updatedPurchaseOrder = await this.purchaseOrderRepository.update(
-        { PurchaseID: Number(params.POID), RevisionID: Number(params.RevisionID) },
-        update
-      );
-      this.logger.debug(`[update-purchase-order]: updatedPurchaseOrder = ${JSON.stringify(updatedPurchaseOrder)}`);
     } catch (error) {
       this.logger.error(error);
       throw new Error('Error updating purchase order');

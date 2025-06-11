@@ -5,7 +5,7 @@ import { IsNumber, IsOptional, IsString } from "class-validator";
 export class FindPurchaseOrderByTypeDto {
     @ApiProperty({ description: 'Type of the purchase order', example: 'Asset' })
     @IsString()
-    POType: string;
+    Category: string;
 
     @ApiProperty({ required: false, description: 'Page number' })
     @IsNumber()

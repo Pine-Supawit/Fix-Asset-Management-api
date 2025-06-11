@@ -138,72 +138,72 @@ export class PurchaseOrderDetailService {
     return `This action returns a #${id} purchaseOrderDetail`;
   }
 
-  async update(params: UpdatePurchaseOrderDetailDto) {
-    try {
-      const purchaseOrderDetail = await this.purchaseOrderDetailRepository.findOne({
-        where: {
-          PurchaseID: Number(params.POID),
-          RevisionID: Number(params.RevisionID),
-          No: Number(params.No),
-        },
-      })
-      if (!purchaseOrderDetail) {
-        throw new NotFoundException(`Purchase Order Detail with PurchaseID: ${params.POID}, RevisionID: ${params.RevisionID}, No: ${params.No} not found`);
-      }
+  // async update(params: UpdatePurchaseOrderDetailDto) {
+  //   try {
+  //     const purchaseOrderDetail = await this.purchaseOrderDetailRepository.findOne({
+  //       where: {
+  //         PurchaseID: Number(params.POID),
+  //         RevisionID: Number(params.RevisionID),
+  //         No: Number(params.No),
+  //       },
+  //     })
+  //     if (!purchaseOrderDetail) {
+  //       throw new NotFoundException(`Purchase Order Detail with PurchaseID: ${params.POID}, RevisionID: ${params.RevisionID}, No: ${params.No} not found`);
+  //     }
 
-      const purpose = await this.purchaseRequestService.findOne({
-        PRNO: purchaseOrderDetail.PRNo?.toString(),
-      })
+  //     const purpose = await this.purchaseRequestService.findOne({
+  //       PRNO: purchaseOrderDetail.PRNo?.toString(),
+  //     })
 
-      const purchaseOrder = await this.purchaseOrderService.findOne({
-        POID: Number(params.POID),
-        RevisionID: Number(params.RevisionID),
-      })
+  //     const purchaseOrder = await this.purchaseOrderService.findOne({
+  //       POID: Number(params.POID),
+  //       RevisionID: Number(params.RevisionID),
+  //     })
 
-      this.logger.debug(`[update-purchase-order-detail]: ${JSON.stringify(params)}`);
-      const update = {
-        PurchaseID: Number(params.POID) || purchaseOrderDetail.PurchaseID,
-        RevisionID: Number(params.RevisionID) || purchaseOrderDetail.RevisionID,
-        No: Number(params.No) || purchaseOrderDetail.No,
-        AssetID: params.AssetID || purchaseOrderDetail.AssetID,
-        chk: params.AssetTypeCheck || purchaseOrderDetail.chk,
-        PriceNote: params.Note || purchaseOrderDetail.PriceNote,
-      }
+  //     this.logger.debug(`[update-purchase-order-detail]: ${JSON.stringify(params)}`);
+  //     const update = {
+  //       PurchaseID: Number(params.POID) || purchaseOrderDetail.PurchaseID,
+  //       RevisionID: Number(params.RevisionID) || purchaseOrderDetail.RevisionID,
+  //       No: Number(params.No) || purchaseOrderDetail.No,
+  //       AssetID: params.AssetID || purchaseOrderDetail.AssetID,
+  //       chk: params.AssetTypeCheck || purchaseOrderDetail.chk,
+  //       PriceNote: params.Note || purchaseOrderDetail.PriceNote,
+  //     }
 
-      const updatedPurchaseOrderDetail = await this.purchaseOrderDetailRepository.update(
-        {
-          PurchaseID: Number(params.POID),
-          RevisionID: Number(params.RevisionID),
-          No: Number(params.No),
-        },
-        update
-      );
+  //     const updatedPurchaseOrderDetail = await this.purchaseOrderDetailRepository.update(
+  //       {
+  //         PurchaseID: Number(params.POID),
+  //         RevisionID: Number(params.RevisionID),
+  //         No: Number(params.No),
+  //       },
+  //       update
+  //     );
 
-      const updatesPurchaseOrder = await this.purchaseOrderService.update({
-        POID: Number(params.POID),
-        RevisionID: Number(params.RevisionID),
-        InvNo: params.InvNo || purchaseOrder.data[0]?.InvNo,
-        InvDate: params.InvDate || purchaseOrder.data[0]?.InvDate,
-      })
-      const updatedPurchaseRequestPurpose = await this.purchaseRequestService.update(
-        {
-          PRNO: purchaseOrderDetail.PRNo?.toString(),
-          Purpose: params.Purpose || purpose.data[0]?.Purpose,
-        },
-      )
+  //     const updatesPurchaseOrder = await this.purchaseOrderService.update({
+  //       POID: Number(params.POID),
+  //       RevisionID: Number(params.RevisionID),
+  //       InvNo: params.InvNo || purchaseOrder.data[0]?.InvNo,
+  //       InvDate: params.InvDate || purchaseOrder.data[0]?.InvDate,
+  //     })
+  //     const updatedPurchaseRequestPurpose = await this.purchaseRequestService.update(
+  //       {
+  //         PRNO: purchaseOrderDetail.PRNo?.toString(),
+  //         Purpose: params.Purpose || purpose.data[0]?.Purpose,
+  //       },
+  //     )
 
-      this.logger.debug(`[update-purchase-order-detail]: updatedPurchaseOrderDetail = ${JSON.stringify(updatedPurchaseOrderDetail)}`);
+  //     this.logger.debug(`[update-purchase-order-detail]: updatedPurchaseOrderDetail = ${JSON.stringify(updatedPurchaseOrderDetail)}`);
 
-      return {
-        data: [],
-        status: 200,
-        message: `Purchase Order Detail updated successfully`,
-      }
-    } catch (error) {
-      this.logger.error(error)
-      throw error;
-    }
-  }
+  //     return {
+  //       data: [],
+  //       status: 200,
+  //       message: `Purchase Order Detail updated successfully`,
+  //     }
+  //   } catch (error) {
+  //     this.logger.error(error)
+  //     throw error;
+  //   }
+  // }
 
   async updateAll() {
     try {

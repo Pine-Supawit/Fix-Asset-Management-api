@@ -2,6 +2,8 @@ import {
     Entity,
     PrimaryColumn,
     Column,
+    CreateDateColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('DetailedPurchasing')
@@ -272,4 +274,10 @@ export class PurchaseOrderDetail {
 
     @Column({ type: 'int', nullable: true })
     PRItem: number;
+
+    @CreateDateColumn({ type: 'datetime' })
+    CreatedAt: Date;
+
+    @UpdateDateColumn({ type: 'datetime' })
+    UpdatedAt: Date;
 }

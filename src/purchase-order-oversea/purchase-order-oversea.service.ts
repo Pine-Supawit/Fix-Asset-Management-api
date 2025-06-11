@@ -29,7 +29,7 @@ export class PurchaseOrderOverseaService {
     startDate?: string,
     endDate?: string,
   ) {
-    console.time('purchaseOrderOverseaList');
+    console.time('purchase-order-oversea-list');
     try {
       const filtersProvided = [
         poid ? 1 : 0,
@@ -111,7 +111,7 @@ export class PurchaseOrderOverseaService {
         totalrecord: result[0]['Totalrecord'] || 0,
         query: query,
       });
-      console.timeEnd('purchaseOrderOverseaList');
+      console.timeEnd('purchase-order-oversea-list');
       return {
         data: result,
         page: page,
