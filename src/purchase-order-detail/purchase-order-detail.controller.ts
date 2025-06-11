@@ -6,12 +6,12 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FindPurchaseOrderDetailedDto } from './dto/find-detailed-purchasing.dto';
 import { AuthGuard } from '@nestjs/passport';
 
+@ApiBearerAuth()
 @ApiTags('Purchase Order Detail')
 @Controller('purchase-order-detail')
 export class PurchaseOrderDetailController {
   constructor(private readonly purchaseOrderDetailService: PurchaseOrderDetailService) { }
 
-  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Get()
   @ApiOperation({ summary: 'Get all purchase order details' })
@@ -19,7 +19,6 @@ export class PurchaseOrderDetailController {
     return this.purchaseOrderDetailService.findAll(body);
   }
 
-  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Patch()
   @ApiOperation({ summary: 'Update purchase order detail' })

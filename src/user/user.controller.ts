@@ -8,12 +8,12 @@ import { AuthGuard } from '@nestjs/passport';
 import { ForgetPasswordDto } from './dto/update-user.dto';
 import { FindOneByEmpIdDto, FindUsersDto } from './dto/find-user.dto';
 
+@ApiBearerAuth()
 @Controller('users')
 @ApiTags('Users')
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
-  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Get()
   @ApiOperation({ summary: 'Find user(s) in the system', description: 'Returns user(s) in the database' })
@@ -21,7 +21,6 @@ export class UserController {
     return this.userService.findAll(body);
   }
 
-  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Post()
   @ApiOperation({ summary: 'Create new user', description: 'Create new user that can login to the system' })
@@ -35,7 +34,6 @@ export class UserController {
     return this.userService.login(body);
   }
 
-  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Post('logout')
   @ApiOperation({ summary: 'Login user', description: 'Returns access token and refresh token' })
@@ -43,6 +41,7 @@ export class UserController {
     return this.userService.logout(body);
   }
 
+  @ApiBearerAuth()
   @Post('refresh')
   @ApiOperation({ summary: 'Get refresh token if access token is expired', description: 'Returns new access token' })
   async refresh(@Body() body: RefreshDto) {
@@ -55,7 +54,6 @@ export class UserController {
     return this.userService.forgotPassword(body);
   }
 
-  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Delete()
   @ApiOperation({ summary: 'Delete user', description: 'Delete user from the system' })

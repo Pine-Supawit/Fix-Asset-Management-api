@@ -9,12 +9,12 @@ import { FindPurchaseOrderByRequestByDto } from './dto/find-by-request-by.dto';
 import { FindPurchaseOrderByPurchaseByDto } from './dto/find-by-purchase-by.dto';
 import { AuthGuard } from '@nestjs/passport';
 
+@ApiBearerAuth()
 @ApiTags('Purchase Order')
 @Controller('purchase-order')
 export class PurchaseOrderController {
   constructor(private readonly purchaseOrderService: PurchaseOrderService) { }
 
-  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Get()
   @ApiOperation({ summary: 'Get all purchase orders' })
