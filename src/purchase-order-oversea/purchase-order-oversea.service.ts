@@ -111,6 +111,7 @@ export class PurchaseOrderOverseaService {
         totalrecord: result[0]['Totalrecrod'] || 0,
         query: query,
       });
+      console.timeEnd('purchaseOrderOverseaList');
       return {
         data: result,
         page: page,
