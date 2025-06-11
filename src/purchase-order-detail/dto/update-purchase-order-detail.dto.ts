@@ -7,7 +7,7 @@ export class UpdatePurchaseOrderDetailDto {
     @ApiProperty({ description: 'Purchase Order ID', required: true, default: 255201052 })
     @IsNumber()
     @Transform(({ value }) => Number(value))
-    PurchaseID: number;
+    POID: number;
 
     @ApiProperty({ description: 'Revision ID', required: true, default: 0 })
     @IsNumber()

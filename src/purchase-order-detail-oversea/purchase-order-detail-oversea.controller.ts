@@ -11,7 +11,7 @@ export class PurchaseOrderDetailOverseaController {
   constructor(private readonly purchaseOrderDetailOverseaService: PurchaseOrderDetailOverseaService) {}
 
   @Get()
-  async purchaseOrderDetailOversea(@Query('PurchaseID') poid: Number, @Query('ProductID') productId: Number, @Query('No') productNo: Number) {
+  async purchaseOrderDetailOversea(@Query('POID') poid: Number, @Query('ProductID') productId: Number, @Query('No') productNo: Number) {
     const validPoid = NumberValidator(+poid);
     const validProductId = NumberValidator(+productId);
     const validProductNo = NumberValidator(+productNo);

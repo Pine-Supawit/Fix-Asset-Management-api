@@ -80,7 +80,7 @@ describe('PurchaseOrderService', () => {
     };
 
     const mockDetail = {
-      PurchaseID: 1,
+      POID: 1,
       RevisionID: 1,
       AssetID: 'A',
       ProductID: 'P1',
@@ -91,7 +91,7 @@ describe('PurchaseOrderService', () => {
     };
 
     const mockPO = {
-      PurchaseID: 1,
+      POID: 1,
       RevisionID: 1,
       PRNo: 'PR123',
       SupplierID: 'S1',

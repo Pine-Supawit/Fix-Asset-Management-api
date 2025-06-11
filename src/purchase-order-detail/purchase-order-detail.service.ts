@@ -35,8 +35,8 @@ export class PurchaseOrderDetailService {
 
       const where: any = {};
 
-      if (params.PurchaseID !== undefined) {
-        where.PurchaseID = Number(params.PurchaseID);
+      if (params.POID !== undefined) {
+        where.PurchaseID = Number(params.POID);
       }
 
       if (params.RevisionID !== undefined) {
@@ -76,12 +76,12 @@ export class PurchaseOrderDetailService {
 
       for (const purchaseOrderDetail of purchaseOrderDetails) {
         const purchaseOrder = await this.purchaseOrderService.findOne({
-          PurchaseID: purchaseOrderDetail?.PurchaseID,
+          POID: purchaseOrderDetail?.PurchaseID,
           RevisionID: purchaseOrderDetail?.RevisionID,
         })
         const purchaseOrderDetailResult = {
-          PurchaseID: purchaseOrderDetail?.PurchaseID,
-          RevisionID: purchaseOrderDetail?.RevisionID,
+          POID: Number(purchaseOrderDetail?.PurchaseID),
+          RevisionID: Number(purchaseOrderDetail?.RevisionID),
           Department: purchaseOrder.data?.Department,
           ForDivision: purchaseOrder.data?.ForDivision,
           Company: CompanyMap[purchaseOrder[0]?.Company],
@@ -142,13 +142,13 @@ export class PurchaseOrderDetailService {
     try {
       const purchaseOrderDetail = await this.purchaseOrderDetailRepository.findOne({
         where: {
-          PurchaseID: Number(params.PurchaseID),
+          PurchaseID: Number(params.POID),
           RevisionID: Number(params.RevisionID),
           No: Number(params.No),
         },
       })
       if (!purchaseOrderDetail) {
-        throw new NotFoundException(`Purchase Order Detail with PurchaseID: ${params.PurchaseID}, RevisionID: ${params.RevisionID}, No: ${params.No} not found`);
+        throw new NotFoundException(`Purchase Order Detail with PurchaseID: ${params.POID}, RevisionID: ${params.RevisionID}, No: ${params.No} not found`);
       }
 
       const purpose = await this.purchaseRequestService.findOne({
@@ -156,13 +156,13 @@ export class PurchaseOrderDetailService {
       })
 
       const purchaseOrder = await this.purchaseOrderService.findOne({
-        PurchaseID: Number(params.PurchaseID),
+        POID: Number(params.POID),
         RevisionID: Number(params.RevisionID),
       })
 
       this.logger.debug(`[update-purchase-order-detail]: ${JSON.stringify(params)}`);
       const update = {
-        PurchaseID: Number(params.PurchaseID) || purchaseOrderDetail.PurchaseID,
+        PurchaseID: Number(params.POID) || purchaseOrderDetail.PurchaseID,
         RevisionID: Number(params.RevisionID) || purchaseOrderDetail.RevisionID,
         No: Number(params.No) || purchaseOrderDetail.No,
         AssetID: params.AssetID || purchaseOrderDetail.AssetID,
@@ -172,7 +172,7 @@ export class PurchaseOrderDetailService {
 
       const updatedPurchaseOrderDetail = await this.purchaseOrderDetailRepository.update(
         {
-          PurchaseID: Number(params.PurchaseID),
+          PurchaseID: Number(params.POID),
           RevisionID: Number(params.RevisionID),
           No: Number(params.No),
         },
@@ -180,7 +180,7 @@ export class PurchaseOrderDetailService {
       );
 
       const updatesPurchaseOrder = await this.purchaseOrderService.update({
-        PurchaseID: Number(params.PurchaseID),
+        POID: Number(params.POID),
         RevisionID: Number(params.RevisionID),
         InvNo: params.InvNo || purchaseOrder.data[0]?.InvNo,
         InvDate: params.InvDate || purchaseOrder.data[0]?.InvDate,

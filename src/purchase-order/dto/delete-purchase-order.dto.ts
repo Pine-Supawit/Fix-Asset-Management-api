@@ -6,5 +6,5 @@ export class DeletePurchaseOrderDto {
     @ApiProperty({ required: true })
     @IsNumber()
     @Transform(({ value }) => Number(value))
-    PurchaseID: number;
+    POID: number;
 }

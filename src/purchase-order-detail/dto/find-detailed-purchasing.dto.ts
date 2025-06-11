@@ -6,7 +6,7 @@ export class FindPurchaseOrderDetailedDto {
     @ApiProperty({ required: false, description: 'Search by purchase order ID' })
     @IsString()
     @IsOptional()
-    PurchaseID?: string;
+    POID?: string;
 
     @ApiProperty({ required: false, description: 'Search by revision ID' })
     @IsString()

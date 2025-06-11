@@ -85,9 +85,9 @@ export class PurchaseOrderService {
         }
       }
 
-      if (params.PurchaseID) {
+      if (params.POID) {
         query.andWhere("detail.PurchaseID = :purchaseID", {
-          purchaseID: Number(params.PurchaseID),
+          purchaseID: Number(params.POID),
         });
       }
 
@@ -184,8 +184,8 @@ export class PurchaseOrderService {
     CompanyMap: Record<string, string>
   ): IPurchaseOrder {
     return {
-      POID: purchaseOrder.PurchaseID?.toString(),
-      RevisionID: purchaseOrder.RevisionID?.toString(),
+      POID: Number(purchaseOrder.PurchaseID),
+      RevisionID: Number(purchaseOrder.RevisionID),
       RepairID: purchaseOrder?.TRNO || "",
       LotShipment: purchaseOrder?.LotShipment || "",
       DateOrder: this.adjustToLocalTime(purchaseOrder?.DateOrder) || undefined,
@@ -239,7 +239,7 @@ export class PurchaseOrderService {
     try {
       const purchaseOrder = await this.purchaseOrderRepository.findOne({
         where: {
-          PurchaseID: params.PurchaseID,
+          PurchaseID: params.POID,
           RevisionID: params.RevisionID,
         },
       });
@@ -249,7 +249,7 @@ export class PurchaseOrderService {
       });
       const request: any = requests?.data || [];
       if (!purchaseOrder) {
-        this.logger.warn(`Purchase order with ID ${params.PurchaseID} not found`);
+        this.logger.warn(`Purchase order with ID ${params.POID} not found`);
         throw new NotFoundException('Purchase order not found');
       }
       return {
@@ -276,19 +276,19 @@ export class PurchaseOrderService {
     }
   }
 
-  async remove(id: DeletePurchaseOrderDto) {
+  async remove(params: DeletePurchaseOrderDto) {
     try {
       const purchaseOrder = await this.purchaseOrderRepository.findOne({
         where: {
-          PurchaseID: id.PurchaseID,
+          PurchaseID: params.POID,
         },
       });
       if (!purchaseOrder) {
-        this.logger.warn(`Purchase order with ID ${id.PurchaseID} not found`);
+        this.logger.warn(`Purchase order with ID ${params.POID} not found`);
         throw new NotFoundException('Purchase order not found');
       }
       await this.purchaseOrderRepository.delete({
-        PurchaseID: id.PurchaseID,
+        PurchaseID: params.POID,
       });
       this.logger.debug(`[delete-purchase-order]: ${JSON.stringify(purchaseOrder.PurchaseID)}`);
       return {
@@ -305,23 +305,23 @@ export class PurchaseOrderService {
     try {
       const purchaseOrder = await this.purchaseOrderRepository.findOne({
         where: {
-          PurchaseID: Number(params.PurchaseID),
+          PurchaseID: Number(params.POID),
           RevisionID: Number(params.RevisionID),
         },
       })
       if (!purchaseOrder) {
-        this.logger.warn(`Purchase order with ID ${params.PurchaseID} not found`);
-        throw new NotFoundException(`Purchase order with ID ${params.PurchaseID} not found`);
+        this.logger.warn(`Purchase order with ID ${params.POID} not found`);
+        throw new NotFoundException(`Purchase order with ID ${params.POID} not found`);
       }
       this.logger.debug(`[update-purchase-order]: ${JSON.stringify(params)}`);
       const update = {
-        PurchaseID: Number(params.PurchaseID) || purchaseOrder.PurchaseID,
+        PurchaseID: Number(params.POID) || purchaseOrder.PurchaseID,
         RevisionID: Number(params.RevisionID) || purchaseOrder.RevisionID,
         InvNo: params.InvNo || purchaseOrder.InvNo,
         InvDate: params.InvDate || purchaseOrder.InvDate,
       }
       const updatedPurchaseOrder = await this.purchaseOrderRepository.update(
-        { PurchaseID: Number(params.PurchaseID), RevisionID: Number(params.RevisionID) },
+        { PurchaseID: Number(params.POID), RevisionID: Number(params.RevisionID) },
         update
       );
       this.logger.debug(`[update-purchase-order]: updatedPurchaseOrder = ${JSON.stringify(updatedPurchaseOrder)}`);

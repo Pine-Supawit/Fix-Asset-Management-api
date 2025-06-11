@@ -1,7 +1,7 @@
 export interface IPurchaseOrder {
-    POID?: string;
+    POID?: number;
     RepairID?: string;
-    RevisionID?: string;
+    RevisionID?: number;
     Company?: string;
     ProductID?: string;
     ProductName?: string;

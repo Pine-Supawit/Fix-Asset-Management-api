@@ -29,7 +29,7 @@ export class PurchaseOrderOverseaController {
 
   @Get('list')
   async purchaseOrderOverseaList(@Query() body: listOverseaDto) {
-    const poid = body.PurchaseID? NumberValidator(+body.PurchaseID): undefined;
+    const poid = body.POID? NumberValidator(+body.POID): undefined;
     const poType = body.Category ? StringValidator(body.Category) : undefined;
     const purchaseBy = body.PurchaseBy? StringValidator(body.PurchaseBy): undefined
     const resquestBy = body.RequestBy? StringValidator(body.RequestBy): undefined;

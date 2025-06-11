@@ -7,7 +7,7 @@ export class FindPurchaseOrderDto {
     @IsNumber()
     @IsOptional()
     @Transform(({ value }) => Number(value))
-    PurchaseID?: number;
+    POID?: number;
 
     @ApiProperty({ required: false, description: 'Search by revision ID' })
     @IsNumber()

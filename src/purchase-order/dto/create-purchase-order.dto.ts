@@ -10,7 +10,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 // export class CreatePurchaseOrderDto {
 //     @ApiProperty()
 //     @IsNumber()
-//     PurchaseID: number;
+//     POID: number;
 
 //     @ApiProperty()
 //     @IsNumber()

@@ -5,7 +5,7 @@ export class listOverseaDto {
   @ApiPropertyOptional({ type: Number, description: 'find by PurchaseID' })
   @IsOptional()
   @IsNumber()
-  PurchaseID: Number;
+  POID: Number;
 
   @ApiPropertyOptional({
     type: String,
