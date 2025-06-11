@@ -62,7 +62,6 @@ export class PurchaseOrderService {
       const CompanyMap: Record<string, string> = {
         "P/P": "Pine-Pacific Co., Ltd",
         "PIM": "Pine Industrial Materials Co., Ltd",
-        "S/R": "Saraburi",
       };
 
       const query = this.purchaseOrderDetailRepository
