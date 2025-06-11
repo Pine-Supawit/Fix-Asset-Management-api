@@ -35,6 +35,7 @@ export class PurchaseOrderService {
 
   async findAll(params: FindPurchaseOrderDto) {
     try {
+      console.time('find-many-purchase-order');
       const startDate = params.startDate ? `${params.startDate} 00:00:00` : undefined;
       const endDate = params.endDate ? `${params.endDate} 23:59:59` : undefined;
 
@@ -153,8 +154,10 @@ export class PurchaseOrderService {
         })
       );
 
-      this.logger.debug(`[find-all-purchase-order]: length = ${JSON.stringify(result.length)}`);
-      this.logger.debug(`[find-all-purchase-order]: total = ${JSON.stringify(total)}`);
+      this.logger.debug(`[find-many-purchase-order]: length = ${JSON.stringify(result.length)}`);
+      this.logger.debug(`[find-many-purchase-order]: total = ${JSON.stringify(total)}`);
+      
+      console.timeEnd('find-many-purchase-order');
 
       return {
         data: result,

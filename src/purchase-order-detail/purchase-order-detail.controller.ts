@@ -22,10 +22,10 @@ export class PurchaseOrderDetailController {
     return this.purchaseOrderDetailService.update(body);
   }
 
-  @Put()
-  @ApiOperation({ summary: 'Update all purchase order status to "active"' })
-  updateAll() {
-    return this.purchaseOrderDetailService.updateAll();
-  }
+  // @Put()
+  // @ApiOperation({ summary: 'Update all purchase order status to "active"' })
+  // updateAll() {
+  //   return this.purchaseOrderDetailService.updateAll();
+  // }
 
 }

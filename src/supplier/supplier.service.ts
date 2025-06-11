@@ -15,6 +15,7 @@ export class SupplierService {
   ) { }
   async findAll(params: FindSupplierDto) {
     try {
+      console.time('find-many-suppliers');
       const page = params.page || 1;
       const limit = params.limit || 10;
       const skip = (page - 1) * limit;
@@ -28,7 +29,10 @@ export class SupplierService {
           SupplierID: 'DESC',
         },
       });
-      this.logger.debug(`[find-many-suppliers]: ${JSON.stringify(suppliers.length)}`);
+      this.logger.debug(`[find-many-suppliers]: length = ${JSON.stringify(suppliers.length)}`);
+      this.logger.debug(`[find-many-suppliers]: total = ${total}`);
+
+      console.timeEnd('find-many-suppliers');
       return {
         data: suppliers,
         pagination: {
@@ -106,7 +110,7 @@ export class SupplierService {
         status: 200,
       };
     } catch (error) {
-      
+
     }
   }
 }

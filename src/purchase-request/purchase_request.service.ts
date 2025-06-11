@@ -19,6 +19,7 @@ export class PurchaseRequestService {
 
   async findAll(params: FindPurchaseRequestDto) {
     try {
+      console.time('find-many-purchase-request');
       const page = params.page || 1;
       const limit = params.limit || 10;
       const skip = (page - 1) * limit;
@@ -38,8 +39,10 @@ export class PurchaseRequestService {
           status: 200
         }
       }
-      this.logger.debug(`[find-many-purchase-request]: ${JSON.stringify(purchaseRequests.length)}`);
+      this.logger.debug(`[find-many-purchase-request]: length = ${JSON.stringify(purchaseRequests.length)}`);
+      this.logger.debug(`[find-many-purchase-request]: total = ${total}`);
 
+      console.timeEnd('find-many-purchase-request');
       return {
         data: purchaseRequests,
         pagination: {
