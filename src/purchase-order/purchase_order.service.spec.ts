@@ -6,28 +6,47 @@ import { PurchaseOrder } from './entities/purchase_order.entity';
 import { PurchaseRequestService } from 'src/purchase-request/purchase_request.service';
 import { SupplierService } from 'src/supplier/supplier.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { PurchaseOrderDetailService } from 'src/purchase-order-detail/purchase-order-detail.service';
+
 describe('PurchaseOrderService', () => {
   let service: PurchaseOrderService;
-  let detailRepo: Repository<PurchaseOrderDetail>;
   let poRepo: Repository<PurchaseOrder>;
+  let detailRepo: Repository<PurchaseOrderDetail>;
   let purchaseRequestService: PurchaseRequestService;
   let supplierService: SupplierService;
+
+  const queryBuilderMock: any = {
+    innerJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
+    skip: jest.fn().mockReturnThis(),
+    take: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
+    addOrderBy: jest.fn().mockReturnThis(),
+    getManyAndCount: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PurchaseOrderService,
         {
-          provide: getRepositoryToken(PurchaseOrderDetail),
+          provide: getRepositoryToken(PurchaseOrder, 'off_pp'),
+          useValue: {
+            findOne: jest.fn(),
+            createQueryBuilder: jest.fn(() => queryBuilderMock),
+          },
+        },
+        {
+          provide: getRepositoryToken(PurchaseOrderDetail, 'off_pp'),
           useValue: {
             createQueryBuilder: jest.fn(() => queryBuilderMock),
           },
         },
         {
-          provide: getRepositoryToken(PurchaseOrder),
+          provide: PurchaseOrderDetailService,
           useValue: {
-            findOne: jest.fn(),
-          },
+            findAll: jest.fn(),},
         },
         {
           provide: PurchaseRequestService,
@@ -45,22 +64,11 @@ describe('PurchaseOrderService', () => {
     }).compile();
 
     service = module.get<PurchaseOrderService>(PurchaseOrderService);
-    detailRepo = module.get(getRepositoryToken(PurchaseOrderDetail));
-    poRepo = module.get(getRepositoryToken(PurchaseOrder));
+    poRepo = module.get(getRepositoryToken(PurchaseOrder, 'off_pp'));
+    detailRepo = module.get(getRepositoryToken(PurchaseOrderDetail, 'off_pp'));
     purchaseRequestService = module.get(PurchaseRequestService);
     supplierService = module.get(SupplierService);
   });
-
-  const queryBuilderMock: any = {
-    innerJoinAndSelect: jest.fn().mockReturnThis(),
-    where: jest.fn().mockReturnThis(),
-    andWhere: jest.fn().mockReturnThis(),
-    skip: jest.fn().mockReturnThis(),
-    take: jest.fn().mockReturnThis(),
-    orderBy: jest.fn().mockReturnThis(),
-    addOrderBy: jest.fn().mockReturnThis(),
-    getManyAndCount: jest.fn(),
-  };
 
   it('should return paginated purchase orders with mapping', async () => {
     const mockParams = {
