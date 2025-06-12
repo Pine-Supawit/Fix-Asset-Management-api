@@ -343,10 +343,11 @@ export class PurchaseOrderService {
 
         this.logger.debug(`[update-purchase-order]: Updated Purchase Order Detail with PurchaseID: ${item.POID}, RevisionID: ${item.RevisionID}, No: ${item.No}`);
 
-        return {
-          status: 200,
-          message: 'Purchase order updated successfully',
-        }
+      }
+      
+      return {
+        status: 200,
+        message: 'Purchase order updated successfully',
       }
     } catch (error) {
       this.logger.error(error);
