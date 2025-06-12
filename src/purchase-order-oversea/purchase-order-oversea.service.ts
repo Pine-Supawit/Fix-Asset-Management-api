@@ -22,6 +22,7 @@ export class PurchaseOrderOverseaService {
   async purchaseOrderOverseaList(
     poid?: number,
     type?: string,
+    potype?: string,
     purchaseOfficer?: string,
     requestOfficer?: string,
     page?: number,
@@ -52,7 +53,7 @@ export class PurchaseOrderOverseaService {
         paginator = `OFFSET ${offset} ROWS FETCH NEXT ${resultLimit} ROWS ONLY`;
       }
       if (startDate && endDate) {
-        dateFilter = `WHERE po.DateOrder BETWEEN '${startDate}' AND '${endDate}'`;
+        dateFilter = `WHERE po.DateOrder BETWEEN DATEADD(HOUR, 7, '${startDate}') AND DATEADD(HOUR, 7, '${endDate}')`;
       }
       if (poid) {
         filters = `WHERE PoCTE.POID = ${poid}`;
@@ -60,6 +61,10 @@ export class PurchaseOrderOverseaService {
       }
       if (type) {
         filters = `WHERE PoCTE.Category = '${type}'`;
+      }
+      if (potype) {
+        filters = `WHERE PoCTE.PoType = '${potype}'`;
+        countRecord = 'PoCTE.PoType';
       }
       if (purchaseOfficer) {
         filters = `WHERE PoCTE.PurchaseBy like '%${purchaseOfficer}%'`;

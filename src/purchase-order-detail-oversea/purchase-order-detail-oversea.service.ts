@@ -23,34 +23,36 @@ export class PurchaseOrderDetailOverseaService {
   ) {
     try {
       const query = `
-      select 'Pine-Pacific Corporation Limited' as Companyname,
-CASE 
-         WHEN pod.ProductID LIKE '5%' THEN 'Asset'
-         ELSE 'Non-Asset'
-       END AS CategoryOfAsset,
-po.PurchaseOfficer as PuchasingOfficer,
-pr.RequestBy as requestBy,
-pr.Purpose as purchasePurpose,
-po.IsPurchaseOverseas as procurementMethod,
-pod.ProductID as productID,
-pod.SProductName as productName,
-sup.SupplierName as supplierName,
-pod.Quantity as quantity,
-pod.Amount as amount,
-s.InvNO as invoiceNum,
-s.InvDate as invoiceDate
-Case
+      select 'Pine-Pacific Corporation Limited' as Company,
+        CASE 
+          WHEN pod.ProductID LIKE '5%' THEN 'Asset'
+          ELSE 'Non-Asset'
+        END AS Category,
+        po.PurchaseOfficer as PurchaseBy,
+        pr.RequestBy as RequestBy,
+        pr.Purpose as Purpose,
+        po.IsPurchaseOverseas as ProcurementMethod,
+        pod.ProductID as ProductID,
+        pod.SProductName as ProductName,
+        sup.SupplierName as SupplierName,
+        CONCAT(pod.Quantity, ' ', pod.Unit) as Quantity,
+        pod.Amount as Amount,
+        s.InvNO as InvoiceNum,
+        s.InvDate as InvoiceDate,
+        Case
           When IsActive = '1' then 'Active'
           Else 'Inactive'
-End as Status
-from [Endeavour].[dbo].[PurchaseOrder] po
-left Join [Endeavour].[dbo].[PurchaseOrderDetailed] pod on po.PurchaseID = pod.PurchaseID
-left Join [Endeavour].[dbo].[PurchaseRequest] pr on po.PRNO = pr.PRNO
-left Join [Endeavour].[dbo].[ShipmentDetail] sd on sd.PurchaseID = po.PurchaseID and sd.NO = pod.No
-left Join [Endeavour].[dbo].[Shipment] s on s.ShipmentID = sd.ShipmentID
-left Join [Ent_db].[dbo].[Supplier] sup on sup.SupplierID = po.SupplierID
-WHERE po.PurchaseID = ${poid} and pod.No = ${productNo} and pod.ProductID = ${productID}
-`
+        End as Status,
+        po.checkPoType as POType,
+        po.checkPOTypeDate as POTypeDate
+      from [Endeavour].[dbo].[PurchaseOrder] po
+      left Join [Endeavour].[dbo].[PurchaseOrderDetailed] pod on po.PurchaseID = pod.PurchaseID
+      left Join [Endeavour].[dbo].[PurchaseRequest] pr on po.PRNO = pr.PRNO
+      left Join [Endeavour].[dbo].[ShipmentDetail] sd on sd.PurchaseID = po.PurchaseID and sd.NO = pod.No
+      left Join [Endeavour].[dbo].[Shipment] s on s.ShipmentID = sd.ShipmentID
+      left Join [Ent_db].[dbo].[Supplier] sup on sup.SupplierID = po.SupplierID
+      WHERE po.PurchaseID = ${poid} and pod.No = ${productNo} and pod.ProductID = ${productID}
+` 
       const result = await this.dataSource.query(query);
 
       if (result.length === 0) {

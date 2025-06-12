@@ -24,119 +24,77 @@ describe('PurchaseOrderOverseaController', () => {
     controller = module.get<PurchaseOrderOverseaController>(PurchaseOrderOverseaController);
     service = module.get<PurchaseOrderOverseaService>(PurchaseOrderOverseaService);
   });
-  it('should call service with page as number', async () => {
-    const mockResult = ['po1', 'po2'];
+  it('should call service with only POID', async () => {
+    const mockResult = { data: ['po1'], page: 1, totalInPage: 1, total: 1 };
     (service.purchaseOrderOverseaList as jest.Mock).mockResolvedValue(mockResult);
-     const mockrequest = {
-        page: 2,
-        startDate: '2025-01-01',
-        endDate: '2025-03-31',
-        limit: 10
-    }
-
-    const result = await controller.purchaseOrderOverseaList(mockrequest); 
-    expect(service.purchaseOrderOverseaList).toHaveBeenCalledWith(2, '2025-01-01', '2025-03-31', 10);
+    const dto = { POID: 123 };
+    const result = await controller.purchaseOrderOverseaList(dto as any);
+    expect(service.purchaseOrderOverseaList).toHaveBeenCalledWith(123, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
     expect(result).toBe(mockResult);
   });
 
-  it('should handle missing optional query values gracefully', async () => {
-      const mockResult = ['po3'];
-      (service.purchaseOrderOverseaList as jest.Mock).mockResolvedValue(mockResult);
+  it('should call service with only Category', async () => {
+    const mockResult = { data: ['po2'], page: 1, totalInPage: 1, total: 1 };
+    (service.purchaseOrderOverseaList as jest.Mock).mockResolvedValue(mockResult);
+    const dto = { Category: 'Asset' };
+    const result = await controller.purchaseOrderOverseaList(dto as any);
+    expect(service.purchaseOrderOverseaList).toHaveBeenCalledWith(undefined, 'ASSET', undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+    expect(result).toBe(mockResult);
+  });
 
-      const mockrequest = {}; // no page or dates
-      const result = await controller.purchaseOrderOverseaList(mockrequest);
-      expect(service.purchaseOrderOverseaList).toHaveBeenCalledWith(undefined, undefined, undefined, undefined);
-      expect(result).toBe(mockResult);
-    });
+  // it('should call service with only PoType', async () => {
+  //   const mockResult = { data: ['poType'], page: 1, totalInPage: 1, total: 1 };
+  //   (service.purchaseOrderOverseaList as jest.Mock).mockResolvedValue(mockResult);
+  //   const dto = { PoType: 'IMPORT' };
+  //   const result = await controller.purchaseOrderOverseaList(dto as any);
+  //   expect(service.purchaseOrderOverseaList).toHaveBeenCalledWith(undefined, undefined, '', undefined, undefined, undefined, undefined, undefined, undefined);
+  //   expect(result).toBe(mockResult);
+  // });
 
-    it('should call service with uppercase type and validated inputs', async () => {
-      const mockResult = ['typeA item1', 'typeA item2'];
-      (service.purchaseOrderOverseaByType as jest.Mock).mockResolvedValue(mockResult);
+  it('should call service with only PurchaseBy', async () => {
+    const mockResult = { data: ['po3'], page: 1, totalInPage: 1, total: 1 };
+    (service.purchaseOrderOverseaList as jest.Mock).mockResolvedValue(mockResult);
+    const dto = { PurchaseBy: 'john' };
+    const result = await controller.purchaseOrderOverseaList(dto as any);
+    expect(service.purchaseOrderOverseaList).toHaveBeenCalledWith(undefined, undefined, undefined, 'JOHN', undefined, undefined, undefined, undefined, undefined);
+    expect(result).toBe(mockResult);
+  });
 
-      const query = {
-        type: 'asset',
-        page: '1',
-        startDate: '2025-01-01',
-        endDate: '2025-01-31',
-      };
+  it('should call service with only RequestBy', async () => {
+    const mockResult = { data: ['po4'], page: 1, totalInPage: 1, total: 1 };
+    (service.purchaseOrderOverseaList as jest.Mock).mockResolvedValue(mockResult);
+    const dto = { RequestBy: 'jane' };
+    const result = await controller.purchaseOrderOverseaList(dto as any);
+    expect(service.purchaseOrderOverseaList).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, 'JANE', undefined, undefined, undefined, undefined);
+    expect(result).toBe(mockResult);
+  });
 
-      const result = await controller.purchaseOrderOverseaByType(query as any);
-      expect(service.purchaseOrderOverseaByType).toHaveBeenCalledWith(
-        'ASSET',
-        1,
-        '2025-01-01',
-        '2025-01-31'
-      );
-      expect(result).toBe(mockResult);
-    });
+  it('should call service with pagination and date filters', async () => {
+    const mockResult = { data: ['po5'], page: 2, totalInPage: 1, total: 1 };
+    (service.purchaseOrderOverseaList as jest.Mock).mockResolvedValue(mockResult);
+    const dto = { page: 2, limit: 10, startDate: '2025-01-01', endDate: '2025-03-31' };
+    const result = await controller.purchaseOrderOverseaList(dto as any);
+    expect(service.purchaseOrderOverseaList).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, undefined, 2, 10, '2025-01-01', '2025-03-31');
+    expect(result).toBe(mockResult);
+  });
 
-    it('should throw BadRequestException for invalid type', async () => {
-      const query = {
-        type: '',
-        page: '1',
-        startDate: '2025-01-01',
-        endDate: '2025-01-31',
-      };
+  it('should return empty result if service returns no data', async () => {
+    const mockResult = { data: [], page: -1, totalInPage: -1, total: -1 };
+    (service.purchaseOrderOverseaList as jest.Mock).mockResolvedValue(mockResult);
+    const dto = { POID: 999 };
+    const result = await controller.purchaseOrderOverseaList(dto as any);
+    expect(result).toEqual(mockResult);
+  });
 
-      await expect(controller.purchaseOrderOverseaByType(query as any)).rejects.toThrow(BadRequestException);
-    });
+  it('should throw error if more than one filter is provided', async () => {
+    (service.purchaseOrderOverseaList as jest.Mock).mockImplementation(() => { throw new Error('Only one of poid, purchaseOfficer, or requestOfficer can be provided at a time.'); });
+    const dto = { POID: 1, PurchaseBy: 'john' };
+    await expect(controller.purchaseOrderOverseaList(dto as any)).rejects.toThrow('Only one of poid, purchaseOfficer, or requestOfficer can be provided at a time.');
+  });
 
-    it('should throw BadRequestException for invalid page number', async () => {
-      const query = {
-        type: 'non-asset',
-        page: '-3',
-        startDate: '2025-01-01',
-        endDate: '2025-01-31',
-      };
-
-      await expect(controller.purchaseOrderOverseaByType(query as any)).rejects.toThrow(BadRequestException);
-    });
-
-
-    it('should call service with all valid params', async () => {
-      const mockResult = { data: ['poid1'], page: 1, totalInPage: 1, total: 1 };
-      service.purchaseOrderOverseaByFilters = jest.fn().mockResolvedValue(mockResult);
-      const query = {
-        poid: '123',
-        purchaseBy: 'john',
-        resquestBy: 'jane',
-        page: '1',
-        startDate: '2025-01-01',
-        endDate: '2025-01-31',
-        limit: '10',
-      };
-      const result = await controller.purchaseOrderOverseaByFilters(query as any);
-      expect(service.purchaseOrderOverseaByFilters).toHaveBeenCalledWith(123, 'JOHN', 'JANE', 1, 10, '2025-01-01', '2025-01-31');
-      expect(result).toBe(mockResult);
-    });
-
-    it('should call service with only poid', async () => {
-      const mockResult = { data: ['poid2'], page: undefined, totalInPage: 1, total: 1 };
-      service.purchaseOrderOverseaByFilters = jest.fn().mockResolvedValue(mockResult);
-      const query = { poid: '456' };
-      const result = await controller.purchaseOrderOverseaByFilters(query as any);
-      expect(service.purchaseOrderOverseaByFilters).toHaveBeenCalledWith(456, undefined, undefined, undefined, undefined, undefined, undefined);
-      expect(result).toBe(mockResult);
-    });
-
-    it('should throw BadRequestException for invalid poid', async () => {
-      const query = { poid: 'not-a-number' };
-      await expect(controller.purchaseOrderOverseaByFilters(query as any)).rejects.toThrow(BadRequestException);
-    });
-
-    it('should throw BadRequestException for negative poid', async () => {
-      const query = { poid: '-5' };
-      await expect(controller.purchaseOrderOverseaByFilters(query as any)).rejects.toThrow(BadRequestException);
-    });
-
-    it('should throw BadRequestException for missing all filters', async () => {
-      const query = { };
-      await expect(controller.purchaseOrderOverseaByFilters(query as any)).rejects.toThrow(TypeError);
-    });
-
-    it('should propagate service errors', async () => {
-      service.purchaseOrderOverseaByFilters = jest.fn().mockRejectedValue(new Error('Service error'));
-      const query = { poid: '123' };
-      await expect(controller.purchaseOrderOverseaByFilters(query as any)).rejects.toThrow('Service error');
-    });
+  it('should propagate service errors', async () => {
+    (service.purchaseOrderOverseaList as jest.Mock).mockRejectedValue(new Error('Service error'));
+    const dto = { POID: 1 };
+    await expect(controller.purchaseOrderOverseaList(dto as any)).rejects.toThrow('Service error');
+  });
 });

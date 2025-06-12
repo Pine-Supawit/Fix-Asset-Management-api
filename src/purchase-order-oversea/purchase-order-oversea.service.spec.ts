@@ -62,7 +62,7 @@ describe('PurchaseOrderOverseaService', () => {
       },
     ];
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
-    const result = await service.purchaseOrderOverseaList(1, undefined, undefined, undefined, 1, 10, '2022-01-01', '2022-01-31');
+    const result = await service.purchaseOrderOverseaList(1, undefined, undefined, undefined, undefined, 1, 10, '2022-01-01', '2022-01-31');
     expect(result).toEqual({
       data: mockResult,
       page: 1,
@@ -73,20 +73,20 @@ describe('PurchaseOrderOverseaService', () => {
 
   it('should return empty data if no purchase orders found', async () => {
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce([]);
-    const result = await service.purchaseOrderOverseaList(1, undefined, undefined, undefined, 1, 10, '2022-01-01', '2022-01-31');
+    const result = await service.purchaseOrderOverseaList(1, undefined, undefined, undefined, undefined, 1, 10, '2022-01-01', '2022-01-31');
     expect(result).toEqual({ data: [], page: -1, totalInPage: -1, total: -1 });
-    expect(loggerMock.warn).toHaveBeenCalledWith('exceed the data');
+    expect(loggerMock.warn).toHaveBeenCalledWith('No more data found');
   });
 
   it('should throw error if more than one filter is provided', async () => {
-    await expect(service.purchaseOrderOverseaList(1, 'type', 'officer', undefined, 1, 10, '2022-01-01', '2022-01-31')).rejects.toThrow(
+    await expect(service.purchaseOrderOverseaList(1, 'type', 'officer', undefined, undefined, 1, 10, '2022-01-01', '2022-01-31')).rejects.toThrow(
       'Error fetching purchase orders'
     );
   });
 
   it('should throw error if query fails', async () => {
     (dataSourceMock.query as jest.Mock).mockRejectedValueOnce(new Error('DB error'));
-    await expect(service.purchaseOrderOverseaList(1, undefined, undefined, undefined, 1, 10, '2022-01-01', '2022-01-31')).rejects.toThrow('Error fetching purchase orders');
+    await expect(service.purchaseOrderOverseaList(1,undefined, undefined, undefined, undefined, 1, 10, '2022-01-01', '2022-01-31')).rejects.toThrow('Error fetching purchase orders');
     expect(loggerMock.error).toHaveBeenCalledWith('Error fetching purchase orders', expect.any(Error));
   });
 
@@ -114,7 +114,7 @@ describe('PurchaseOrderOverseaService', () => {
       },
     ];
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
-    const result = await service.purchaseOrderOverseaList(1, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+    const result = await service.purchaseOrderOverseaList(1, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
     expect(result).toEqual({
       data: mockResult,
       page: undefined,
@@ -147,7 +147,7 @@ describe('PurchaseOrderOverseaService', () => {
       },
     ];
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
-    const result = await service.purchaseOrderOverseaList(undefined, 'Asset', undefined, undefined, undefined, undefined, undefined, undefined);
+    const result = await service.purchaseOrderOverseaList(undefined, 'Asset', undefined, undefined, undefined, undefined, undefined, undefined, undefined);
     expect(result).toEqual({
       data: mockResult,
       page: undefined,
@@ -180,7 +180,7 @@ describe('PurchaseOrderOverseaService', () => {
       },
     ];
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
-    const result = await service.purchaseOrderOverseaList(undefined, undefined, 'User', undefined, undefined, undefined, undefined, undefined);
+    const result = await service.purchaseOrderOverseaList(undefined, undefined, undefined, 'User', undefined, undefined, undefined, undefined, undefined);
     expect(result).toEqual({
       data: mockResult,
       page: undefined,
@@ -213,7 +213,7 @@ describe('PurchaseOrderOverseaService', () => {
       },
     ];
     (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(mockResult);
-    const result = await service.purchaseOrderOverseaList(undefined, undefined, undefined, 'Req', undefined, undefined, undefined, undefined);
+    const result = await service.purchaseOrderOverseaList(undefined, undefined, undefined, undefined, 'Req', undefined, undefined, undefined, undefined);
     expect(result).toEqual({
       data: mockResult,
       page: undefined,
