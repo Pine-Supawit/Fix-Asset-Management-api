@@ -327,9 +327,9 @@ export class PurchaseOrderService {
           throw new NotFoundException('Purchase Order Detail not found');
         }
 
-        if (params.Category) {
+        if (params.POType) {
           const updatePODetail = {
-            AssetID: AssetTypeMap[params.Category] || purchaseOrderDetail.AssetID,
+            POType: AssetTypeMap[params.POType] || purchaseOrderDetail.AssetID,
           }
 
           await this.purchaseOrderDetailRepository.update({

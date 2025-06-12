@@ -17,7 +17,7 @@ export class UpdatePurchaseOrderDto {
     @ApiProperty({ required: false, description: 'Search by Asset type (A, E, T, S, C)' })
     @IsString()
     @IsOptional()
-    Category?: string;
+    POType?: string;
 }
 
 export class POObject {

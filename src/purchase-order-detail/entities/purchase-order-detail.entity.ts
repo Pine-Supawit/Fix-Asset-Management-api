@@ -159,7 +159,7 @@ export class PurchaseOrderDetail {
     PriceNote: string;
 
     @Column({ type: 'varchar', length: 30, nullable: true })
-    H_Quality1: string;
+    POType: string;
 
     @Column({ type: 'varchar', length: 30, nullable: true })
     H_Quality2: string;
