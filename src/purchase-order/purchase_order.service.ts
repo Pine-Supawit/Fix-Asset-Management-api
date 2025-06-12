@@ -206,7 +206,7 @@ export class PurchaseOrderService {
       Category: POTypeMap[detail?.AssetID] || "",
       InvNo: purchaseOrder?.InvNo || "",
       BLNO: purchaseOrder?.BLNo || "",
-      POType: "",
+      POType: detail?.POType || "",
       PODate: this.adjustToLocalTime(purchaseOrder?.DateOrder) || undefined,
       PRDate: this.adjustToLocalTime(purchaseOrder?.PRDate) || undefined,
       PRNO: purchaseOrder?.PRNo || "",
