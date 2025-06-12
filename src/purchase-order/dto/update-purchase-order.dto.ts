@@ -38,14 +38,4 @@ export class POObject {
     @IsOptional()
     @Transform(({ value }) => Number(value))
     No?: number;
-
-    @ApiProperty({ description: 'Purchase Order Detail Check ("OK", "NO")', required: false, default: "OK" })
-    @IsString()
-    @IsOptional()
-    Check?: string;
-
-    @ApiProperty({ description: 'Purchase Order Detail Remark', required: false })
-    @IsString()
-    @IsOptional()
-    Note?: string;
 }
