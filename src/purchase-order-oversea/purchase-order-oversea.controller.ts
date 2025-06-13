@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { PurchaseOrderOverseaService } from './purchase-order-oversea.service';
 import { CreatePurchaseOrderOverseaDto } from './dto/create-purchase-order-oversea.dto';
@@ -17,8 +18,9 @@ import {
   NumberValidator,
   StringValidator,
 } from '../utils/validation';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { listOverseaDto } from './dto/list-oversea.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Purchase Order Oversea')
 @Controller('purchase-order-oversea')
@@ -26,7 +28,8 @@ export class PurchaseOrderOverseaController {
   constructor(
     private readonly purchaseOrderOverseaService: PurchaseOrderOverseaService,
   ) {}
-
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Get('list')
   async purchaseOrderOverseaList(@Query() body: listOverseaDto) {
     const poid = body.POID? NumberValidator(+body.POID): undefined;
