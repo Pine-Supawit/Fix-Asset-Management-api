@@ -88,7 +88,8 @@ export class PurchaseOrderOverseaService {
                 When IsActive = '1' then 'Active'
                 Else 'Inactive'
             End as Status,
-            po.checkPoType as PoType
+            po.checkPoType as PoType,
+            po.PRNO as PRNO
             from [Endeavour].[dbo].[PurchaseOrder] po
             left Join [Endeavour].[dbo].[PurchaseOrderDetailed] pod on po.PurchaseID = pod.PurchaseID
             left Join [Endeavour].[dbo].[PurchaseRequest] pr on po.PRNO = pr.PRNO
