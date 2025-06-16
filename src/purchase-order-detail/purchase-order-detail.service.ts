@@ -182,6 +182,10 @@ export class PurchaseOrderDetailService {
         RevisionID: purchaseOrderDetail?.RevisionID,
       })
 
+      const request = await this.purchaseRequestService.findAll({
+        PRNO: purchaseOrderDetail?.PRNo?.toString(),
+      })
+
       let purchaseOrderDetailResult = {};
       if (purchaseOrderDetail) {
         purchaseOrderDetailResult = {
@@ -189,7 +193,7 @@ export class PurchaseOrderDetailService {
           RevisionID: Number(purchaseOrderDetail?.RevisionID),
           Department: purchaseOrder.data?.Department,
           ForDivision: purchaseOrder.data?.ForDivision,
-          Company: CompanyMap[purchaseOrder[0]?.Company],
+          Company: CompanyMap[purchaseOrder.data?.Company],
           No: purchaseOrderDetail?.No,
           ProductID: purchaseOrderDetail?.ProductID,
           ProductName: purchaseOrderDetail?.SProductName,
@@ -206,6 +210,7 @@ export class PurchaseOrderDetailService {
           UnitCostBaht: purchaseOrderDetail?.UnitCostBaht,
           ExchangeRate: purchaseOrderDetail?.ExchangeRate,
           PriceNote: purchaseOrderDetail?.PriceNote,
+          Purpose: request?.data[0]?.Purpose || "",
           PRNo: purchaseOrderDetail?.PRNo,
           PRItem: purchaseOrderDetail?.PRItem,
           Category: POTypeMap[purchaseOrderDetail.AssetID],
