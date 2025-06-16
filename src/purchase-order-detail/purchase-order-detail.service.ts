@@ -112,6 +112,8 @@ export class PurchaseOrderDetailService {
           InsuranceNo: purchaseOrder.data?.InsuranceNo,
           PINO: purchaseOrder.data?.PINO,
           Status: purchaseOrderDetail.Status,
+          CreatedAt: purchaseOrderDetail.CreatedAt,
+          UpdatedAt: purchaseOrderDetail.UpdatedAt,
         };
         purchaseOrderDetailsResult.push(purchaseOrderDetailResult);
       }
@@ -135,8 +137,101 @@ export class PurchaseOrderDetailService {
   }
 
 
-  findOne(id: number) {
-    return `This action returns a #${id} purchaseOrderDetail`;
+  async findOne(params: FindPurchaseOrderDetailedDto) {
+    try {
+      console.time('find-one-purchase-order-detail');
+      const where: any = {};
+
+      if (params.POID !== undefined) {
+        where.PurchaseID = Number(params.POID);
+      }
+
+      if (params.RevisionID !== undefined) {
+        where.RevisionID = Number(params.RevisionID);
+      }
+
+      if (params.No !== undefined) {
+        where.No = Number(params.No);
+      }
+
+      if (params.ProductID !== undefined) {
+        where.ProductID = params.ProductID;
+      }
+
+      const purchaseOrderDetail = await this.purchaseOrderDetailRepository.findOne({
+        where
+      });
+
+      const POTypeMap: Record<string, string> = {
+        A: "Asset",
+        T: "Tools",
+        E: "Expense",
+        S: "Spare",
+        C: "Consumable",
+      };
+
+      const CompanyMap: Record<string, string> = {
+        "P/P": "Pine-Pacific Co., Ltd",
+        "PIM": "Pine Industrial Materials Co., Ltd",
+        "S/R": "Saraburi"
+      }
+
+
+      const purchaseOrder = await this.purchaseOrderService.findOne({
+        POID: purchaseOrderDetail?.PurchaseID,
+        RevisionID: purchaseOrderDetail?.RevisionID,
+      })
+
+      let purchaseOrderDetailResult = {};
+      if (purchaseOrderDetail) {
+        purchaseOrderDetailResult = {
+          POID: Number(purchaseOrderDetail?.PurchaseID),
+          RevisionID: Number(purchaseOrderDetail?.RevisionID),
+          Department: purchaseOrder.data?.Department,
+          ForDivision: purchaseOrder.data?.ForDivision,
+          Company: CompanyMap[purchaseOrder[0]?.Company],
+          No: purchaseOrderDetail?.No,
+          ProductID: purchaseOrderDetail?.ProductID,
+          ProductName: purchaseOrderDetail?.SProductName,
+          UNIT: purchaseOrderDetail?.Unit,
+          UnitCost: purchaseOrderDetail?.UnitCost,
+          Currency: purchaseOrderDetail?.Currency,
+          TotalQuantity: purchaseOrderDetail?.TotalQty,
+          GrandTotalQuantity: purchaseOrderDetail?.GTotalQty,
+          AmountQuantity: purchaseOrderDetail?.AmtQty,
+          Amount: purchaseOrderDetail?.Amount,
+          GPUnit: purchaseOrderDetail?.GPUnit,
+          GPUnitCost: purchaseOrderDetail?.GPUnitCost,
+          GShow: purchaseOrderDetail?.GShow,
+          UnitCostBaht: purchaseOrderDetail?.UnitCostBaht,
+          ExchangeRate: purchaseOrderDetail?.ExchangeRate,
+          PriceNote: purchaseOrderDetail?.PriceNote,
+          PRNo: purchaseOrderDetail?.PRNo,
+          PRItem: purchaseOrderDetail?.PRItem,
+          Category: POTypeMap[purchaseOrderDetail.AssetID],
+          POType: POTypeMap[purchaseOrderDetail.POType],
+          PurchaseBy: purchaseOrder.data?.PurchaseBy,
+          InvNo: purchaseOrder.data?.InvNo,
+          InvDate: purchaseOrder.data?.InvDate,
+          InsuranceCompany: purchaseOrder.data?.InsuranceCompany,
+          InsuranceNo: purchaseOrder.data?.InsuranceNo,
+          PINO: purchaseOrder.data?.PINO,
+          Status: purchaseOrderDetail?.Status,
+          CreatedAt: purchaseOrderDetail?.CreatedAt,
+          UpdatedAt: purchaseOrderDetail?.UpdatedAt,
+        };
+      }
+
+      console.timeEnd('find-one-purchase-order-detail');
+      return {
+        data: purchaseOrderDetailResult,
+        status: 200,
+        message: `Purchase Order Detail with ID: ${params.POID} RevisionID: ${params.RevisionID} No: ${params.No} found successfully`,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      throw new Error(`Error finding purchase order detail with ID: ${params.POID} RevisionID: ${params.RevisionID} No: ${params.No}`);
+    }
   }
 
   // async update(params: UpdatePurchaseOrderDetailDto) {

@@ -19,6 +19,13 @@ export class PurchaseOrderDetailController {
     return this.purchaseOrderDetailService.findAll(body);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Get('find-one')
+  @ApiOperation({ summary: 'Get one purchase order details' })
+  findOne(@Query() body: FindPurchaseOrderDetailedDto) {
+    return this.purchaseOrderDetailService.findOne(body);
+  }
+
   // @UseGuards(AuthGuard('jwt'))
   // @Patch()
   // @ApiOperation({ summary: 'Update purchase order detail' })
