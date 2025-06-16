@@ -211,6 +211,7 @@ export class PurchaseOrderDetailService {
           Category: POTypeMap[purchaseOrderDetail.AssetID],
           POType: POTypeMap[purchaseOrderDetail.POType] || "",
           PurchaseBy: purchaseOrder.data?.PurchaseBy,
+          RequestBy: purchaseOrder.data?.RequestBy,
           InvNo: purchaseOrder.data?.InvNo,
           InvDate: purchaseOrder.data?.InvDate,
           InsuranceCompany: purchaseOrder.data?.InsuranceCompany,
