@@ -17,7 +17,7 @@ import {
   DateValidator,
   NumberValidator,
   StringValidator,
-} from '../utils/validation';
+} from '../common/utils/validation';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { listOverseaDto } from './dto/list-oversea.dto';
 import { AuthGuard } from '@nestjs/passport';

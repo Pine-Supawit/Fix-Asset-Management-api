@@ -12,7 +12,7 @@ import { SupplierOverseaService } from './supplier-oversea.service';
 import { CreateSupplierOverseaDto } from './dto/create-supplier-oversea.dto';
 import { UpdateSupplierOverseaDto } from './dto/update-supplier-oversea.dto';
 import { supplierOverseaDto } from './dto/get-supplier-oversea.dto';
-import { StringValidator } from 'src/utils/validation';
+import { StringValidator } from '../common/utils/validation';
 
 @Controller('supplier-oversea')
 export class SupplierOverseaController {
