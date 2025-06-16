@@ -16,6 +16,7 @@ import { startOfDay, endOfDay } from 'date-fns';
 import { FindProductNameDto } from './dto/find-product-name.dto';
 import { FindPurchaseOrderByRequestByDto } from './dto/find-by-request-by.dto';
 import { FindPurchaseOrderByPurchaseByDto } from './dto/find-by-purchase-by.dto';
+import { adjustToLocalTime } from 'src/common/utils/adjust-local-time';
 
 @Injectable()
 export class PurchaseOrderService {
@@ -187,10 +188,10 @@ export class PurchaseOrderService {
       RevisionID: Number(purchaseOrder.RevisionID),
       RepairID: purchaseOrder?.TRNO || "",
       LotShipment: purchaseOrder?.LotShipment || "",
-      DateOrder: this.adjustToLocalTime(purchaseOrder?.DateOrder) || undefined,
-      DateOfDelivery: this.adjustToLocalTime(purchaseOrder?.EstimateArr1) || undefined,
-      InvDate: this.adjustToLocalTime(purchaseOrder?.InvDate) || undefined,
-      BLDate: this.adjustToLocalTime(purchaseOrder?.BLDate) || undefined,
+      DateOrder: adjustToLocalTime(purchaseOrder?.DateOrder) || undefined,
+      DateOfDelivery: adjustToLocalTime(purchaseOrder?.EstimateArr1) || undefined,
+      InvDate: adjustToLocalTime(purchaseOrder?.InvDate) || undefined,
+      BLDate: adjustToLocalTime(purchaseOrder?.BLDate) || undefined,
       Company: CompanyMap[purchaseOrder?.Company] || "",
       ProductID: detail?.ProductID || "",
       No: detail?.No || 1,
@@ -207,14 +208,14 @@ export class PurchaseOrderService {
       InvNo: purchaseOrder?.InvNo || "",
       BLNO: purchaseOrder?.BLNo || "",
       POType: detail?.POType || "",
-      PODate: this.adjustToLocalTime(purchaseOrder?.DateOrder) || undefined,
-      PRDate: this.adjustToLocalTime(purchaseOrder?.PRDate) || undefined,
+      PODate: adjustToLocalTime(purchaseOrder?.DateOrder) || undefined,
+      PRDate: adjustToLocalTime(purchaseOrder?.PRDate) || undefined,
       PRNO: purchaseOrder?.PRNo || "",
-      ReceiveDate: this.adjustToLocalTime(purchaseOrder?.DateArrive) || undefined,
-      SendDocDate: this.adjustToLocalTime(purchaseOrder?.SendDocDate) || undefined,
-      ReceiveDocDate: this.adjustToLocalTime(purchaseOrder?.ReceiveDocDate) || undefined,
+      ReceiveDate: adjustToLocalTime(purchaseOrder?.DateArrive) || undefined,
+      SendDocDate: adjustToLocalTime(purchaseOrder?.SendDocDate) || undefined,
+      ReceiveDocDate: adjustToLocalTime(purchaseOrder?.ReceiveDocDate) || undefined,
       ApprovedBy: purchaseOrder?.ApprovedBy || "",
-      ApprovedDate: this.adjustToLocalTime(purchaseOrder?.ApprovedDate) || undefined,
+      ApprovedDate: adjustToLocalTime(purchaseOrder?.ApprovedDate) || undefined,
       Amount: detail?.Amount || 0,
       Discount: purchaseOrder?.TotalDiscount || 0,
       VAT: purchaseOrder?.VAT || 0,
@@ -226,13 +227,6 @@ export class PurchaseOrderService {
       Status: detail?.Status || "",
       NoteForShipmentReport: purchaseOrder?.NoteForShipmentReport || "",
     };
-  }
-
-  private adjustToLocalTime(date: Date | string | null): Date | null {
-    if (!date) return null;
-    const dt = new Date(date);
-    dt.setHours(dt.getHours() + 7);
-    return dt;
   }
 
   async findOne(params: FindPurchaseOrderDto) {
@@ -335,6 +329,7 @@ export class PurchaseOrderService {
         if (params.POType) {
           const updatePODetail = {
             POType: AssetTypeMap[params.POType] || purchaseOrderDetail.AssetID,
+            chk: "OK",
           }
 
           await this.purchaseOrderDetailRepository.update({
@@ -349,7 +344,7 @@ export class PurchaseOrderService {
         this.logger.debug(`[update-purchase-order]: Updated Purchase Order Detail with PurchaseID: ${item.POID}, RevisionID: ${item.RevisionID}, No: ${item.No}`);
 
       }
-      
+
       return {
         status: 200,
         message: 'Purchase order updated successfully',

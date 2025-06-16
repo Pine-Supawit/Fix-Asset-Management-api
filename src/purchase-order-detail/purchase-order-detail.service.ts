@@ -8,6 +8,7 @@ import { In, Repository } from 'typeorm';
 import { PurchaseOrderService } from 'src/purchase-order/purchase_order.service';
 import { PurchaseRequestService } from 'src/purchase-request/purchase_request.service';
 import { SupplierService } from 'src/supplier/supplier.service';
+import { adjustToLocalTime } from 'src/common/utils/adjust-local-time';
 
 @Injectable()
 export class PurchaseOrderDetailService {
@@ -136,13 +137,6 @@ export class PurchaseOrderDetailService {
     }
   }
 
-  private adjustToLocalTime(date: Date | string | null): Date | null {
-    if (!date) return null;
-    const dt = new Date(date);
-    dt.setHours(dt.getHours() + 7);
-    return dt;
-  }
-
   async findOne(params: FindPurchaseOrderDetailedDto) {
     try {
       console.time('find-one-purchase-order-detail');
@@ -225,13 +219,13 @@ export class PurchaseOrderDetailService {
           PurchaseBy: purchaseOrder.data?.PurchaseBy,
           RequestBy: purchaseOrder.data?.RequestBy,
           InvNo: purchaseOrder.data?.InvNo,
-          InvDate: this.adjustToLocalTime(purchaseOrder.data?.InvDate),
+          InvDate: adjustToLocalTime(purchaseOrder.data?.InvDate),
           InsuranceCompany: purchaseOrder.data?.InsuranceCompany,
           InsuranceNo: purchaseOrder.data?.InsuranceNo,
           PINO: purchaseOrder.data?.PINO,
           Status: purchaseOrderDetail?.Status,
-          CreatedAt: this.adjustToLocalTime(purchaseOrderDetail?.CreatedAt),
-          UpdatedAt: this.adjustToLocalTime(purchaseOrderDetail?.UpdatedAt),
+          CreatedAt: adjustToLocalTime(purchaseOrderDetail?.CreatedAt),
+          UpdatedAt: adjustToLocalTime(purchaseOrderDetail?.UpdatedAt),
         };
       }
 
