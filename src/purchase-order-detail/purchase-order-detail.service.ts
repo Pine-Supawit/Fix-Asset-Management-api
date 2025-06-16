@@ -136,6 +136,12 @@ export class PurchaseOrderDetailService {
     }
   }
 
+  private adjustToLocalTime(date: Date | string | null): Date | null {
+    if (!date) return null;
+    const dt = new Date(date);
+    dt.setHours(dt.getHours() + 7);
+    return dt;
+  }
 
   async findOne(params: FindPurchaseOrderDetailedDto) {
     try {
@@ -197,6 +203,7 @@ export class PurchaseOrderDetailService {
           No: purchaseOrderDetail?.No,
           ProductID: purchaseOrderDetail?.ProductID,
           ProductName: purchaseOrderDetail?.SProductName,
+          SupplierName: purchaseOrder.data?.SupplierName || "",
           UNIT: purchaseOrderDetail?.Unit,
           UnitCost: purchaseOrderDetail?.UnitCost,
           Currency: purchaseOrderDetail?.Currency,
@@ -218,13 +225,13 @@ export class PurchaseOrderDetailService {
           PurchaseBy: purchaseOrder.data?.PurchaseBy,
           RequestBy: purchaseOrder.data?.RequestBy,
           InvNo: purchaseOrder.data?.InvNo,
-          InvDate: purchaseOrder.data?.InvDate,
+          InvDate: this.adjustToLocalTime(purchaseOrder.data?.InvDate),
           InsuranceCompany: purchaseOrder.data?.InsuranceCompany,
           InsuranceNo: purchaseOrder.data?.InsuranceNo,
           PINO: purchaseOrder.data?.PINO,
           Status: purchaseOrderDetail?.Status,
-          CreatedAt: purchaseOrderDetail?.CreatedAt,
-          UpdatedAt: purchaseOrderDetail?.UpdatedAt,
+          CreatedAt: this.adjustToLocalTime(purchaseOrderDetail?.CreatedAt),
+          UpdatedAt: this.adjustToLocalTime(purchaseOrderDetail?.UpdatedAt),
         };
       }
 

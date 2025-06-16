@@ -247,6 +247,10 @@ export class PurchaseOrderService {
       const requests = await this.purchaseRequestService.findAll({
         PRNO: purchaseOrder?.PRNo?.toString(),
       });
+
+      const supplier = await this.supplierService.findOne({
+        SupplierID: purchaseOrder?.SupplierID,
+      })
       const request: any = requests?.data || [];
       if (!purchaseOrder) {
         this.logger.warn(`Purchase order with ID ${params.POID} not found`);
@@ -267,6 +271,7 @@ export class PurchaseOrderService {
           InsuranceCompany: purchaseOrder?.InsuranceCompany || "",
           InsuranceNo: purchaseOrder?.InsuranceNo || "",
           PINO: purchaseOrder?.PINO || "",
+          SupplierName: supplier.data.SupplierName,
         },
         status: 200,
       }
