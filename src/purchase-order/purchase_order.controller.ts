@@ -16,7 +16,7 @@ import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 export class PurchaseOrderController {
   constructor(private readonly purchaseOrderService: PurchaseOrderService) { }
 
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   @ApiOperation({ summary: 'Get all purchase orders' })
   findAll(@Query() body: FindPurchaseOrderDto) {
