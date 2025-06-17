@@ -34,7 +34,7 @@ export class PurchaseOrderOverseaController {
   async purchaseOrderOverseaList(@Query() body: listOverseaDto) {
     const poid = body.POID? NumberValidator(+body.POID): undefined;
     const category = body.Category ? StringValidator(body.Category) : undefined;
-    const poType = body.POType ? StringValidator(body.Category) : undefined;
+    const poType = body.POType ? StringValidator(body.POType) : undefined;
     const purchaseBy = body.PurchaseBy? StringValidator(body.PurchaseBy): undefined
     const resquestBy = body.RequestBy? StringValidator(body.RequestBy): undefined;
     const pageNum = body.page ? NumberValidator(+body.page) : undefined;

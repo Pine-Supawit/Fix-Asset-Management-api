@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { NumberValidator, TypeValidator } from '../interfaces/validation.interface';
+import { NumberValidator, StringValidator, DateValidator} from '../interfaces/validation.interface';
 
 export function NumberValidator(num: number): number {
   if (!num || num <= 0) {
