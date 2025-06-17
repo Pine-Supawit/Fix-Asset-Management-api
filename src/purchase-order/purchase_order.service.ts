@@ -202,7 +202,7 @@ export class PurchaseOrderService {
       RequestBy: purchaseOrder?.ShippingAgent || "",
       PurchaseBy: purchaseOrder?.PurchaseOfficer || "",
       Department: purchaseOrder?.PRDivision || "",
-      Purpose: request?.Purpose || "",
+      Purpose: request?.data.Purpose || "",
       ForDepartment: purchaseOrder?.ForDivision || "",
       Category: POTypeMap[detail?.AssetID] || "",
       InvNo: purchaseOrder?.InvNo || "",

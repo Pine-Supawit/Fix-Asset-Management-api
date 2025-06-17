@@ -46,7 +46,8 @@ describe('PurchaseOrderService', () => {
         {
           provide: PurchaseOrderDetailService,
           useValue: {
-            findAll: jest.fn(),},
+            findAll: jest.fn(),
+          },
         },
         {
           provide: PurchaseRequestService,
