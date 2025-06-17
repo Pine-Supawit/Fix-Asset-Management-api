@@ -19,32 +19,27 @@ export class UpdatePurchaseOrderDetailDto {
     @Transform(({ value }) => Number(value))
     No: number;
 
-    @ApiProperty({ description: 'Asset ID', required: false, default: 'E' })
+    @ApiProperty({ description: 'POType', required: false, default: 'E' })
     @IsString()
-    AssetID: string;
+    POType: string;
 
-    @ApiProperty({ description: 'Invoice Number', required: false })
-    @IsString()
-    @IsOptional()
-    InvNo?: string;
+    // @ApiProperty({ description: 'Invoice Number', required: false })
+    // @IsString()
+    // @IsOptional()
+    // InvNo?: string;
 
-    @ApiProperty({ description: 'Invoice Date', required: false })
-    @IsDate()
-    @IsOptional()
-    InvDate?: Date;
+    // @ApiProperty({ description: 'Invoice Date', required: false })
+    // @IsDate()
+    // @IsOptional()
+    // InvDate?: Date;
 
-    @ApiProperty({ description: 'Asset Type check', required: false, default: "OK" })
-    @IsString()
-    @IsOptional()
-    AssetTypeCheck?: string;
-
-    @ApiProperty({ description: 'Note', required: false })
+    @ApiProperty({ description: 'PriceNote', required: false })
     @IsString()
     @IsOptional()
-    Note?: string;
+    PriceNote?: string;
 
-    @ApiProperty({ description: 'Purpose', required: false })
-    @IsString()
-    @IsOptional()
-    Purpose?: string;
+    // @ApiProperty({ description: 'Purpose', required: false })
+    // @IsString()
+    // @IsOptional()
+    // Purpose?: string;
 }

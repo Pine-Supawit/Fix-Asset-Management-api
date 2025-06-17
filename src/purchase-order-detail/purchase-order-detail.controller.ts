@@ -26,12 +26,12 @@ export class PurchaseOrderDetailController {
     return this.purchaseOrderDetailService.findOne(body);
   }
 
-  // @UseGuards(AuthGuard('jwt'))
-  // @Patch()
-  // @ApiOperation({ summary: 'Update purchase order detail' })
-  // update(@Body() body: UpdatePurchaseOrderDetailDto) {
-  //   return this.purchaseOrderDetailService.update(body);
-  // }
+  @UseGuards(AuthGuard('jwt'))
+  @Patch()
+  @ApiOperation({ summary: 'Update purchase order detail' })
+  update(@Body() body: UpdatePurchaseOrderDetailDto) {
+    return this.purchaseOrderDetailService.update(body);
+  }
 
   // @Put()
   // @ApiOperation({ summary: 'Update all purchase order status to "active"' })
