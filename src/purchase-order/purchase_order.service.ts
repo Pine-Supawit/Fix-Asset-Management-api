@@ -37,6 +37,7 @@ export class PurchaseOrderService {
   async findAll(params: FindPurchaseOrderDto) {
     try {
       console.time('find-many-purchase-order');
+
       const startDate = params.startDate ? `${params.startDate} 00:00:00` : undefined;
       const endDate = params.endDate ? `${params.endDate} 23:59:59` : undefined;
 
@@ -80,12 +81,6 @@ export class PurchaseOrderService {
         });
       }
 
-      if (params.POType) {
-        query.andWhere("detail.POType = :poType", {
-          poType: AssetTypeMap[params.POType],
-        });
-      }
-
       if (params.POID) {
         query.andWhere("detail.PurchaseID = :purchaseID", {
           purchaseID: Number(params.POID),
@@ -115,6 +110,14 @@ export class PurchaseOrderService {
           startDate,
           endDate,
         });
+      }
+
+      if (params.POType) {
+        query.andWhere("detail.POType = :poType", {
+          poType: AssetTypeMap[params.POType],
+        });
+      } else {
+        query.andWhere("detail.POType IS NULL");
       }
 
       const [details, total] = await query
@@ -175,6 +178,7 @@ export class PurchaseOrderService {
       throw new Error("Error fetching purchase orders");
     }
   }
+
 
   private mapPurchaseOrderFields(
     purchaseOrder: any,
