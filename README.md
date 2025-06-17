@@ -1,4 +1,4 @@
-# Assets Management API Test
+# Assets Management API
 
 > NestJS-based API for managing assets, purchase orders, suppliers, and related business operations.
 
