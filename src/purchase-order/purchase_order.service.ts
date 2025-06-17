@@ -75,14 +75,15 @@ export class PurchaseOrderService {
         .where("po.ReceiveDocDate IS NOT NULL");
 
       if (params.Category) {
-        const assetTypeKey = Object.keys(AssetTypeMap).find((key) =>
-          params.Category && key.toLowerCase().startsWith(params.Category.toLowerCase())
-        );
-        if (assetTypeKey) {
-          query.andWhere("detail.AssetID = :assetID", {
-            assetID: AssetTypeMap[assetTypeKey],
-          });
-        }
+        query.andWhere("detail.AssetID = :assetID", {
+          assetID: AssetTypeMap[params.Category],
+        });
+      }
+
+      if (params.POType) {
+        query.andWhere("detail.POType = :poType", {
+          poType: AssetTypeMap[params.POType],
+        });
       }
 
       if (params.POID) {
