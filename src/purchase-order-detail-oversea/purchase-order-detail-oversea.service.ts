@@ -84,7 +84,7 @@ export class PurchaseOrderDetailOverseaService {
         UPDATE [Endeavour].[dbo].[PurchaseOrderDetailed]
         SET 
           POType = '${POType}',
-          POTypeDate = GETDATE()
+          POTypeDate = DATEADD(HOUR, 7, GETDATE())
         WHERE 
           PurchaseID = ${POID} AND 
           ProductID = ${ProductID} AND 
