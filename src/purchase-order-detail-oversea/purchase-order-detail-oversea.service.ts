@@ -25,8 +25,11 @@ export class PurchaseOrderDetailOverseaService {
       const query = `
       select 'Pine-Pacific Corporation Limited' as Company,
         CASE 
-          WHEN pod.ProductID LIKE '5%' THEN 'Asset'
-          ELSE 'Non-Asset'
+            WHEN pod.ProductID LIKE '5%' THEN 'Asset'
+            WHEN pod.ProductID LIKE '1%' THEN 'Product'
+            WHEN pod.ProductID LIKE '20%' or pod.ProductID LIKE '21%' or pod.ProductID LIKE '22%' THEN 'Tools'
+            WHEN pod.ProductID LIKE '23%' or pod.ProductID LIKE '24%' or pod.ProductID LIKE '25%' THEN 'Service'
+            ELSE 'Undefined'
         END AS Category,
         po.PurchaseOfficer as PurchaseBy,
         pr.RequestBy as RequestBy,
@@ -43,8 +46,8 @@ export class PurchaseOrderDetailOverseaService {
           When IsActive = '1' then 'Active'
           Else 'Inactive'
         End as Status,
-        po.checkPoType as POType,
-        po.checkPOTypeDate as POTypeDate
+        pod.POType as POType,
+        pod.POTypeDate as POTypeDate
       from [Endeavour].[dbo].[PurchaseOrder] po
       left Join [Endeavour].[dbo].[PurchaseOrderDetailed] pod on po.PurchaseID = pod.PurchaseID
       left Join [Endeavour].[dbo].[PurchaseRequest] pr on po.PRNO = pr.PRNO
@@ -66,6 +69,35 @@ export class PurchaseOrderDetailOverseaService {
     } catch (error) {
       this.logger.error('Error fetching purchase orders details', error);
       throw new Error('Error fetching purchase orders details');
+    }
+  }
+
+  async update(params: UpdatePurchaseOrderDetailOverseaDto) {
+    try {
+      const { POObject, POType } = params;
+
+      if (!POObject.length) {
+        throw new Error('POObject array is empty.');
+      }
+      const updatePromises = POObject.map(({ POID, ProductID, No }) => {
+      const query = `
+        UPDATE [Endeavour].[dbo].[PurchaseOrderDetailed]
+        SET 
+          POType = '${POType}',
+          POTypeDate = GETDATE()
+        WHERE 
+          PurchaseID = ${POID} AND 
+          ProductID = ${ProductID} AND 
+          No = ${No}`;
+      //this.logger.debug(`[update-purchase-order]: ${query}`);
+      return this.dataSource.query(query);
+    })
+
+      await Promise.all(updatePromises);
+      return { status: 200, message: 'Purchase order oversea updated successfully' };
+    } catch (error) {
+      this.logger.error(error);
+      throw new Error('Error updating purchase order');
     }
   }
 }

@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+  Query,
+} from '@nestjs/common';
 import { CreatePurchaseOrderOverseaDto } from './dto/create-purchase-order-oversea.dto';
 import { UpdatePurchaseOrderOverseaDto } from './dto/update-purchase-order-oversea.dto';
 import { PurchaseOrderOverseaDto } from './dto/get-purchase-order-oversea.dto';
@@ -15,7 +21,7 @@ export class PurchaseOrderOverseaService {
     private purchaseOrderOverseaRepo: Repository<PurchaseOrderOversea>,
     @Inject(getDataSourceToken('Endeavour'))
     private dataSource: DataSource,
-  ) { }
+  ) {}
 
   private logger = new Logger();
 
@@ -47,6 +53,7 @@ export class PurchaseOrderOverseaService {
       let paginator = '';
       let filters = '';
       let countRecord = '*';
+      let nullFilter = 'AND pod.POType is null';
       if (page && limit) {
         const resultLimit = limit;
         const offset = (page - 1) * resultLimit;
@@ -65,6 +72,7 @@ export class PurchaseOrderOverseaService {
       if (potype) {
         filters = `WHERE PoCTE.PoType = '${potype}'`;
         countRecord = 'PoCTE.PoType';
+        nullFilter = '';
       }
       if (purchaseOfficer) {
         filters = `WHERE PoCTE.PurchaseBy like '%${purchaseOfficer}%'`;
@@ -81,14 +89,17 @@ export class PurchaseOrderOverseaService {
             pod.Amount as Amount, pr.Division as Department, po.PurchaseOfficer as PurchaseBy, pr.RequestBy as RequestBy,
             CASE 
               WHEN pod.ProductID LIKE '5%' THEN 'Asset'
-              ELSE 'Non-Asset'
+              WHEN pod.ProductID LIKE '1%' THEN 'Product'
+              WHEN pod.ProductID LIKE '20%' or pod.ProductID LIKE '21%' or pod.ProductID LIKE '22%' THEN 'Tools'
+              WHEN pod.ProductID LIKE '23%' or pod.ProductID LIKE '24%' or pod.ProductID LIKE '25%' THEN 'Service'
+              ELSE 'Undefined'
             END AS Category,
             pod.ProductID as ProductID, pod.No as ProductNo, po.IsPurchaseOverseas as IsPurchaseOverseas,
             Case
                 When IsActive = '1' then 'Active'
                 Else 'Inactive'
             End as Status,
-            po.checkPoType as PoType,
+            pod.POType as POType,
             po.PRNO as PRNO
             from [Endeavour].[dbo].[PurchaseOrder] po
             left Join [Endeavour].[dbo].[PurchaseOrderDetailed] pod on po.PurchaseID = pod.PurchaseID
@@ -97,6 +108,7 @@ export class PurchaseOrderOverseaService {
             left Join [Endeavour].[dbo].[Shipment] S on s.ShipmentID = sd.ShipmentID
             left Join [Ent_db].[dbo].[Supplier] sup on sup.SupplierID = po.SupplierID
             ${dateFilter}
+            ${nullFilter}
         )
 
         select *, (SELECT COUNT(${countRecord}) FROM PoCTE ${filters}) AS Totalrecord
@@ -105,6 +117,9 @@ export class PurchaseOrderOverseaService {
         order by PoCTE.POID desc, PoCTE.ProductNo ASC
         ${paginator}
       `;
+
+      // this.logger.debug(`[update-purchase-order]: ${JSON.stringify(query)}`)
+
       const result = await this.dataSource.query(query);
       if (result.length === 0) {
         this.logger.warn('No more data found');
