@@ -4,6 +4,7 @@ import { UpdatePurchaseOrderDetailOverseaDto } from './dto/update-purchase-order
 import { PurchaseOrderDetailOversea } from './entities/purchase-order-detail-oversea.entity';
 import { getDataSourceToken, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
+import { adjustToLocalTime } from 'src/common/utils/adjust-local-time';
 
 @Injectable()
 export class PurchaseOrderDetailOverseaService {
@@ -47,7 +48,7 @@ export class PurchaseOrderDetailOverseaService {
           Else 'Inactive'
         End as Status,
         pod.POType as POType,
-        pod.POTypeDate as POTypeDate
+        DATEADD(HOUR, 7, pod.POTypeDate) as POTypeDate
       from [Endeavour].[dbo].[PurchaseOrder] po
       left Join [Endeavour].[dbo].[PurchaseOrderDetailed] pod on po.PurchaseID = pod.PurchaseID
       left Join [Endeavour].[dbo].[PurchaseRequest] pr on po.PRNO = pr.PRNO
@@ -62,7 +63,6 @@ export class PurchaseOrderDetailOverseaService {
         this.logger.warn('No purchase order details found for the given criteria');
         return {data: [], page: -1, total: -1};
       }
-
       this.logger.log('Purchase order details fetched successfully');
       this.logger.log({data: result})
       return result
