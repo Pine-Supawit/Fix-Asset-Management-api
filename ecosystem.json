@@ -18,11 +18,11 @@
   ],
   "deploy": {
     "dev-api-assets": {
-      "user": "tuna",
-      "host": ["100.114.41.14"],
+      "user": "nueamek",
+      "host": ["203.146.94.243"],
       "ref": "origin/main",
-      "repo": "https://github.com/thampaponn/assets-management-api.git",
-      "path": "/home/tuna/assets-management/dev-api-assets",
+      "repo": "https://github.com/Pine-Supawit/Fix-Asset-Management-api.git",
+      "path": "/home/assets-management/dev-api-assets",
       "ssh_options": ["ForwardAgent=yes"],
       "post-deploy": "npm install && npm run build && /home/tuna/.nvm/versions/node/v22.16.0/bin/pm2 startOrRestart ecosystem.json --env dev-api-assets"
     }
