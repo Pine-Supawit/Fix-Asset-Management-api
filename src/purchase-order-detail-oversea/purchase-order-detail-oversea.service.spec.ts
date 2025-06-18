@@ -3,6 +3,7 @@ import { PurchaseOrderDetailOverseaService } from './purchase-order-detail-overs
 import { DataSource } from 'typeorm';
 import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
 import { PurchaseOrderDetailOversea } from './entities/purchase-order-detail-oversea.entity';
+import { UpdatePurchaseOrderDetailOverseaDto } from './dto/update-purchase-order-detail-oversea.dto';
 
 describe('PurchaseOrderDetailOverseaService', () => {
   let service: PurchaseOrderDetailOverseaService;
@@ -123,4 +124,66 @@ describe('PurchaseOrderDetailOverseaService', () => {
   it('should throw an error if productNo is null', async () => {
     await expect(service.purchaseOrderDetailOversea(1, 50001, null as any)).rejects.toThrow();
   });
+
+  it('should update successfully with valid input', async () => {
+    const dto: UpdatePurchaseOrderDetailOverseaDto = {
+      POType: 'ASSET',
+      POObject: [
+        { POID: 1, ProductID: 101, No: 1 },
+        { POID: 2, ProductID: 202, No: 2 },
+      ],
+    };
+
+    (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(null).mockResolvedValueOnce(null);
+
+    const result = await service.update(dto);
+
+    expect(dataSourceMock.query).toHaveBeenCalledTimes(2);
+    expect(result).toEqual({
+      status: 200,
+      message: 'Purchase order oversea updated successfully',
+    });
+  });
+
+  it('should throw error if POObject is empty', async () => {
+    const dto: UpdatePurchaseOrderDetailOverseaDto = {
+      POType: 'ASSET',
+      POObject: [],
+    };
+
+    await expect(service.update(dto)).rejects.toThrow('Error updating purchase order');
+    expect(dataSourceMock.query).not.toHaveBeenCalled();
+  });
+
+  it('should throw general error when query fails', async () => {
+    const dto: UpdatePurchaseOrderDetailOverseaDto = {
+      POType: 'ASSET',
+      POObject: [{ POID: 1, ProductID: 101, No: 1 }],
+    };
+
+    (dataSourceMock.query as jest.Mock).mockRejectedValue(new Error('SQL error'));
+
+    await expect(service.update(dto)).rejects.toThrow('Error updating purchase order');
+    expect(loggerMock.error).toHaveBeenCalled();
+  });
+
+
+  it('should update even with string numbers in POObject', async () => {
+    const dto: UpdatePurchaseOrderDetailOverseaDto = {
+      POType: 'TOOL',
+      POObject: [
+        { POID: '10', ProductID: '200', No: '2' } as any,
+      ],
+    };
+
+    (dataSourceMock.query as jest.Mock).mockResolvedValue(null);
+
+    const result = await service.update(dto);
+
+    expect(result).toEqual({
+      status: 200,
+      message: 'Purchase order oversea updated successfully',
+    });
+  });
+
 });
