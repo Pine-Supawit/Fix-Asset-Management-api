@@ -42,7 +42,7 @@ export class PurchaseOrderDetailOverseaService {
         CONCAT(pod.Quantity, ' ', pod.Unit) as Quantity,
         pod.Amount as Amount,
         s.InvNO as InvoiceNum,
-        s.InvDate as InvoiceDate,
+        DATEADD(HOUR, 7, s.InvDate) as InvoiceDate,
         Case
           When IsActive = '1' then 'Active'
           Else 'Inactive'
