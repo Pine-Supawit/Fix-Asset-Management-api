@@ -151,7 +151,7 @@ describe('PurchaseOrderDetailOverseaService', () => {
       POObject: [],
     };
 
-    await expect(service.update(dto)).rejects.toThrow('Error updating purchase order');
+    await expect(service.update(dto)).rejects.toThrow('Error updateing purchase orders POtype');
     expect(dataSourceMock.query).not.toHaveBeenCalled();
   });
 
@@ -163,7 +163,7 @@ describe('PurchaseOrderDetailOverseaService', () => {
 
     (dataSourceMock.query as jest.Mock).mockRejectedValue(new Error('SQL error'));
 
-    await expect(service.update(dto)).rejects.toThrow('Error updating purchase order');
+    await expect(service.update(dto)).rejects.toThrow('Error updateing purchase orders POtype');
     expect(loggerMock.error).toHaveBeenCalled();
   });
 
@@ -184,6 +184,95 @@ describe('PurchaseOrderDetailOverseaService', () => {
       status: 200,
       message: 'Purchase order oversea updated successfully',
     });
+  });
+
+   it('should update POType and Note when both are provided', async () => {
+    const params = {
+      POID: 1,
+      ProductID: 101,
+      No: 1,
+      POType: 'ASSET',
+      PriceNote: 'Special price',
+    };
+    (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(null);
+    const result = await service.updateByOne(params);
+    expect(dataSourceMock.query).toHaveBeenCalled();
+    expect(result).toEqual({
+      status: 200,
+      message: 'Purchase order detail oversea updated successfully',
+    });
+  });
+
+  it('should update only POType when PriceNote is not provided', async () => {
+    const params = {
+      POID: 1,
+      ProductID: 101,
+      No: 1,
+      POType: 'ASSET',
+    };
+    (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(null);
+    const result = await service.updateByOne(params);
+    expect(dataSourceMock.query).toHaveBeenCalled();
+    expect(result).toEqual({
+      status: 200,
+      message: 'Purchase order detail oversea updated successfully',
+    });
+  });
+
+  it('should update only Note when POType is not provided', async () => {
+    const params = {
+      POID: 1,
+      ProductID: 101,
+      No: 1,
+      PriceNote: 'Special price',
+    };
+    (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(null);
+    const result = await service.updateByOne(params);
+    expect(dataSourceMock.query).toHaveBeenCalled();
+    expect(result).toEqual({
+      status: 200,
+      message: 'Purchase order detail oversea updated successfully',
+    });
+  });
+
+  it('should throw error if query fails', async () => {
+    const params = {
+      POID: 1,
+      ProductID: 101,
+      No: 1,
+      POType: 'ASSET',
+      PriceNote: 'Special price',
+    };
+    (dataSourceMock.query as jest.Mock).mockRejectedValueOnce(new Error('SQL error'));
+    await expect(service.updateByOne(params)).rejects.toThrow('Error updateing purchase orders details');
+    expect(loggerMock.error).toHaveBeenCalled();
+  });
+
+  it('should handle string numbers for POID, ProductID, No', async () => {
+    const params = {
+      POID: '1',
+      ProductID: '101',
+      No: '1',
+      POType: 'ASSET',
+      PriceNote: 'Special price',
+    } as any;
+    (dataSourceMock.query as jest.Mock).mockResolvedValueOnce(null);
+    const result = await service.updateByOne(params);
+    expect(result).toEqual({
+      status: 200,
+      message: 'Purchase order detail oversea updated successfully',
+    });
+  });
+
+  it('should throw error if required fields are missing', async () => {
+    const params = {
+      POType: 'ASSET',
+      PriceNote: 'Special price',
+    } as any;
+
+    (dataSourceMock.query as jest.Mock).mockRejectedValue(new Error('SQL error'));
+    await expect(service.updateByOne(params)).rejects.toThrow('Error updateing purchase orders details');
+    expect(loggerMock.error).toHaveBeenCalled();
   });
 
 });
