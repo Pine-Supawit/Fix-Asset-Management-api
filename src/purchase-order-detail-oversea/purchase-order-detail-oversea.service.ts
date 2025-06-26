@@ -5,6 +5,7 @@ import { PurchaseOrderDetailOversea } from './entities/purchase-order-detail-ove
 import { getDataSourceToken, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { adjustToLocalTime } from 'src/common/utils/adjust-local-time';
+import { UpdatePurchaseByOneOrderDetailDto } from './dto/update-by-one-purchase-order-detail-oversea.dto';
 
 @Injectable()
 export class PurchaseOrderDetailOverseaService {
@@ -96,8 +97,42 @@ export class PurchaseOrderDetailOverseaService {
       await Promise.all(updatePromises);
       return { status: 200, message: 'Purchase order oversea updated successfully' };
     } catch (error) {
-      this.logger.error(error);
-      throw new Error('Error updating purchase order');
+      this.logger.error('Error updating purchase orders POtype', error);
+      throw new Error('Error updateing purchase orders POtype');
+    }
+  }
+  
+  async updateByOne(params: UpdatePurchaseByOneOrderDetailDto){
+    try {
+      const { POID, ProductID, No, POType, PriceNote } = params;
+      let PoTypeQuery = '';
+      let NoteQuery = '';
+      if(POType){
+        PoTypeQuery = `POType = '${POType}', POTypeDate = DATEADD(HOUR, 7, GETDATE())`;
+      }
+      if(PriceNote){
+        NoteQuery = `Note = '${PriceNote}'`;
+      }
+      if (PoTypeQuery && NoteQuery) {
+        NoteQuery += ',';
+      }
+      const query = `
+      UPDATE [Endeavour].[dbo].[PurchaseOrderDetailed]
+      SET 
+        ${NoteQuery}
+        ${PoTypeQuery}
+      WHERE 
+        PurchaseID = ${POID} AND 
+        ProductID = ${ProductID} AND 
+        No = ${No}
+      `
+      this.logger.log({ query: query });
+      const result = await this.dataSource.query(query);
+      return { status: 200, message: 'Purchase order detail oversea updated successfully'}
+    } catch (error) {
+      this.logger.error('Error updating purchase orders details', error);
+      throw new Error('Error updateing purchase orders details');
     }
   }
 }
+

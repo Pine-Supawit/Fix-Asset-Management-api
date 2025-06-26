@@ -5,6 +5,7 @@ import { UpdatePurchaseOrderDetailOverseaDto } from './dto/update-purchase-order
 import { NumberValidator, StringValidator } from '../common/utils/validation';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { UpdatePurchaseByOneOrderDetailDto } from './dto/update-by-one-purchase-order-detail-oversea.dto';
 
 @ApiBearerAuth()
 @ApiTags('Purchase Order Detail Oversea')
@@ -32,4 +33,12 @@ export class PurchaseOrderDetailOverseaController {
     return this.purchaseOrderDetailOverseaService.update(body);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('By-one')
+  async updateByOne(@Body() body: UpdatePurchaseByOneOrderDetailDto) {
+    if (body.POType) {
+      body.POType = StringValidator(body.POType);
+    }
+    return this.purchaseOrderDetailOverseaService.updateByOne(body);
+  }
 }
