@@ -49,7 +49,7 @@ export class PurchaseOrderDetailOverseaService {
           Else 'Inactive'
         End as Status,
         pod.POType as POType,
-        DATEADD(HOUR, 7, pod.POTypeDate) as POTypeDate
+        DATEADD(HOUR, 7, pod.POTypeDate) as POTypeDate,
         pod.Note as PriceNote
       from [Endeavour].[dbo].[PurchaseOrder] po
       left Join [Endeavour].[dbo].[PurchaseOrderDetailed] pod on po.PurchaseID = pod.PurchaseID
